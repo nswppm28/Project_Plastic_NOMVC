@@ -5,17 +5,38 @@
 {% block page_heading %}แดชบอร์ด{% endblock %}
 
 {% block page_subtitle %}
-<p class="page-subtitle">ภาพรวมข้อมูลการรับซื้อพลาสติกจากฐานข้อมูล</p>
+<p class="page-subtitle">ภาพรวมยอดรับซื้อ มูลค่า และสถานะข้อมูลล่าสุดของร้าน</p>
 {% endblock %}
 
 {% block content %}
 <div class="dashboard-page">
 
+  <!-- HERO / PAGE INTRO -->
+  <section class="dashboard-hero">
+    <div class="dashboard-hero-text">
+      <span class="dashboard-eyebrow">PLASTIC BUYBACK OVERVIEW</span>
+      <h2>ภาพรวมร้านรับซื้อพลาสติก</h2>
+      <p>ติดตามยอดรับซื้อ ประเภทพลาสติกยอดนิยม ลูกค้าประจำ และรายการล่าสุดในหน้าเดียว</p>
+    </div>
+
+    <div class="dashboard-hero-actions">
+      <a href="{{ url_for('purchase_page') }}" class="dashboard-primary-btn">
+        <i class="bi bi-plus-circle"></i>
+        บันทึกรับซื้อ
+      </a>
+      <a href="{{ url_for('stock_page') }}" class="dashboard-secondary-btn">
+        <i class="bi bi-archive"></i>
+        ดูคลังสินค้า
+      </a>
+    </div>
+  </section>
+
+  <!-- TOP KPI CARDS -->
   <section class="dashboard-stat-grid">
     <article class="dashboard-card stat-card stat-green">
       <div class="stat-card-content">
         <div>
-          <p class="stat-label">รับซื้อรายวัน</p>
+          <p class="stat-label">รับซื้อวันนี้</p>
           <h3>{{ dashboard.daily_total }}</h3>
           <span>{{ dashboard.daily_count }}</span>
         </div>
@@ -28,7 +49,7 @@
     <article class="dashboard-card stat-card stat-blue">
       <div class="stat-card-content">
         <div>
-          <p class="stat-label">รับซื้อรายเดือน</p>
+          <p class="stat-label">รับซื้อเดือนนี้</p>
           <h3>{{ dashboard.monthly_total }}</h3>
           <span>{{ dashboard.monthly_count }}</span>
         </div>
@@ -51,89 +72,119 @@
       </div>
     </article>
 
-   <article class="dashboard-card popular-plastic-card">
-  <div class="popular-plastic-head">
-    <div>
-      <p class="popular-plastic-label">สรุปตามน้ำหนักรับซื้อ</p>
-      <h3>ประเภทพลาสติกที่รับซื้อมากที่สุด</h3>
-    </div>
+    <article class="dashboard-card stat-card stat-purple">
+      <div class="stat-card-content">
+        <div>
+          <p class="stat-label">พลาสติกเด่น</p>
+          <h3>{{ dashboard.top_plastic }}</h3>
+          <span>{{ dashboard.top_plastic_detail }}</span>
+        </div>
+        <div class="stat-icon">
+          <i class="bi bi-recycle"></i>
+        </div>
+      </div>
+    </article>
+  </section>
 
-    <div class="popular-plastic-icon">
-      <i class="bi bi-recycle"></i>
-    </div>
-  </div>
-
-  <div class="popular-plastic-list">
-
-    {% if top_plastics %}
-      {% for plastic in top_plastics %}
-      <div class="popular-plastic-item">
-        <div class="popular-plastic-row">
-          <span class="popular-plastic-name">{{ plastic.plastic_type }}</span>
-          <span class="popular-plastic-value">
-            {{ "%.0f"|format(plastic.total_weight|float) }} กก.
-            <small>({{ "%.0f"|format(plastic.percent|float) }}%)</small>
-          </span>
+  <!-- MAIN SUMMARY AREA -->
+  <section class="dashboard-main-grid">
+    <article class="dashboard-card popular-plastic-card">
+      <div class="popular-plastic-head">
+        <div>
+          <p class="popular-plastic-label">สรุปตามน้ำหนักรับซื้อ</p>
+          <h3>ประเภทพลาสติกที่รับซื้อมากที่สุด</h3>
+          <span>เรียงจากน้ำหนักรวมที่รับซื้อทั้งหมดในระบบ</span>
         </div>
 
-        <div class="popular-progress">
-          <div 
-            class="popular-progress-fill"
-            style="width: {{ plastic.percent }}%;">
+        <div class="popular-plastic-icon">
+          <i class="bi bi-recycle"></i>
+        </div>
+      </div>
+
+      <div class="popular-plastic-list">
+        {% if top_plastics %}
+          {% for plastic in top_plastics %}
+          <div class="popular-plastic-item">
+            <div class="popular-plastic-row">
+              <div class="popular-plastic-name-wrap">
+                <span class="popular-plastic-name">{{ plastic.plastic_type }}</span>
+                <small>{{ plastic.plastic_name_th }}</small>
+              </div>
+
+              <span class="popular-plastic-value">
+                {{ "%.0f"|format(plastic.total_weight|float) }} กก.
+                <small>({{ "%.0f"|format(plastic.percent|float) }}%)</small>
+              </span>
+            </div>
+
+            <div class="popular-progress">
+              <div
+                class="popular-progress-fill"
+                style="width: {{ plastic.percent }}%;">
+              </div>
+            </div>
           </div>
+          {% endfor %}
+        {% else %}
+          <div class="popular-plastic-empty">
+            <i class="bi bi-inbox"></i>
+            <p>ยังไม่มีข้อมูลประเภทพลาสติก</p>
+          </div>
+        {% endif %}
+      </div>
+    </article>
+
+    <aside class="dashboard-side-panel">
+      <article class="dashboard-card insight-card">
+        <div class="insight-icon green-soft">
+          <i class="bi bi-person-check"></i>
         </div>
-      </div>
-      {% endfor %}
-    {% else %}
-      <div class="popular-plastic-empty">
-        <i class="bi bi-inbox"></i>
-        <p>ยังไม่มีข้อมูลประเภทพลาสติก</p>
-      </div>
-    {% endif %}
+        <div>
+          <p>ลูกค้าขายบ่อยที่สุด</p>
+          <h3>{{ dashboard.top_customer }}</h3>
+          <span>{{ dashboard.top_customer_detail }}</span>
+        </div>
+      </article>
 
-  </div>
-</article>
+      <article class="dashboard-card insight-card">
+        <div class="insight-icon blue-soft">
+          <i class="bi bi-receipt"></i>
+        </div>
+        <div>
+          <p>จำนวนรายการวันนี้</p>
+          <h3>{{ dashboard.daily_count }}</h3>
+          <span>นับเฉพาะรายการรับซื้อของวันที่เปิดใช้งานระบบ</span>
+        </div>
+      </article>
+
+      <article class="dashboard-card insight-card">
+        <div class="insight-icon gold-soft">
+          <i class="bi bi-graph-up-arrow"></i>
+        </div>
+        <div>
+          <p>รายการเดือนนี้</p>
+          <h3>{{ dashboard.monthly_count }}</h3>
+          <span>สรุปเอกสารรับซื้อในเดือนปัจจุบัน</span>
+        </div>
+      </article>
+
+      <article class="dashboard-card note-card">
+        <div>
+          <p class="note-label">หมายเหตุ</p>
+          <h3>ยอดรายวัน/รายเดือนคิดตามวันที่ปัจจุบัน</h3>
+          <span>ถ้ามีรายการเก่าแต่ยอดวันนี้เป็น 0 หมายถึงยังไม่มีการรับซื้อในวันนี้</span>
+        </div>
+      </article>
+    </aside>
   </section>
 
-  <section class="dashboard-summary-grid">
-    <article class="dashboard-card summary-card">
-      <div class="summary-icon green-soft">
-        <i class="bi bi-person-check"></i>
-      </div>
-      <div>
-        <p>ลูกค้าขายบ่อยที่สุด</p>
-        <h3>{{ dashboard.top_customer }}</h3>
-        <span>{{ dashboard.top_customer_detail }}</span>
-      </div>
-    </article>
-
-    <article class="dashboard-card summary-card">
-      <div class="summary-icon blue-soft">
-        <i class="bi bi-receipt"></i>
-      </div>
-      <div>
-        <p>จำนวนรายการวันนี้</p>
-        <h3>{{ dashboard.daily_count }}</h3>
-        <span>นับจากรายการรับซื้อประจำวันที่เปิดระบบ</span>
-      </div>
-    </article>
-
-    <article class="dashboard-card summary-card">
-      <div class="summary-icon gold-soft">
-        <i class="bi bi-graph-up-arrow"></i>
-      </div>
-      <div>
-        <p>รายการเดือนนี้</p>
-        <h3>{{ dashboard.monthly_count }}</h3>
-        <span>สรุปจำนวนเอกสารรับซื้อในเดือนปัจจุบัน</span>
-      </div>
-    </article>
-  </section>
-
+  <!-- LATEST PURCHASES -->
   <section class="dashboard-card table-card">
     <div class="section-head">
       <div>
+        <p class="section-label">RECENT PURCHASES</p>
         <h3>รายการรับซื้อล่าสุด</h3>
+        <span>แสดงรายการล่าสุดจากฐานข้อมูล เพื่อใช้ตรวจสอบย้อนหลังอย่างรวดเร็ว</span>
       </div>
       <a href="{{ url_for('purchase_page') }}" class="dashboard-action-btn">
         <i class="bi bi-plus-circle"></i>

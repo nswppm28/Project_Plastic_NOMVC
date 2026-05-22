@@ -41,14 +41,21 @@ except ModuleNotFoundError:
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "plastic-buyback-secret-key")
 
+MYSQL_PASSWORD = os.getenv("DB_PASSWORD") or "Nam640710768"
+
 DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", "Nam640710768"),
-    "database": os.getenv("DB_NAME", "plastic_buyback_db"),
+    "host": os.getenv("DB_HOST") or "localhost",
+    "user": os.getenv("DB_USER") or "root",
+    "password": MYSQL_PASSWORD,
+    "database": os.getenv("DB_NAME") or "plastic_buyback_db",
     "charset": "utf8mb4",
     "collation": "utf8mb4_unicode_ci",
 }
+
+print("DB_CONFIG_FILE =", __file__)
+print("DB_USER =", DB_CONFIG["user"])
+print("DB_PASSWORD_SET =", bool(DB_CONFIG["password"]))
+print("DB_NAME =", DB_CONFIG["database"])
 
 MODEL_PATH = os.getenv("MODEL_PATH", "plastic_model.h5")
 
@@ -1148,6 +1155,7 @@ def create_stock_export_record(
         raise ValueError("ราคาขายต่อกิโลกรัมต้องมากกว่า 0 บาท")
 
     amount = round(weight_kg * unit_price, 2)
+    use_export_trigger = has_stock_export_trigger()
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -1248,6 +1256,55 @@ def create_stock_export_record(
             ),
         )
 
+        export_item_id = cursor.lastrowid
+
+        if not use_export_trigger:
+            new_balance = round(current_weight - weight_kg, 3)
+
+            cursor.execute(
+                """
+                UPDATE stock_summary
+                SET total_weight_kg = %s,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE subtype_id = %s
+                """,
+                (new_balance, subtype_id),
+            )
+
+            cursor.execute(
+                """
+                UPDATE stock_exports
+                SET total_weight_kg = %s,
+                    total_amount = %s,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE export_id = %s
+                """,
+                (weight_kg, amount, export_id),
+            )
+
+            cursor.execute(
+                """
+                INSERT INTO stock_movements (
+                    subtype_id,
+                    purchase_item_id,
+                    stock_export_item_id,
+                    movement_type,
+                    quantity_kg,
+                    balance_after_kg,
+                    note,
+                    created_at
+                )
+                VALUES (%s, NULL, %s, 'SALE_OUT', %s, %s, %s, CURRENT_TIMESTAMP)
+                """,
+                (
+                    subtype_id,
+                    export_item_id,
+                    weight_kg * -1,
+                    new_balance,
+                    f"จำหน่ายออกเลขที่ {export_no}",
+                ),
+            )
+
         conn.commit()
 
         return {
@@ -1322,16 +1379,25 @@ def load_stock_export_history(keyword=""):
 
 # ----- purchase_service.py -----
 
-def has_stock_trigger():
+def has_trigger(trigger_name):
     row = fetch_one(
         """
         SELECT COUNT(*) AS trigger_count
         FROM information_schema.TRIGGERS
         WHERE TRIGGER_SCHEMA = DATABASE()
-          AND TRIGGER_NAME = 'trg_purchase_items_after_insert'
-        """
+          AND TRIGGER_NAME = %s
+        """,
+        (trigger_name,),
     )
     return bool(row and row.get("trigger_count", 0) > 0)
+
+
+def has_stock_trigger():
+    return has_trigger("trg_purchase_items_after_insert")
+
+
+def has_stock_export_trigger():
+    return has_trigger("trg_stock_export_items_after_insert")
 
 
 def normalize_purchase_items(items):

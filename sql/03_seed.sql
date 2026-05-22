@@ -11,6 +11,11 @@ USE plastic_buyback_db;
 SET FOREIGN_KEY_CHECKS = 0;
 
 TRUNCATE TABLE ai_predictions;
+TRUNCATE TABLE stock_export_items;
+TRUNCATE TABLE stock_exports;
+TRUNCATE TABLE stock_buyers;
+TRUNCATE TABLE stock_movements;
+TRUNCATE TABLE stock_summary;
 TRUNCATE TABLE receipts;
 TRUNCATE TABLE purchase_items;
 TRUNCATE TABLE purchases;
@@ -81,13 +86,14 @@ INSERT INTO customers (
     full_name,
     phone,
     address,
-    note
+    note,
+    is_active
 ) VALUES
 
-(1, 'CUST-0001', 'สมชาย ใจดี', '081-234-5678', 'อ.เมือง จ.นครราชสีมา', 'ลูกค้าประจำ'),
-(2, 'CUST-0002', 'พิมพ์ชนก ศรีทอง', '089-555-2244', 'อ.ชุมพวง จ.นครราชสีมา', NULL),
-(3, 'CUST-0003', 'ประสิทธิ์ มั่นคง', '092-111-7788', 'อ.ปากช่อง จ.นครราชสีมา', NULL),
-(4, 'CUST-0004', 'หทัยรัตน์ บุญมาก', '095-678-1099', 'อ.สีคิ้ว จ.นครราชสีมา', NULL);
+(1, 'CUST-0001', 'สมชาย ใจดี', '081-234-5678', 'อ.เมือง จ.นครราชสีมา', 'ลูกค้าประจำ', 1),
+(2, 'CUST-0002', 'พิมพ์ชนก ศรีทอง', '089-555-2244', 'อ.ชุมพวง จ.นครราชสีมา', NULL, 1),
+(3, 'CUST-0003', 'ประสิทธิ์ มั่นคง', '092-111-7788', 'อ.ปากช่อง จ.นครราชสีมา', NULL, 1),
+(4, 'CUST-0004', 'หทัยรัตน์ บุญมาก', '095-678-1099', 'อ.สีคิ้ว จ.นครราชสีมา', NULL, 1);
 
 -- =====================================================
 -- PLASTIC TYPES
@@ -230,6 +236,75 @@ INSERT INTO purchase_items (
 (4, 2,13,  4.000, 10.00,  40.00, 'uploads/pp_cap_001.jpg', 1),
 
 (5, 3,10, 20.000,  7.20, 144.00, 'uploads/ldpe_film_001.jpg', 1);
+
+-- =====================================================
+-- REBUILD PURCHASE TOTAL + STOCK SEED
+-- ใช้ให้ seed data ถูกต้องเสมอ แม้มี trigger อยู่ก่อนแล้ว
+-- =====================================================
+
+UPDATE purchases p
+LEFT JOIN (
+    SELECT purchase_id, COALESCE(SUM(amount), 0) AS total_amount
+    FROM purchase_items
+    GROUP BY purchase_id
+) x ON p.purchase_id = x.purchase_id
+SET p.total_amount = COALESCE(x.total_amount, 0),
+    p.updated_at = CURRENT_TIMESTAMP;
+
+DELETE FROM stock_movements;
+DELETE FROM stock_summary;
+
+INSERT INTO stock_summary (
+    subtype_id,
+    total_weight_kg,
+    last_in_datetime,
+    updated_at
+)
+SELECT
+    pi.subtype_id,
+    ROUND(SUM(pi.weight_kg), 3) AS total_weight_kg,
+    MAX(p.purchase_date) AS last_in_datetime,
+    CURRENT_TIMESTAMP AS updated_at
+FROM purchase_items pi
+INNER JOIN purchases p
+    ON pi.purchase_id = p.purchase_id
+GROUP BY pi.subtype_id;
+
+INSERT INTO stock_movements (
+    subtype_id,
+    purchase_item_id,
+    stock_export_item_id,
+    movement_type,
+    quantity_kg,
+    balance_after_kg,
+    note,
+    created_at
+)
+SELECT
+    t.subtype_id,
+    t.item_id,
+    NULL AS stock_export_item_id,
+    'PURCHASE_IN' AS movement_type,
+    t.weight_kg AS quantity_kg,
+    t.balance_after_kg,
+    CONCAT('รับเข้าจาก seed data เลขที่ ', t.purchase_no) AS note,
+    t.purchase_date AS created_at
+FROM (
+    SELECT
+        pi.item_id,
+        pi.subtype_id,
+        pi.weight_kg,
+        p.purchase_no,
+        p.purchase_date,
+        SUM(pi.weight_kg) OVER (
+            PARTITION BY pi.subtype_id
+            ORDER BY p.purchase_date, pi.item_id
+        ) AS balance_after_kg
+    FROM purchase_items pi
+    INNER JOIN purchases p
+        ON pi.purchase_id = p.purchase_id
+) t
+ORDER BY t.purchase_date, t.item_id;
 
 -- =====================================================
 -- RECEIPTS

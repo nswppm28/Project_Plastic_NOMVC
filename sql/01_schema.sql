@@ -8,6 +8,9 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS ai_predictions;
+DROP TABLE IF EXISTS stock_export_items;
+DROP TABLE IF EXISTS stock_exports;
+DROP TABLE IF EXISTS stock_buyers;
 DROP TABLE IF EXISTS stock_movements;
 DROP TABLE IF EXISTS stock_summary;
 DROP TABLE IF EXISTS receipts;
@@ -39,10 +42,12 @@ CREATE TABLE customers (
     phone VARCHAR(30) NOT NULL,
     address TEXT NULL,
     note VARCHAR(255) NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_customers_full_name (full_name),
-    INDEX idx_customers_phone (phone)
+    INDEX idx_customers_phone (phone),
+    INDEX idx_customers_active (is_active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE plastic_types (
@@ -184,6 +189,7 @@ CREATE TABLE stock_movements (
     movement_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     subtype_id BIGINT UNSIGNED NOT NULL,
     purchase_item_id BIGINT UNSIGNED NULL,
+    stock_export_item_id BIGINT UNSIGNED NULL,
     movement_type VARCHAR(30) NOT NULL,
     quantity_kg DECIMAL(12,3) NOT NULL,
     balance_after_kg DECIMAL(12,3) NULL,
@@ -195,7 +201,72 @@ CREATE TABLE stock_movements (
         ON DELETE RESTRICT,
     INDEX idx_stock_movements_subtype (subtype_id),
     INDEX idx_stock_movements_purchase_item (purchase_item_id),
+    INDEX idx_stock_movements_export_item (stock_export_item_id),
     INDEX idx_stock_movements_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE stock_buyers (
+    buyer_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    buyer_code VARCHAR(30) NOT NULL UNIQUE,
+    buyer_name VARCHAR(150) NOT NULL,
+    buyer_type VARCHAR(50) NOT NULL DEFAULT 'recycle_factory',
+    phone VARCHAR(30) NULL,
+    address TEXT NULL,
+    contact_person VARCHAR(150) NULL,
+    note VARCHAR(255) NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_stock_buyers_name (buyer_name),
+    INDEX idx_stock_buyers_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE stock_exports (
+    export_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    export_no VARCHAR(30) NOT NULL UNIQUE,
+    buyer_id BIGINT UNSIGNED NOT NULL,
+    export_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    total_weight_kg DECIMAL(12,3) NOT NULL DEFAULT 0.000,
+    total_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    transport_method VARCHAR(100) NULL,
+    vehicle_plate VARCHAR(50) NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'completed',
+    note VARCHAR(255) NULL,
+    created_by BIGINT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_stock_exports_buyer
+        FOREIGN KEY (buyer_id) REFERENCES stock_buyers(buyer_id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_stock_exports_created_by
+        FOREIGN KEY (created_by) REFERENCES users(user_id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL,
+    INDEX idx_stock_exports_buyer (buyer_id),
+    INDEX idx_stock_exports_date (export_date),
+    INDEX idx_stock_exports_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE stock_export_items (
+    export_item_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    export_id BIGINT UNSIGNED NOT NULL,
+    subtype_id BIGINT UNSIGNED NOT NULL,
+    weight_kg DECIMAL(12,3) NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    note VARCHAR(255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_stock_export_items_export
+        FOREIGN KEY (export_id) REFERENCES stock_exports(export_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_stock_export_items_subtype
+        FOREIGN KEY (subtype_id) REFERENCES plastic_subtypes(subtype_id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+    INDEX idx_stock_export_items_export (export_id),
+    INDEX idx_stock_export_items_subtype (subtype_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE ai_predictions (
