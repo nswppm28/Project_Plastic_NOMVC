@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}ระบบร้านรับซื้อพลาสติก{% endblock %}</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  >
+
+  <!-- CSS หลัก -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260521">
+
+  <!-- CSS เฉพาะหน้า -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/customers.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/receipt.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/stock.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260521">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}?v=20260521">
+
+  {% block head_extra %}{% endblock %}
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="brand-block">
+        <div class="brand-icon">
+          <i class="bi bi-recycle"></i>
+        </div>
+
+        <div>
+          <p class="brand-small">PLASTIC BUYBACK</p>
+          <h1>ร้านรับซื้อพลาสติก</h1>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        {% set ep = request.endpoint or '' %}
+
+        <a
+          href="{{ url_for('dashboard_page') }}"
+          class="nav-link {{ 'active' if ep in ['dashboard_page', 'dashboard', 'index'] else '' }}"
+        >
+          <i class="bi bi-grid-1x2"></i>
+          <span>แดชบอร์ด</span>
+        </a>
+
+        <a
+          href="{{ url_for('customers_page') }}"
+          class="nav-link {{ 'active' if ep in ['customers_page', 'customer_add', 'customer_edit'] else '' }}"
+        >
+          <i class="bi bi-people"></i>
+          <span>จัดการลูกค้า</span>
+        </a>
+
+        <a
+          href="{{ url_for('plastic_types_page') }}"
+          class="nav-link {{ 'active' if ep in ['plastic_types_page', 'price_page', 'price_update', 'plastic_type_edit_page'] else '' }}"
+        >
+          <i class="bi bi-box-seam"></i>
+          <span>ประเภทพลาสติก</span>
+        </a>
+
+        <a
+          href="{{ url_for('purchase_page') }}"
+          class="nav-link {{ 'active' if ep in ['purchase_page', 'purchase_create'] else '' }}"
+        >
+          <i class="bi bi-cart3"></i>
+          <span>รับซื้อ</span>
+        </a>
+
+        <a
+          href="{{ url_for('stock_page') }}"
+          class="nav-link {{ 'active' if ep in ['stock_page', 'stock'] else '' }}"
+        >
+          <i class="bi bi-archive"></i>
+          <span>คลังสินค้า</span>
+        </a>
+
+        <a
+          href="{{ url_for('stock_export_page') }}"
+          class="nav-link {{ 'active' if ep in ['stock_export_page', 'stock_export_create', 'stock_export_history_page'] else '' }}"
+        >
+          <i class="bi bi-truck"></i>
+          <span>จำหน่ายออก</span>
+        </a>
+
+        <a
+          href="{{ url_for('receipt_history_page') }}"
+          class="nav-link {{ 'active' if ep in ['receipt_history_page', 'receipt_page', 'receipt_detail_page'] else '' }}"
+        >
+          <i class="bi bi-receipt"></i>
+          <span>ใบเสร็จรับซื้อ</span>
+        </a>
+
+        <a
+          href="{{ url_for('ai_page') }}"
+          class="nav-link {{ 'active' if ep in ['ai_page', 'ai_detection', 'predict_plastic'] else '' }}"
+        >
+          <i class="bi bi-camera"></i>
+          <span>ตรวจจับพลาสติก</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer: User + Logout -->
+      {% if session.get('user_id') %}
+      <div class="sidebar-footer">
+
+        <div class="user-box">
+          <div class="user-avatar">
+            <i class="bi bi-person-circle"></i>
+          </div>
+
+          <div class="user-info">
+            <strong>{{ session.get('full_name', 'ผู้ใช้งาน') }}</strong>
+            <span>{{ session.get('role', 'user') }}</span>
+          </div>
+        </div>
+
+        <a href="{{ url_for('logout') }}" class="logout-btn">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>ออกจากระบบ</span>
+        </a>
+
+      </div>
+      {% endif %}
+
+    </aside>
+
+    <!-- Main -->
+    <div class="main-area">
+
+      <header class="topbar">
+        <button class="menu-toggle" type="button" id="menuToggle">
+          <i class="bi bi-list"></i>
+        </button>
+
+        <div class="page-header-box">
+          <h2 class="page-heading">
+            {% block page_heading %}หน้าหลัก{% endblock %}
+          </h2>
+
+          {% block page_subtitle %}
+          <p class="page-subtitle"></p>
+          {% endblock %}
+        </div>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-wrap">
+          {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      {% endwith %}
+
+      <main class="content-area">
+        {% block content %}{% endblock %}
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ส่งข้อมูลจาก Flask ไป JavaScript -->
+  <script id="page-data" type="application/json">
+    {{ {
+      "catalog": catalog|default(none),
+      "customers": customers|default(none),
+      "dashboard": dashboard|default(none),
+      "transactions": transactions|default(none),
+      "receipt": receipt|default(none),
+      "receipt_items": receipt_items|default(none),
+      "receipt_history": receipt_history|default(none),
+      "stock_items": stock_items|default(none),
+      "stock_movements": stock_movements|default(none),
+      "buyers": buyers|default(none),
+      "exports": exports|default(none)
+    } | tojson }}
+  </script>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}?v=20260521"></script>
+
+  {% block script_extra %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Flask / env
+.env
+instance/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Model / large files
+*.h5
+*.keras
+*.tflite
+
+# Uploads / generated files
+static/uploads/
+uploads/

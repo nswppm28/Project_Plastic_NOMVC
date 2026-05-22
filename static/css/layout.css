@@ -1,0 +1,479 @@
+/* ================= MAIN LAYOUT ================= */
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+.main-area {
+  padding: 26px 28px;
+}
+
+.content-area {
+  margin-top: 20px;
+}
+
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+
+  width: 260px;
+  height: 100vh;
+
+  padding: 20px 14px;
+
+  background: #ffffff;
+  border-right: 1px solid #dfe8e3;
+  box-shadow: 8px 0 24px rgba(15, 23, 42, 0.03);
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ================= BRAND ================= */
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 18px 16px;
+  margin-bottom: 24px;
+
+  background: linear-gradient(135deg, #198754, #146c43);
+  color: #ffffff;
+
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(25, 135, 84, 0.18);
+}
+
+.brand-icon {
+  width: 46px;
+  height: 46px;
+
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+
+  font-size: 24px;
+}
+
+.brand-small {
+  margin: 0 0 4px;
+
+  color: rgba(255, 255, 255, 0.86);
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.brand-block h1 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+
+/* ================= NAVIGATION ================= */
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-top: 22px;
+
+  flex: 1;
+}
+
+.nav-link {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 13px 16px 13px 26px;
+
+  border-radius: 16px;
+
+  color: #64748b;
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.nav-link i {
+  font-size: 19px;
+}
+
+.nav-link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.nav-link.active {
+  background: #e8f7ef;
+  color: #00875a;
+  font-weight: 800;
+}
+
+.nav-link.active i {
+  color: #00875a;
+}
+
+.nav-link.active::before {
+  content: "";
+
+  position: absolute;
+
+  left: 10px;
+  top: 50%;
+
+  width: 5px;
+  height: 26px;
+
+  border-radius: 999px;
+
+  background: #00a86b;
+
+  transform: translateY(-50%);
+}
+
+
+/* ================= SIDEBAR FOOTER ================= */
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+
+  border-top: 1px solid #e5ebe7;
+}
+
+
+/* ================= USER BOX ================= */
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 11px 12px;
+  margin-bottom: 12px;
+
+  border-radius: 16px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #e8f7ef;
+  color: #00875a;
+
+  font-size: 22px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.user-info strong {
+  color: #0f172a;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-info span {
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-transform: capitalize;
+}
+
+
+/* ================= LOGOUT BUTTON ================= */
+
+.logout-btn {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  padding: 12px 14px;
+
+  border-radius: 15px;
+
+  background: #fee2e2;
+  color: #b91c1c;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  transition: 0.2s ease;
+}
+
+.logout-btn i {
+  font-size: 17px;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.22);
+}
+
+
+/* ================= TOPBAR ================= */
+
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  padding: 0 0 18px;
+
+  background: transparent;
+
+  border: none;
+  border-radius: 0;
+
+  box-shadow: none;
+}
+
+.page-header-box {
+  width: 100%;
+
+  padding: 24px 28px;
+
+  background: #ffffff;
+
+  border: 1px solid #d6e0d8;
+  border-radius: 20px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.page-heading {
+  margin: 0 0 8px;
+
+  color: var(--text);
+
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.page-subtitle {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.menu-toggle {
+  display: none;
+
+  padding: 8px 12px;
+
+  background: #ffffff;
+
+  border: 1px solid var(--line);
+  border-radius: 10px;
+
+  cursor: pointer;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 240px 1fr;
+  }
+
+  .sidebar {
+    width: 240px;
+    padding: 18px 12px;
+  }
+
+  .main-area {
+    padding: 20px;
+  }
+
+  .brand-block {
+    padding: 16px 14px;
+  }
+
+  .brand-block h1 {
+    font-size: 20px;
+  }
+
+  .nav-link {
+    min-height: 46px;
+    font-size: 14px;
+    padding: 12px 14px 12px 24px;
+  }
+
+  .user-box {
+    padding: 10px 11px;
+  }
+
+  .logout-btn {
+    padding: 11px 13px;
+  }
+}
+/* ================= COMPACT LAYOUT FIX ================= */
+
+.app-shell {
+  grid-template-columns: 230px 1fr;
+}
+
+.sidebar {
+  width: 230px;
+  padding: 16px 12px;
+}
+
+.main-area {
+  padding: 18px 22px;
+}
+
+.content-area {
+  margin-top: 14px;
+}
+
+/* Brand */
+.brand-block {
+  padding: 14px 14px;
+  margin-bottom: 18px;
+  border-radius: 18px;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 21px;
+  border-radius: 13px;
+}
+
+.brand-small {
+  font-size: 10px;
+}
+
+.brand-block h1 {
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+/* Menu */
+.nav-menu {
+  margin-top: 16px;
+  gap: 6px;
+}
+
+.nav-link {
+  padding: 11px 14px 11px 24px;
+  border-radius: 14px;
+  font-size: 14px;
+  gap: 11px;
+}
+
+.nav-link i {
+  font-size: 17px;
+}
+
+.nav-link.active::before {
+  height: 22px;
+}
+
+/* User + Logout */
+.user-box {
+  padding: 10px 11px;
+  border-radius: 14px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 19px;
+}
+
+.user-info strong {
+  font-size: 12px;
+}
+
+.user-info span {
+  font-size: 11px;
+}
+
+.logout-btn {
+  padding: 10px 12px;
+  border-radius: 13px;
+  font-size: 13px;
+}
+
+/* Header */
+.topbar {
+  padding-bottom: 12px;
+}
+
+.page-header-box {
+  padding: 18px 22px;
+  border-radius: 18px;
+}
+
+.page-heading {
+  font-size: 20px;
+}
+
+.page-subtitle {
+  font-size: 13px;
+}

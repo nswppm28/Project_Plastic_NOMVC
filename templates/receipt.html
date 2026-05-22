@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}ใบเสร็จรับซื้อ | ระบบร้านรับซื้อพลาสติก{% endblock %}
+
+{% block page_heading %}ใบเสร็จรับซื้อ{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">แสดงรายละเอียดใบเสร็จรับซื้อพลาสติก</p>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/receipt.css') }}?v=20260425">
+{% endblock %}
+
+{% block content %}
+<section class="receipt-page">
+
+  <div class="receipt-toolbar">
+    <a href="{{ url_for('receipt_history_page') }}" class="btn btn-light">
+      <i class="bi bi-arrow-left"></i>
+      <span>กลับไปประวัติย้อนหลัง</span>
+    </a>
+
+    <button class="btn btn-primary" type="button" onclick="openPrintReceiptModal()">
+      <i class="bi bi-printer"></i>
+      <span>พิมพ์ใบเสร็จ</span>
+    </button>
+  </div>
+
+  <div class="receipt-wrap">
+    <div class="receipt-paper">
+
+      <!-- Header -->
+      <div class="receipt-header">
+        <h1>ใบเสร็จรับซื้อ</h1>
+        <h2>ระบบรับซื้อพลาสติก</h2>
+        <p>123 ถนนสมมุติ แขวงทดสอบ เขตทดลอง</p>
+        <p>กรุงเทพมหานคร 10110</p>
+        <p><strong>โทร.</strong> 02-123-4567</p>
+      </div>
+
+      <div class="receipt-line"></div>
+
+      <!-- Receipt Info -->
+      <div class="receipt-meta">
+        <div class="receipt-meta-left">
+          <p class="meta-label">เลขที่ใบเสร็จ</p>
+          <p class="meta-value">{{ receipt.receipt_no or '-' }}</p>
+        </div>
+
+        <div class="receipt-meta-right">
+          <p class="meta-label">วันที่</p>
+          <p class="meta-value">{{ receipt.receipt_date or '-' }}</p>
+        </div>
+      </div>
+
+      <div class="receipt-meta mt-small">
+        <div class="receipt-meta-left">
+          <p class="meta-label">เลขที่รายการ</p>
+          <p class="meta-value">{{ receipt.purchase_no or '-' }}</p>
+        </div>
+
+        <div class="receipt-meta-right">
+          <p class="meta-label">รหัสลูกค้า</p>
+          <p class="meta-value">{{ receipt.customer_code or '-' }}</p>
+        </div>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="receipt-customer">
+        <p class="section-title">ข้อมูลผู้ขายพลาสติก</p>
+        <p class="customer-name">{{ receipt.customer_name or '-' }}</p>
+        <p>โทร: {{ receipt.phone or '-' }}</p>
+        <p>ที่อยู่: {{ receipt.address or '-' }}</p>
+      </div>
+
+      <!-- Items -->
+      <table class="receipt-table">
+        <thead>
+          <tr>
+            <th class="col-item">รายการ</th>
+            <th class="col-weight">น้ำหนัก</th>
+            <th class="col-price">ราคา/กก.</th>
+            <th class="col-total">รวม</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% set ns = namespace(total_weight=0) %}
+
+          {% if receipt_items %}
+            {% for item in receipt_items %}
+              {% set ns.total_weight = ns.total_weight + (item.weight_kg|float) %}
+              <tr>
+                <td class="item-name">
+                  {{ item.subtype_name }}
+                </td>
+                <td>{{ "%.2f"|format(item.weight_kg|float) }} กก.</td>
+                <td>฿ {{ "%.2f"|format(item.unit_price|float) }}</td>
+                <td>฿ {{ "%.2f"|format(item.amount|float) }}</td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" class="receipt-empty">ไม่พบรายการ</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <div class="receipt-line"></div>
+
+      <!-- Summary -->
+      <div class="receipt-summary">
+        <div class="summary-row">
+          <span>น้ำหนักรวม</span>
+          <strong>{{ "%.2f"|format(ns.total_weight) }} กก.</strong>
+        </div>
+
+        <div class="summary-row total-row">
+          <span>ยอดรวมทั้งหมด</span>
+          <strong class="grand-total">
+            ฿ {{ "{:,.2f}".format(receipt.total_amount|float) if receipt and receipt.total_amount else "0.00" }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="receipt-line"></div>
+
+      <!-- Footer -->
+      <div class="receipt-footer">
+        <p>ขอบคุณที่ใช้บริการ</p>
+        <p>ใบเสร็จนี้สร้างโดยระบบอัตโนมัติ</p>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- Popup Confirm Print -->
+<div class="print-receipt-modal" id="printReceiptModal">
+  <div class="print-receipt-box">
+
+    <div class="print-receipt-icon">
+      <i class="bi bi-printer"></i>
+    </div>
+
+    <h3>พิมพ์ใบเสร็จรับซื้อ</h3>
+
+    <p>
+      ต้องการพิมพ์ใบเสร็จเลขที่
+      <strong>{{ receipt.receipt_no or '-' }}</strong>
+      ใช่หรือไม่?
+    </p>
+
+    <div class="print-receipt-summary">
+      <div>
+        <span>ผู้ขาย</span>
+        <strong>{{ receipt.customer_name or '-' }}</strong>
+      </div>
+
+      <div>
+        <span>วันที่</span>
+        <strong>{{ receipt.receipt_date or '-' }}</strong>
+      </div>
+
+      <div>
+        <span>ยอดรวม</span>
+        <strong>
+          ฿ {{ "{:,.2f}".format(receipt.total_amount|float) if receipt and receipt.total_amount else "0.00" }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="print-receipt-actions">
+      <button type="button" class="btn btn-light" onclick="closePrintReceiptModal()">
+        <i class="bi bi-x-circle"></i>
+        <span>ยกเลิก</span>
+      </button>
+
+      <button type="button" class="btn btn-primary" onclick="printReceiptNow()">
+        <i class="bi bi-printer"></i>
+        <span>พิมพ์เลย</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+<script>
+  const printReceiptModal = document.getElementById("printReceiptModal");
+
+  function openPrintReceiptModal() {
+    if (printReceiptModal) {
+      printReceiptModal.classList.add("show");
+    }
+  }
+
+  function closePrintReceiptModal() {
+    if (printReceiptModal) {
+      printReceiptModal.classList.remove("show");
+    }
+  }
+
+  function printReceiptNow() {
+    closePrintReceiptModal();
+
+    setTimeout(function () {
+      window.print();
+    }, 150);
+  }
+
+  if (printReceiptModal) {
+    printReceiptModal.addEventListener("click", function (event) {
+      if (event.target === printReceiptModal) {
+        closePrintReceiptModal();
+      }
+    });
+  }
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closePrintReceiptModal();
+    }
+  });
+</script>
+{% endblock %}

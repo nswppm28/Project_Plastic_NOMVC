@@ -1,0 +1,746 @@
+/* ================= PAGE ================= */
+
+.purchase-page {
+  display: grid;
+  gap: 16px;
+  color: #102033;
+  font-size: 14px;
+}
+
+
+/* ================= HERO HEADER ================= */
+
+.purchase-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 22px 26px;
+
+  background: #fff;
+  border: 1px solid #dfe8e3;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.purchase-hero-icon {
+  width: 56px;
+  height: 56px;
+
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  border-radius: 18px;
+  background: #e9f7ef;
+  color: #198754;
+  font-size: 25px;
+}
+
+.purchase-hero h2 {
+  margin: 0 0 6px;
+  color: #102033;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.purchase-hero p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+
+/* ================= LAYOUT CARD ================= */
+
+.purchase-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.85fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.purchase-card {
+  padding: 22px;
+
+  background: #fff;
+  border: 1px solid #dfe8e3;
+  border-radius: 20px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.035);
+}
+
+.bill-card {
+  position: sticky;
+  top: 16px;
+}
+
+
+/* ================= CARD HEADER ================= */
+
+.purchase-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.purchase-card-icon {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  border-radius: 14px;
+  background: #e9f7ef;
+  color: #198754;
+  font-size: 20px;
+}
+
+.purchase-head h3 {
+  margin: 0 0 4px;
+  color: #102033;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.purchase-head p,
+.muted {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+
+/* ================= FORM ================= */
+
+.purchase-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-group {
+  display: grid;
+  gap: 7px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  color: #102033;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+
+  background: #fff;
+  border: 1px solid #d8e3dd;
+  border-radius: 14px;
+
+  color: #102033;
+  font-size: 14.5px;
+  font-weight: 500;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.08);
+}
+
+.helper-text {
+  margin-top: 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+
+/* ================= AI IMAGE CHECK ================= */
+
+.plastic-check-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+
+  background: #fbfdfc;
+  border: 1px solid #edf1ef;
+  border-radius: 18px;
+}
+
+.upload-input {
+  display: none;
+}
+
+.upload-box {
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+
+  background: #fff;
+  border: 1.5px dashed #c8d7cf;
+  border-radius: 16px;
+
+  cursor: pointer;
+  overflow: hidden;
+  transition: 0.18s ease;
+}
+
+.upload-box:hover {
+  background: #f4fbf7;
+  border-color: #198754;
+}
+
+.upload-empty {
+  display: grid;
+  place-items: center;
+  gap: 5px;
+
+  color: #6b7280;
+  text-align: center;
+}
+
+.upload-empty i {
+  color: #94a3b8;
+  font-size: 34px;
+}
+
+.upload-empty strong {
+  color: #102033;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.upload-empty span {
+  font-size: 13px;
+}
+
+.plastic-preview-image {
+  display: none;
+  max-width: 100%;
+  max-height: 140px;
+  width: auto;
+  height: auto;
+
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.image-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.info-label {
+  display: block;
+  margin-bottom: 2px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.image-info-row strong {
+  color: #102033;
+  font-size: 14px;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.image-action-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+
+/* ================= AI RESULT ================= */
+
+.ai-result-card {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+
+  background: #fff;
+  border: 1px solid #edf1ef;
+  border-radius: 16px;
+}
+
+.ai-result-card.success {
+  background: #f0fbf4;
+  border-color: #bde8c9;
+}
+
+.ai-result-top {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+
+.result-dot {
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.ai-result-card.success .result-dot {
+  background: #22c55e;
+}
+
+.ai-result-top h4 {
+  margin: 0 0 3px;
+  color: #102033;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.ai-result-top p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.ai-result-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ai-result-main div {
+  padding: 10px 12px;
+
+  background: #fff;
+  border: 1px solid #edf1ef;
+  border-radius: 14px;
+}
+
+.ai-result-main span {
+  display: block;
+  margin-bottom: 3px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ai-result-main strong {
+  color: #0f5132;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+
+/* ================= BUTTONS ================= */
+
+.purchase-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  min-height: 42px;
+  padding: 10px 15px;
+
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+
+  transition: 0.18s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: #198754;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(25, 135, 84, 0.15);
+}
+
+.btn-primary:hover {
+  background: #157347;
+}
+
+.btn-light {
+  background: #eef3f0;
+  color: #102033;
+  border: 1px solid #dde8e1;
+}
+
+.btn-light:hover {
+  background: #e3ebe6;
+}
+
+.btn-danger-soft {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #ffd7de;
+}
+
+.btn-danger-soft:hover {
+  background: #ffe4e6;
+}
+
+
+/* ================= BILL CUSTOMER ================= */
+
+.bill-customer-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  margin-bottom: 14px;
+  padding: 12px;
+
+  background: #f8faf9;
+  border: 1px solid #edf1ef;
+  border-radius: 16px;
+}
+
+.bill-customer-card div {
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #edf1ef;
+  border-radius: 13px;
+}
+
+.bill-customer-card span {
+  display: block;
+  margin-bottom: 3px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bill-customer-card strong {
+  color: #102033;
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+
+/* ================= BILL BOX ================= */
+
+.bill-box {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #edf1ef;
+}
+
+.bill-box.no-border {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.bill-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.bill-head h4 {
+  margin: 0 0 3px;
+  color: #102033;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.bill-head p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.bill-head span {
+  align-self: flex-start;
+  padding: 5px 10px;
+
+  background: #e9f7ef;
+  border-radius: 999px;
+
+  color: #198754;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.bill-empty {
+  padding: 15px;
+
+  background: #f8faf9;
+  border: 1px dashed #d8e3dd;
+  border-radius: 14px;
+
+  color: #6b7280;
+  text-align: center;
+  font-size: 14px;
+}
+
+
+/* ================= BILL TABLE ================= */
+
+.bill-table {
+  display: none;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bill-table th,
+.bill-table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid #edf1ef;
+  color: #102033;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.bill-table th {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.bill-table td {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.bill-table td strong {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
+.bill-table td span {
+  display: block;
+  margin-top: 2px;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.remove-item-btn {
+  padding: 6px 9px;
+
+  background: #fff1f2;
+  border: none;
+  border-radius: 9px;
+
+  color: #be123c;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.remove-item-btn:hover {
+  background: #ffe4e6;
+}
+
+
+/* ================= BILL SUMMARY ================= */
+
+.bill-summary {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.bill-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 12px 13px;
+
+  background: #fff;
+  border: 1px solid #edf1ef;
+  border-radius: 13px;
+}
+
+.bill-summary span {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.bill-summary strong {
+  color: #102033;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.bill-grand-total {
+  background: #e9f7ef !important;
+  border-color: #cfe8d8 !important;
+}
+
+.bill-grand-total span,
+.bill-grand-total strong {
+  color: #0f5132;
+}
+
+.bill-grand-total strong {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+
+/* ================= BILL ACTIONS ================= */
+
+.bill-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #edf1ef;
+}
+
+.btn-save-bill {
+  min-width: 210px;
+  min-height: 46px;
+
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(25, 135, 84, 0.16);
+}
+
+
+/* ================= NOTE ================= */
+
+.purchase-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  margin-top: 14px;
+  padding: 12px 13px;
+
+  background: #f5f8f6;
+  border-radius: 14px;
+
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.purchase-note i {
+  margin-top: 1px;
+  color: #198754;
+  font-size: 16px;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1180px) {
+  .purchase-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bill-card {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .purchase-form,
+  .ai-result-main,
+  .bill-customer-card {
+    grid-template-columns: 1fr;
+  }
+
+  .purchase-hero {
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .purchase-hero-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    font-size: 24px;
+  }
+
+  .purchase-hero h2 {
+    font-size: 19px;
+  }
+
+  .purchase-hero p {
+    font-size: 13px;
+  }
+
+  .purchase-card {
+    padding: 18px;
+  }
+
+  .purchase-actions,
+  .image-action-row {
+    flex-direction: column;
+  }
+
+  .btn,
+  .image-action-row .btn,
+  .btn-save-bill {
+    width: 100%;
+  }
+
+  .image-info-row {
+    align-items: stretch;
+  }
+
+  .bill-card {
+    overflow-x: auto;
+  }
+
+  .bill-table {
+    min-width: 460px;
+  }
+
+  .bill-actions {
+    justify-content: stretch;
+  }
+}

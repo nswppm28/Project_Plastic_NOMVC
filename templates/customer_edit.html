@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}แก้ไขข้อมูลลูกค้า | ระบบร้านรับซื้อพลาสติก{% endblock %}
+{% block page_heading %}{% endblock %}
+{% block page_subtitle %}{% endblock %}
+
+{% block head_extra %}
+<style>
+  /* ซ่อนหัวด้านบนของ base เฉพาะหน้านี้ */
+  .topbar {
+    display: none;
+  }
+
+  .customer-edit-page {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+  }
+
+  .customer-edit-card {
+    width: 100%;
+    max-width: 640px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  .customer-edit-title {
+    margin-bottom: 24px;
+  }
+
+  .customer-edit-title h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .customer-edit-title p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .customer-edit-form {
+    display: grid;
+    gap: 18px;
+  }
+
+  .customer-edit-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .customer-edit-form input,
+  .customer-edit-form textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px 16px;
+    background: #fff;
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+  }
+
+  .customer-edit-form input:focus,
+  .customer-edit-form textarea:focus {
+    border-color: #7bc59a;
+    box-shadow: 0 0 0 3px rgba(20, 146, 78, 0.08);
+  }
+
+  .customer-edit-form textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .customer-edit-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .btn-outline {
+    background: #fff;
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+
+  .btn-outline:hover {
+    background: #f7f9f8;
+  }
+
+  @media (max-width: 640px) {
+    .customer-edit-card {
+      padding: 22px;
+      border-radius: 18px;
+    }
+
+    .customer-edit-actions {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="customer-edit-page">
+  <div class="customer-edit-card">
+    <div class="customer-edit-title">
+      <h3>แก้ไขข้อมูลลูกค้า</h3>
+      <p>ปรับปรุงข้อมูลลูกค้าให้ถูกต้องก่อนบันทึก</p>
+    </div>
+
+    <form method="post" class="customer-edit-form">
+      <div>
+        <label for="full_name">ชื่อ-นามสกุล</label>
+        <input
+          type="text"
+          id="full_name"
+          name="full_name"
+          value="{{ customer.full_name or customer.name or '' }}"
+          required>
+      </div>
+
+      <div>
+        <label for="phone">เบอร์โทรศัพท์</label>
+        <input
+          type="text"
+          id="phone"
+          name="phone"
+          value="{{ customer.phone or '' }}"
+          required>
+      </div>
+
+      <div>
+        <label for="address">ที่อยู่</label>
+        <textarea
+          id="address"
+          name="address"
+          placeholder="กรอกที่อยู่ลูกค้า">{{ customer.address or '' }}</textarea>
+      </div>
+
+      <div class="customer-edit-actions">
+        <a href="/customers" class="btn btn-outline">ยกเลิก</a>
+        <button type="submit" class="btn btn-primary">บันทึก</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

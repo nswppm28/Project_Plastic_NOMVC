@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}ตรวจจับพลาสติกด้วย AI | ระบบร้านรับซื้อพลาสติก{% endblock %}
+
+{% block page_heading %}ตรวจจับพลาสติกด้วย AI{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">อัปโหลดรูปภาพเพื่อให้ระบบช่วยวิเคราะห์ประเภทพลาสติก</p>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}?v=20260521">
+{% endblock %}
+
+{% block content %}
+<section class="ai-page">
+
+  <section class="ai-hero">
+    <div class="ai-hero-icon">
+      <i class="bi bi-camera"></i>
+    </div>
+
+    <div class="ai-hero-text">
+      <h3>ระบบตรวจจับชนิดพลาสติก</h3>
+      <p>
+        เลือกรูปภาพพลาสติก 1 รูป เพื่อให้ AI วิเคราะห์ประเภท เช่น PET, HDPE, PVC, LDPE, PP และ PS
+      </p>
+    </div>
+
+    <div class="ai-model-status">
+      {% if model_loaded %}
+        <span class="status-pill status-ready">
+          <i class="bi bi-check-circle-fill"></i>
+          โมเดลพร้อมใช้งาน
+        </span>
+      {% else %}
+        <span class="status-pill status-not-ready">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          โมเดลยังไม่พร้อม
+        </span>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if not model_loaded %}
+  <section class="ai-warning-box">
+    <i class="bi bi-info-circle"></i>
+    <p>
+      ยังไม่สามารถใช้งาน AI ได้ในขณะนี้
+      {% if model_error %}
+        <br>
+        <small>{{ model_error }}</small>
+      {% endif %}
+    </p>
+  </section>
+  {% endif %}
+
+  <section class="ai-layout">
+
+    <div class="ai-card ai-upload-card">
+      <div class="ai-card-head">
+        <div>
+          <h3>อัปโหลดรูปภาพ</h3>
+          <p>แนะนำให้ใช้รูปที่เห็นวัตถุชัดเจน พื้นหลังไม่รก และมีแสงเพียงพอ</p>
+        </div>
+
+        <div class="ai-card-icon">
+          <i class="bi bi-cloud-arrow-up"></i>
+        </div>
+      </div>
+
+      <form id="aiDetectForm" class="ai-form" enctype="multipart/form-data">
+        <input
+          type="file"
+          id="plasticImage"
+          name="image"
+          accept="image/*"
+        >
+
+        <label class="ai-upload-zone" id="imagePreviewBox" for="plasticImage">
+          <div class="ai-upload-empty">
+            <div class="ai-upload-circle">
+              <i class="bi bi-image"></i>
+            </div>
+
+            <strong id="uploadFileName">คลิกเพื่อเลือกรูปภาพ</strong>
+            <span>รองรับไฟล์ JPG, PNG หรือรูปภาพทั่วไป</span>
+          </div>
+        </label>
+
+        <div class="ai-actions">
+          <button
+            type="button"
+            class="ai-btn-primary"
+            id="realAiBtn"
+          >
+            <i class="bi bi-stars"></i>
+            วิเคราะห์รูปภาพ
+          </button>
+
+          <p class="ai-help-text">
+            <i class="bi bi-info-circle"></i>
+            ระบบจะแสดงประเภทพลาสติกและค่าเชื่อมั่นหลังวิเคราะห์
+          </p>
+        </div>
+      </form>
+    </div>
+
+    <div class="ai-card ai-result-card">
+      <div class="ai-card-head">
+        <div>
+          <h3>ผลการวิเคราะห์</h3>
+          <p>ผลลัพธ์จากโมเดล AI สำหรับรูปภาพที่เลือก</p>
+        </div>
+
+        <div class="ai-card-icon">
+          <i class="bi bi-clipboard-data"></i>
+        </div>
+      </div>
+
+      <div class="ai-result-summary">
+        <div class="ai-result-main">
+          <span>ประเภทที่คาดว่าเป็น</span>
+          <strong id="aiType">-</strong>
+        </div>
+
+        <div class="ai-result-row">
+          <span>
+            <i class="bi bi-card-text"></i>
+            ชื่อเต็ม
+          </span>
+          <strong id="aiFullName">-</strong>
+        </div>
+
+        <div class="ai-result-row">
+          <span>
+            <i class="bi bi-percent"></i>
+            ค่าเชื่อมั่น
+          </span>
+          <strong id="aiConfidence">-</strong>
+        </div>
+
+        <div class="ai-result-row">
+          <span>
+            <i class="bi bi-activity"></i>
+            สถานะ
+          </span>
+          <strong id="aiNote">รออัปโหลดรูปภาพ</strong>
+        </div>
+      </div>
+
+      <div class="ai-tip-box">
+        <h4>
+          <i class="bi bi-lightbulb"></i>
+          คำแนะนำ
+        </h4>
+        <p>
+          ผลลัพธ์จาก AI ใช้ช่วยประกอบการคัดแยกเบื้องต้น ควรตรวจสอบจากลักษณะจริงของพลาสติกอีกครั้งก่อนนำไปบันทึกรายการรับซื้อ
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+</section>
+{% endblock %}

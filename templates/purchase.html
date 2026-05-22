@@ -1,0 +1,594 @@
+{% extends 'base.html' %}
+
+{% block title %}บันทึกรายการรับซื้อ | ระบบร้านรับซื้อพลาสติก{% endblock %}
+
+{% block page_heading %}บันทึกรายการรับซื้อ{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">ตรวจเช็คชนิดพลาสติก เลือกประเภทย่อย เพิ่มหลายรายการลงบิล และบันทึกเป็นใบเสร็จเดียว</p>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}?v=20260425">
+{% endblock %}
+
+{% block content %}
+<section class="purchase-page">
+
+  <!-- แถบหัวข้อ -->
+  <section class="purchase-hero">
+    <div class="purchase-hero-icon">
+      <i class="bi bi-cart-check"></i>
+    </div>
+    <div>
+      <h2>บันทึกรายการรับซื้อพลาสติก</h2>
+      <p>เริ่มจากตรวจเช็คชนิดพลาสติกด้วยรูปภาพ จากนั้นเลือกประเภทย่อยและเพิ่มลงในรายการบิล</p>
+    </div>
+  </section>
+  <div class="purchase-grid">
+
+    <!-- ฝั่งซ้าย -->
+    <section class="purchase-card">
+      <div class="section-head purchase-head">
+        <div>
+          <h3>ฟอร์มรับซื้อ</h3>
+          <p class="muted">กรอกข้อมูลทีละรายการ แล้วกดเพิ่มลงบิล</p>
+        </div>
+        <div class="purchase-card-icon">
+          <i class="bi bi-bag-check"></i>
+        </div>
+      </div>
+
+      <form id="purchaseForm" class="purchase-form">
+        <!-- ลูกค้า -->
+        <div class="form-group full-width">
+          <label for="customer_id">เลือกลูกค้า</label>
+          <select id="customer_id" name="customer_id" required>
+            <option value="">-- เลือกลูกค้า --</option>
+            {% if customers %}
+            {% for customer in customers %}
+            <option value="{{ customer.customer_id or customer.id }}"
+              data-name="{{ customer.full_name or customer.name }}" data-phone="{{ customer.phone or '-' }}"
+              data-code="{{ customer.customer_code or '' }}">
+              {{ customer.full_name or customer.name }}
+            </option>
+            {% endfor %}
+            {% endif %}
+          </select>
+        </div>
+
+        <!-- ตรวจเช็คพลาสติกด้วย AI -->
+        <div class="form-group full-width">
+          <label>ตรวจเช็คชนิดพลาสติกด้วยรูปภาพ</label>
+
+          <div class="plastic-check-card">
+            <input type="file" id="plasticCheckImage" class="upload-input" accept="image/*">
+
+            <label for="plasticCheckImage" class="upload-box">
+              <div class="upload-empty" id="uploadEmpty">
+                <i class="bi bi-image"></i>
+                <strong>เลือกรูปพลาสติก</strong>
+                <span>รองรับ JPG, PNG</span>
+              </div>
+
+              <img id="plasticPreviewImage" class="plastic-preview-image" alt="ตัวอย่างรูปพลาสติก">
+            </label>
+
+            <div class="image-info-row">
+              <div>
+                <span class="info-label">รูปภาพสำหรับตรวจเช็ค</span>
+                <strong id="imageFileName">ยังไม่ได้เลือกรูปภาพ</strong>
+              </div>
+
+              <div class="image-action-row">
+                <label for="plasticCheckImage" class="btn btn-light">
+                  <i class="bi bi-upload"></i>
+                  <span>เลือกรูป</span>
+                </label>
+
+                <button type="button" class="btn btn-primary" id="checkPlasticBtn">
+                  <i class="bi bi-stars"></i>
+                  <span>ตรวจเช็ค</span>
+                </button>
+
+                <button type="button" class="btn btn-danger-soft" id="clearImageBtn">
+                  <i class="bi bi-trash3"></i>
+                  <span>ลบรูป</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="ai-result-card" id="aiCheckResult">
+              <div class="ai-result-top">
+                <span class="result-dot"></span>
+                <div>
+                  <h4>ผลการตรวจเช็ค AI</h4>
+                  <p id="aiResultText">ยังไม่ได้ตรวจเช็คจากรูปภาพ</p>
+                </div>
+              </div>
+
+              <div class="ai-result-main">
+                <div>
+                  <span>ประเภทหลัก</span>
+                  <strong id="aiTypeText">-</strong>
+                </div>
+
+                <div>
+                  <span>ความมั่นใจ</span>
+                  <strong id="aiConfidenceText">-</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          
+        </div>
+        <!-- ประเภทหลัก -->
+        <div class="form-group">
+          <label for="type_code">ประเภทหลัก</label>
+          <select id="type_code" name="type_code">
+            <option value="">-- เลือกประเภทหลัก --</option>
+          </select>
+        </div>
+
+        <!-- ประเภทย่อย -->
+        <div class="form-group">
+          <label for="subtype_id">ประเภทย่อย</label>
+          <select id="subtype_id" name="subtype_id">
+            <option value="">-- เลือกประเภทย่อย --</option>
+          </select>
+        </div>
+
+        <!-- ราคา -->
+        <div class="form-group">
+          <label for="unit_price">ราคาต่อกิโลกรัม (บาท)</label>
+          <input type="number" id="unit_price" step="0.01" readonly>
+        </div>
+
+        <!-- น้ำหนัก -->
+        <div class="form-group">
+          <label for="weight_kg">น้ำหนัก (กก.)</label>
+          <input type="number" id="weight_kg" step="0.01" min="0.01" placeholder="เช่น 12.50">
+        </div>
+
+        <!-- ราคารายการนี้ -->
+        <div class="form-group full-width">
+          <label for="total_amount">ราคารายการนี้ (บาท)</label>
+          <input type="number" id="total_amount" step="0.01" readonly>
+        </div>
+
+        <div class="purchase-actions full-width">
+          <button type="button" class="btn btn-light" id="addBillItemBtn">
+            <i class="bi bi-plus-circle"></i>
+            <span>เพิ่มลงรายการบิล</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+   <!-- ฝั่งขวา: รายการบิล -->
+<section class="purchase-card bill-card">
+  <div class="section-head purchase-head">
+    <div>
+      <h3>รายการบิลรับซื้อ</h3>
+      <p class="muted">ตรวจสอบรายการทั้งหมดก่อนบันทึกและสร้างใบเสร็จ</p>
+    </div>
+
+    <div class="purchase-card-icon">
+      <i class="bi bi-receipt"></i>
+    </div>
+  </div>
+
+  <!-- ข้อมูลลูกค้าในบิล -->
+  <div class="bill-customer-card">
+    <div>
+      <span>ลูกค้า</span>
+      <strong id="billCustomerName">ยังไม่ได้เลือกลูกค้า</strong>
+    </div>
+
+    <div>
+      <span>เบอร์โทร</span>
+      <strong id="billCustomerPhone">-</strong>
+    </div>
+  </div>
+
+  <!-- รายการในบิล -->
+  <div class="bill-box no-border">
+    <div class="bill-head">
+      <div>
+        <h4>รายการพลาสติกในบิล</h4>
+
+      </div>
+
+      <span id="billItemCount">0 รายการ</span>
+    </div>
+
+    <div class="bill-empty" id="billEmpty">
+      ยังไม่มีรายการในบิล
+    </div>
+
+    <table class="bill-table" id="billTable">
+      <thead>
+        <tr>
+          <th>รายการ</th>
+          <th>น้ำหนัก</th>
+          <th>รวม</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody id="billTableBody"></tbody>
+    </table>
+
+   <div class="bill-summary">
+  <div>
+    <span>น้ำหนักรวม</span>
+    <strong id="billTotalWeight">0.00 กก.</strong>
+  </div>
+
+  <div class="bill-grand-total">
+    <span>ยอดรวมทั้งบิล</span>
+    <strong id="billGrandTotal">฿ 0.00</strong>
+  </div>
+</div>
+
+<div class="purchase-note">
+  <i class="bi bi-info-circle"></i>
+  <span>เมื่อกดบันทึก ระบบจะสร้างใบเสร็จ 1 ใบ และข้อมูลจะไปแสดงในหน้าประวัติผู้ขายย้อนหลัง</span>
+</div>
+
+<div class="bill-actions">
+  <button
+    type="submit"
+    form="purchaseForm"
+    class="btn btn-primary btn-save-bill"
+    id="savePurchaseBtn"
+  >
+    <i class="bi bi-check-circle"></i>
+    <span>บันทึกและสร้างใบเสร็จ</span>
+  </button>
+</div>
+</section>
+
+ </div>
+</section>
+{% endblock %}
+
+{% block script_extra %}
+<script>
+  (function () {
+    const pageData = JSON.parse(document.getElementById("page-data").textContent || "{}");
+    const catalog = pageData.catalog || [];
+
+    const form = document.getElementById("purchaseForm");
+    const customer = document.getElementById("customer_id");
+    const typeSelect = document.getElementById("type_code");
+    const subtypeSelect = document.getElementById("subtype_id");
+    const priceInput = document.getElementById("unit_price");
+    const weightInput = document.getElementById("weight_kg");
+    const totalInput = document.getElementById("total_amount");
+
+    const imageInput = document.getElementById("plasticCheckImage");
+    const previewImage = document.getElementById("plasticPreviewImage");
+    const uploadEmpty = document.getElementById("uploadEmpty");
+    const fileName = document.getElementById("imageFileName");
+    const checkBtn = document.getElementById("checkPlasticBtn");
+    const clearBtn = document.getElementById("clearImageBtn");
+
+    const aiBox = document.getElementById("aiCheckResult");
+    const aiResultText = document.getElementById("aiResultText");
+    const aiTypeText = document.getElementById("aiTypeText");
+    const aiConfidenceText = document.getElementById("aiConfidenceText");
+
+    /* ข้อมูลลูกค้าที่จะแสดงในบิล */
+    const billCustomerName = document.getElementById("billCustomerName");
+    const billCustomerPhone = document.getElementById("billCustomerPhone");
+
+    const addBtn = document.getElementById("addBillItemBtn");
+    const saveBtn = document.getElementById("savePurchaseBtn");
+    const billTable = document.getElementById("billTable");
+    const billBody = document.getElementById("billTableBody");
+    const billEmpty = document.getElementById("billEmpty");
+    const billCount = document.getElementById("billItemCount");
+    const billWeight = document.getElementById("billTotalWeight");
+    const billTotal = document.getElementById("billGrandTotal");
+
+    let billItems = [];
+
+    function money(value) {
+      return "฿ " + Number(value || 0).toLocaleString("th-TH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function weight(value) {
+      return Number(value || 0).toFixed(2) + " กก.";
+    }
+
+    function updateCustomerInfo() {
+      const option = customer.options[customer.selectedIndex];
+
+      if (!customer.value || !option) {
+        billCustomerName.textContent = "ยังไม่ได้เลือกลูกค้า";
+        billCustomerPhone.textContent = "-";
+        return;
+      }
+
+      billCustomerName.textContent = option.dataset.name || option.textContent.trim();
+      billCustomerPhone.textContent = option.dataset.phone || "-";
+    }
+
+    function fillTypes() {
+      typeSelect.innerHTML = `<option value="">-- เลือกประเภทหลัก --</option>`;
+
+      catalog.forEach(type => {
+        const code = type.type_code || type.code;
+
+        if (code) {
+          typeSelect.innerHTML += `<option value="${code}">${code}</option>`;
+        }
+      });
+    }
+
+    function fillSubtypes(typeCode) {
+      const type = catalog.find(item => (item.type_code || item.code) === typeCode);
+
+      subtypeSelect.innerHTML = `<option value="">-- เลือกประเภทย่อย --</option>`;
+      priceInput.value = "";
+      totalInput.value = "";
+
+      if (!type) return;
+
+      (type.subtypes || []).forEach(sub => {
+        const id = sub.subtype_id || sub.id;
+        const name = sub.subtype_name || sub.name;
+        const price = sub.unit_price || sub.price || 0;
+
+        subtypeSelect.innerHTML += `
+          <option value="${id}" data-name="${name}" data-price="${price}">
+            ${name}
+          </option>
+        `;
+      });
+    }
+
+    function updateTotal() {
+      const price = Number(priceInput.value || 0);
+      const kg = Number(weightInput.value || 0);
+
+      totalInput.value = (price * kg).toFixed(2);
+    }
+
+    function resetImage() {
+      imageInput.value = "";
+      previewImage.src = "";
+      previewImage.style.display = "none";
+      uploadEmpty.style.display = "grid";
+      fileName.textContent = "ยังไม่ได้เลือกรูปภาพ";
+
+      aiBox.classList.remove("success");
+      aiResultText.textContent = "ยังไม่ได้ตรวจเช็คจากรูปภาพ";
+      aiTypeText.textContent = "-";
+      aiConfidenceText.textContent = "-";
+    }
+
+    function renderBill() {
+      billBody.innerHTML = "";
+
+      if (billItems.length === 0) {
+        billTable.style.display = "none";
+        billEmpty.style.display = "block";
+        billCount.textContent = "0 รายการ";
+        billWeight.textContent = "0.00 กก.";
+        billTotal.textContent = "฿ 0.00";
+        return;
+      }
+
+      let totalKg = 0;
+      let totalMoney = 0;
+
+      billItems.forEach((item, index) => {
+        totalKg += item.weight_kg;
+        totalMoney += item.amount;
+
+        billBody.innerHTML += `
+          <tr>
+            <td>
+              <strong>${item.type_code}</strong>
+              <span>${item.subtype_name}</span>
+            </td>
+            <td>${weight(item.weight_kg)}</td>
+            <td>${money(item.amount)}</td>
+            <td>
+              <button type="button" class="remove-item-btn" onclick="removeBillItem(${index})">
+                ลบ
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      billTable.style.display = "table";
+      billEmpty.style.display = "none";
+      billCount.textContent = billItems.length + " รายการ";
+      billWeight.textContent = weight(totalKg);
+      billTotal.textContent = money(totalMoney);
+    }
+
+    window.removeBillItem = function (index) {
+      billItems.splice(index, 1);
+      renderBill();
+    };
+
+    function addBillItem() {
+      const selected = subtypeSelect.options[subtypeSelect.selectedIndex];
+
+      const typeCode = typeSelect.value;
+      const subtypeId = Number(subtypeSelect.value || 0);
+      const subtypeName = selected ? selected.dataset.name : "";
+      const unitPrice = Number(priceInput.value || 0);
+      const kg = Number(weightInput.value || 0);
+      const amount = unitPrice * kg;
+
+      if (!typeCode || !subtypeId || kg <= 0) {
+        alert("กรุณาเลือกประเภท ประเภทย่อย และกรอกน้ำหนักให้ถูกต้อง");
+        return;
+      }
+
+      billItems.push({
+        type_code: typeCode,
+        subtype_id: subtypeId,
+        subtype_name: subtypeName,
+        unit_price: unitPrice,
+        weight_kg: kg,
+        amount: amount
+      });
+
+      subtypeSelect.value = "";
+      priceInput.value = "";
+      weightInput.value = "";
+      totalInput.value = "";
+
+      renderBill();
+    }
+
+    async function checkPlastic() {
+      const file = imageInput.files[0];
+
+      if (!file) {
+        alert("กรุณาเลือกรูปภาพก่อน");
+        return;
+      }
+
+      const data = new FormData();
+      data.append("image", file);
+
+      checkBtn.disabled = true;
+      aiBox.classList.remove("success");
+      aiResultText.textContent = "กำลังตรวจเช็คพลาสติก...";
+
+      try {
+        const res = await fetch("/api/predict_plastic", {
+          method: "POST",
+          body: data
+        });
+
+        const result = await res.json();
+
+        if (!res.ok || result.error) {
+          throw new Error(result.error || "ตรวจเช็คไม่สำเร็จ");
+        }
+
+        const type = result.plastic_type || "-";
+        const confidence = result.confidence || 0;
+
+        typeSelect.value = type;
+        fillSubtypes(type);
+
+        aiBox.classList.add("success");
+        aiResultText.textContent = "ตรวจเช็คสำเร็จ ระบบเลือกประเภทหลักให้แล้ว";
+        aiTypeText.textContent = type;
+        aiConfidenceText.textContent = confidence + "%";
+
+      } catch (err) {
+        aiResultText.textContent = "เกิดข้อผิดพลาด: " + err.message;
+        aiTypeText.textContent = "-";
+        aiConfidenceText.textContent = "-";
+      } finally {
+        checkBtn.disabled = false;
+      }
+    }
+
+    async function submitPurchase(event) {
+      event.preventDefault();
+
+      if (!customer.value) {
+        alert("กรุณาเลือกลูกค้า");
+        return;
+      }
+
+      if (billItems.length === 0) {
+        alert("กรุณาเพิ่มรายการลงบิลก่อน");
+        return;
+      }
+
+      const data = new FormData();
+      data.append("customer_id", customer.value);
+      data.append("items_json", JSON.stringify(billItems));
+
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> กำลังบันทึก...`;
+
+      try {
+        const res = await fetch("/purchase/create", {
+          method: "POST",
+          body: data,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          }
+        });
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+          throw new Error(result.error || result.message || "บันทึกไม่สำเร็จ");
+        }
+
+        billItems = [];
+        renderBill();
+
+        window.location.href = "/receipt?purchase_id=" + result.purchase_id;
+
+      } catch (err) {
+        alert("เกิดข้อผิดพลาด: " + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i class="bi bi-check-circle"></i> บันทึกและสร้างใบเสร็จ`;
+      }
+    }
+
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+
+      if (!file) {
+        resetImage();
+        return;
+      }
+
+      previewImage.src = URL.createObjectURL(file);
+      previewImage.style.display = "block";
+      uploadEmpty.style.display = "none";
+      fileName.textContent = file.name;
+
+      aiBox.classList.remove("success");
+      aiResultText.textContent = "เลือกรูปแล้ว กดตรวจเช็คเพื่อวิเคราะห์";
+      aiTypeText.textContent = "-";
+      aiConfidenceText.textContent = "-";
+    });
+
+    customer.addEventListener("change", updateCustomerInfo);
+
+    typeSelect.addEventListener("change", function () {
+      fillSubtypes(typeSelect.value);
+    });
+
+    subtypeSelect.addEventListener("change", function () {
+      const selected = subtypeSelect.options[subtypeSelect.selectedIndex];
+
+      priceInput.value = selected ? selected.dataset.price || "" : "";
+      updateTotal();
+    });
+
+    weightInput.addEventListener("input", updateTotal);
+    clearBtn.addEventListener("click", resetImage);
+    checkBtn.addEventListener("click", checkPlastic);
+    addBtn.addEventListener("click", addBillItem);
+    form.addEventListener("submit", submitPurchase);
+
+    fillTypes();
+    renderBill();
+    updateCustomerInfo();
+  })();
+</script>
+{% endblock %}

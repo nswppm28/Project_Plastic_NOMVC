@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | ระบบร้านรับซื้อพลาสติก{% endblock %}
+
+{% block page_heading %}แดชบอร์ด{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">ภาพรวมข้อมูลการรับซื้อพลาสติกจากฐานข้อมูล</p>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+
+  <section class="dashboard-stat-grid">
+    <article class="dashboard-card stat-card stat-green">
+      <div class="stat-card-content">
+        <div>
+          <p class="stat-label">รับซื้อรายวัน</p>
+          <h3>{{ dashboard.daily_total }}</h3>
+          <span>{{ dashboard.daily_count }}</span>
+        </div>
+        <div class="stat-icon">
+          <i class="bi bi-calendar-check"></i>
+        </div>
+      </div>
+    </article>
+
+    <article class="dashboard-card stat-card stat-blue">
+      <div class="stat-card-content">
+        <div>
+          <p class="stat-label">รับซื้อรายเดือน</p>
+          <h3>{{ dashboard.monthly_total }}</h3>
+          <span>{{ dashboard.monthly_count }}</span>
+        </div>
+        <div class="stat-icon">
+          <i class="bi bi-bar-chart-line"></i>
+        </div>
+      </div>
+    </article>
+
+    <article class="dashboard-card stat-card stat-gold">
+      <div class="stat-card-content">
+        <div>
+          <p class="stat-label">มูลค่ารวมทั้งหมด</p>
+          <h3>{{ dashboard.grand_total }}</h3>
+          <span>{{ dashboard.total_documents }}</span>
+        </div>
+        <div class="stat-icon">
+          <i class="bi bi-cash-coin"></i>
+        </div>
+      </div>
+    </article>
+
+   <article class="dashboard-card popular-plastic-card">
+  <div class="popular-plastic-head">
+    <div>
+      <p class="popular-plastic-label">สรุปตามน้ำหนักรับซื้อ</p>
+      <h3>ประเภทพลาสติกที่รับซื้อมากที่สุด</h3>
+    </div>
+
+    <div class="popular-plastic-icon">
+      <i class="bi bi-recycle"></i>
+    </div>
+  </div>
+
+  <div class="popular-plastic-list">
+
+    {% if top_plastics %}
+      {% for plastic in top_plastics %}
+      <div class="popular-plastic-item">
+        <div class="popular-plastic-row">
+          <span class="popular-plastic-name">{{ plastic.plastic_type }}</span>
+          <span class="popular-plastic-value">
+            {{ "%.0f"|format(plastic.total_weight|float) }} กก.
+            <small>({{ "%.0f"|format(plastic.percent|float) }}%)</small>
+          </span>
+        </div>
+
+        <div class="popular-progress">
+          <div 
+            class="popular-progress-fill"
+            style="width: {{ plastic.percent }}%;">
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="popular-plastic-empty">
+        <i class="bi bi-inbox"></i>
+        <p>ยังไม่มีข้อมูลประเภทพลาสติก</p>
+      </div>
+    {% endif %}
+
+  </div>
+</article>
+  </section>
+
+  <section class="dashboard-summary-grid">
+    <article class="dashboard-card summary-card">
+      <div class="summary-icon green-soft">
+        <i class="bi bi-person-check"></i>
+      </div>
+      <div>
+        <p>ลูกค้าขายบ่อยที่สุด</p>
+        <h3>{{ dashboard.top_customer }}</h3>
+        <span>{{ dashboard.top_customer_detail }}</span>
+      </div>
+    </article>
+
+    <article class="dashboard-card summary-card">
+      <div class="summary-icon blue-soft">
+        <i class="bi bi-receipt"></i>
+      </div>
+      <div>
+        <p>จำนวนรายการวันนี้</p>
+        <h3>{{ dashboard.daily_count }}</h3>
+        <span>นับจากรายการรับซื้อประจำวันที่เปิดระบบ</span>
+      </div>
+    </article>
+
+    <article class="dashboard-card summary-card">
+      <div class="summary-icon gold-soft">
+        <i class="bi bi-graph-up-arrow"></i>
+      </div>
+      <div>
+        <p>รายการเดือนนี้</p>
+        <h3>{{ dashboard.monthly_count }}</h3>
+        <span>สรุปจำนวนเอกสารรับซื้อในเดือนปัจจุบัน</span>
+      </div>
+    </article>
+  </section>
+
+  <section class="dashboard-card table-card">
+    <div class="section-head">
+      <div>
+        <h3>รายการรับซื้อล่าสุด</h3>
+      </div>
+      <a href="{{ url_for('purchase_page') }}" class="dashboard-action-btn">
+        <i class="bi bi-plus-circle"></i>
+        บันทึกรับซื้อ
+      </a>
+    </div>
+
+    <div class="dashboard-table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>เลขที่รายการ</th>
+            <th>เลขใบเสร็จ</th>
+            <th>วันที่และเวลา</th>
+            <th>ลูกค้า</th>
+            <th>ประเภทพลาสติก</th>
+            <th class="text-right">น้ำหนัก</th>
+            <th class="text-right">มูลค่า</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% if transactions %}
+            {% for item in transactions %}
+            <tr>
+              <td>
+                <span class="doc-no">{{ item.purchase_no }}</span>
+              </td>
+
+              <td>
+                <span class="receipt-no">
+                  {{ item.receipt_no if item.receipt_no else '-' }}
+                </span>
+              </td>
+
+              <td>{{ item.purchase_date }}</td>
+
+              <td>
+                <div class="customer-cell">
+                  <strong>{{ item.customer_name }}</strong>
+                  <span>{{ item.customer_code }}</span>
+                </div>
+              </td>
+
+              <td>
+                <span class="plastic-label">
+                  {{ item.plastic_label }}
+                </span>
+              </td>
+
+              <td class="text-right">
+                {{ "%.3f"|format(item.weight_kg|float) }} กก.
+              </td>
+
+              <td class="text-right">
+                <strong>฿ {{ "{:,.2f}".format(item.amount|float) }}</strong>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>ยังไม่มีข้อมูลรายการรับซื้อ</p>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

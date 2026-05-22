@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}ประวัติจำหน่ายออก | ระบบร้านรับซื้อพลาสติก{% endblock %}
+
+{% block page_heading %}ประวัติจำหน่ายออก{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">ตรวจสอบรายการขายพลาสติกออกจากคลังให้ผู้รับซื้อปลายทาง</p>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260521">
+{% endblock %}
+
+{% block content %}
+<section class="export-page">
+
+  <section class="export-header-card">
+    <div class="export-header-left">
+      <div class="export-header-icon">
+        <i class="bi bi-clock-history"></i>
+      </div>
+
+      <div>
+        <h3>ประวัติการจำหน่ายออก</h3>
+        <p>แสดงรายการส่งออก/ขายต่อพลาสติกจากคลังย้อนหลัง</p>
+      </div>
+    </div>
+
+    <a href="{{ url_for('stock_export_page') }}" class="export-header-btn">
+      <i class="bi bi-plus-circle"></i>
+      เพิ่มรายการจำหน่ายออก
+    </a>
+  </section>
+
+  <section class="export-card">
+    <div class="export-card-head history-head">
+      <div>
+        <h3>รายการจำหน่ายออกทั้งหมด</h3>
+        <p>ค้นหาได้จากเลขที่รายการ หรือชื่อผู้รับซื้อปลายทาง</p>
+      </div>
+
+      <form class="export-search-form" method="get" action="{{ url_for('stock_export_history_page') }}">
+        <input
+          type="text"
+          name="q"
+          value="{{ export_search or '' }}"
+          placeholder="ค้นหาเลขที่ / ผู้รับซื้อ"
+        >
+        <button type="submit">
+          <i class="bi bi-search"></i>
+          ค้นหา
+        </button>
+      </form>
+    </div>
+
+    <div class="export-table-wrap">
+      <table class="export-table">
+        <thead>
+          <tr>
+            <th>เลขที่</th>
+            <th>วันที่</th>
+            <th>ผู้รับซื้อปลายทาง</th>
+            <th class="text-center">จำนวนรายการ</th>
+            <th class="text-right">น้ำหนักรวม</th>
+            <th class="text-right">มูลค่ารวม</th>
+            <th>ขนส่ง</th>
+            <th class="text-center">สถานะ</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% if exports %}
+            {% for export in exports %}
+            <tr>
+              <td>
+                <strong>{{ export.export_no }}</strong>
+              </td>
+
+              <td>
+                <span class="muted-text">{{ export.export_date }}</span>
+              </td>
+
+              <td>
+                <strong>{{ export.buyer_name }}</strong>
+                <small>{{ export.buyer_code }}</small>
+              </td>
+
+              <td class="text-center">
+                {{ export.item_count }} รายการ
+              </td>
+
+              <td class="text-right">
+                <strong>{{ "%.2f"|format(export.total_weight_kg|float) }} กก.</strong>
+              </td>
+
+              <td class="text-right">
+                <strong>฿ {{ "%.2f"|format(export.total_amount|float) }}</strong>
+              </td>
+
+              <td>
+                <span class="muted-text">
+                  {{ export.transport_method or '-' }}
+                  {% if export.vehicle_plate %}
+                    <br>{{ export.vehicle_plate }}
+                  {% endif %}
+                </span>
+              </td>
+
+              <td class="text-center">
+                <span class="export-status">สำเร็จ</span>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" class="export-empty">
+                ยังไม่มีประวัติจำหน่ายออก
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</section>
+{% endblock %}

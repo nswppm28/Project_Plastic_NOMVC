@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}ประวัติผู้ขายย้อนหลัง | ระบบร้านรับซื้อพลาสติก{% endblock %}
+
+{% block page_heading %}ประวัติผู้ขายย้อนหลัง{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">เก็บข้อมูลผู้ที่เคยขายพลาสติก และสามารถเปิดดูใบเสร็จย้อนหลังได้</p>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/receipt_history.css') }}?v=20260425">
+{% endblock %}
+
+{% block content %}
+<section class="history-page">
+
+  <!-- ส่วนหัวของหน้า -->
+
+<!-- ส่วนหัวของหน้า -->
+<section class="history-card history-header-card">
+  <div class="history-header-row">
+    <div class="history-icon">
+      <i class="bi bi-clock-history"></i>
+    </div>
+
+    <div class="history-header-text">
+      <h3>ประวัติใบเสร็จรับซื้อ</h3>
+      <p>ค้นหาและดูรายการรับซื้อย้อนหลังของลูกค้าแต่ละคน</p>
+    </div>
+  </div>
+</section>
+
+  <!-- ค้นหาข้อมูล -->
+  <section class="history-card">
+    <form class="history-search-form" method="get" action="{{ url_for('receipt_history_page') }}">
+      <div class="history-search-box">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          name="q"
+          value="{{ receipt_search or '' }}"
+          placeholder="ค้นหา ชื่อลูกค้า เบอร์โทร รหัสลูกค้า เลขใบเสร็จ"
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-search"></i>
+        ค้นหา
+      </button>
+
+      {% if receipt_search %}
+      <a href="{{ url_for('receipt_history_page') }}" class="btn btn-light">
+        ล้างค้นหา
+      </a>
+      {% endif %}
+    </form>
+  </section>
+
+  <!-- ตารางประวัติใบเสร็จ -->
+  <section class="history-card">
+    <div class="history-list-head">
+      <div>
+        <h3>รายการรับซื้อย้อนหลัง</h3>
+      </div>
+
+      <span>{{ receipt_history|length if receipt_history else 0 }} รายการ</span>
+    </div>
+
+    <div class="history-table-wrap">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>เลขใบเสร็จ</th>
+            <th>วันที่และเวลา</th>
+            <th>ผู้ขาย</th>
+            <th>เบอร์โทร</th>
+            <th>ประเภท</th>
+            <th class="text-right">น้ำหนัก</th>
+            <th class="text-right">ยอดรวม</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% if receipt_history %}
+            {% for item in receipt_history %}
+            <tr>
+              <td>
+                <span class="receipt-no">
+                  {{ item.receipt_no or '-' }}
+                </span>
+              </td>
+
+              <td>{{ item.receipt_date }}</td>
+
+              <td>
+                <div class="seller-cell">
+                  <strong>{{ item.customer_name }}</strong>
+                  <span>{{ item.customer_code }}</span>
+                </div>
+              </td>
+
+              <td>{{ item.phone or '-' }}</td>
+
+              <td>
+                <span class="plastic-types">
+                  {{ item.plastic_types or '-' }}
+                </span>
+              </td>
+
+              <td class="text-right weight-cell">
+                {{ "%.2f"|format(item.total_weight_kg|float) }} กก.
+              </td>
+
+              <td class="text-right amount-cell">
+                ฿ {{ "{:,.2f}".format(item.total_amount|float) }}
+              </td>
+
+              <td>
+                <a
+                  class="btn btn-primary btn-sm"
+                  href="{{ url_for('receipt_page', purchase_id=item.purchase_id) }}"
+                >
+                  <i class="bi bi-receipt"></i>
+                  ดูใบเสร็จ
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" class="history-empty">
+                <i class="bi bi-inbox"></i>
+                <p>ยังไม่มีประวัติผู้ขายย้อนหลัง</p>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</section>
+{% endblock %}

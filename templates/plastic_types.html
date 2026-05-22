@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block page_heading %}จัดการประเภทพลาสติกและราคา{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">กำหนดประเภทย่อยและราคารับซื้อพลาสติกแต่ละชนิด</p>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260428">
+{% endblock %}
+
+{% block content %}
+
+{% macro plastic_row(plastic_type, subtype=None) %}
+  {% set type_id = plastic_type.id|default(plastic_type.type_id, true) %}
+  {% set type_code = plastic_type.code|default(plastic_type.type_code, true) %}
+  {% set type_name_th = plastic_type.type_name_th|default(type_code, true) %}
+  {% set type_name_en = plastic_type.full_name|default(plastic_type.type_name_en, true) %}
+
+  {% if subtype %}
+    {% set subtype_id = subtype.id|default(subtype.subtype_id, true) %}
+    {% set subtype_name = subtype.name|default(subtype.subtype_name, true) %}
+    {% set subtype_code = subtype.code|default(subtype.subtype_code, true) %}
+    {% set unit_price = subtype.price|default(subtype.unit_price|default(0, true), true) %}
+    {% set form_id = 'price-form-' ~ subtype_id %}
+  {% endif %}
+
+  <tr class="plastic-row type-{{ type_code|lower }}">
+    <td>
+      <span class="plastic-type-badge">{{ type_code }}</span>
+    </td>
+
+    <td>
+      {% if subtype %}
+        <div class="subtype-name">{{ subtype_name }}</div>
+        <div class="subtype-code">{{ subtype_code }}</div>
+      {% else %}
+        <span class="muted-text">ยังไม่มีประเภทย่อย</span>
+      {% endif %}
+    </td>
+
+    <td>
+      <div class="plastic-name-th">{{ type_name_th }}</div>
+      <div class="plastic-full-name">{{ type_name_en }}</div>
+    </td>
+
+    <td>
+      {% if subtype %}
+        <form id="{{ form_id }}" action="/plastic-types/{{ subtype_id }}/price" method="post"></form>
+
+        <div class="price-control">
+          <input
+            class="price-input"
+            form="{{ form_id }}"
+            type="number"
+            step="0.01"
+            min="0"
+            name="unit_price"
+            value="{{ '%.2f'|format(unit_price|float) }}"
+            required
+          >
+          <span class="price-unit">บาท/กก.</span>
+        </div>
+      {% else %}
+        <span class="muted-text">-</span>
+      {% endif %}
+    </td>
+
+    <td class="action-cell">
+      {% if subtype %}
+        <div class="action-group">
+          <button type="submit" form="{{ form_id }}" class="btn-save-price">
+            บันทึก
+          </button>
+
+          <a
+            class="btn-delete-mini"
+            href="/plastic-types/{{ subtype_id }}/delete"
+            onclick="return confirm('ต้องการลบประเภทย่อยนี้หรือไม่?');"
+          >
+            ลบ
+          </a>
+        </div>
+      {% else %}
+        <span class="muted-text">-</span>
+      {% endif %}
+    </td>
+  </tr>
+{% endmacro %}
+
+<div class="plastic-page">
+
+  <input type="checkbox" id="addPlasticModalToggle" class="plastic-modal-toggle">
+
+  <section class="plastic-header-card">
+    <div class="plastic-header-left">
+      <div class="plastic-header-icon">
+        <i class="bi bi-tags"></i>
+      </div>
+
+      <div class="plastic-header-text">
+        <h3>ประเภทพลาสติกหลัก 6 ชนิด</h3>
+        <p>PET, HDPE, PVC, LDPE, PP และ PS พร้อมประเภทย่อยและราคารับซื้อ</p>
+      </div>
+    </div>
+
+    <label for="addPlasticModalToggle" class="btn-open-plastic-modal">
+      <i class="bi bi-plus-circle"></i>
+      เพิ่มพลาสติกใหม่
+    </label>
+  </section>
+
+  <section class="plastic-table-card">
+    <div class="plastic-table-wrap">
+      <table class="plastic-table">
+        <colgroup>
+          <col style="width: 12%;">
+          <col style="width: 25%;">
+          <col style="width: 27%;">
+          <col style="width: 22%;">
+          <col style="width: 14%;">
+        </colgroup>
+
+        <thead>
+          <tr>
+            <th>ประเภทหลัก</th>
+            <th>ประเภทย่อย</th>
+            <th>ชื่อเต็ม</th>
+            <th>ราคารับซื้อ</th>
+            <th class="text-center">จัดการ</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% if catalog is defined and catalog %}
+            {% for plastic_type in catalog %}
+              {% if plastic_type.subtypes %}
+                {% for subtype in plastic_type.subtypes %}
+                  {{ plastic_row(plastic_type, subtype) }}
+                {% endfor %}
+              {% else %}
+                {{ plastic_row(plastic_type) }}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="empty-state">
+                ยังไม่มีข้อมูลประเภทพลาสติก
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="plastic-modal-layer">
+    <label for="addPlasticModalToggle" class="plastic-modal-backdrop"></label>
+
+    <div class="plastic-modal-box">
+      <div class="plastic-modal-head">
+        <div>
+          <h2>เพิ่มพลาสติกใหม่</h2>
+          <p>เพิ่มประเภทย่อยและกำหนดราคารับซื้อเริ่มต้น</p>
+        </div>
+
+        <label for="addPlasticModalToggle" class="plastic-modal-close">
+          <i class="bi bi-x-lg"></i>
+        </label>
+      </div>
+
+      <form action="{{ url_for('create_plastic_subtype') }}" method="post" class="plastic-modal-form">
+
+        <div class="modal-form-group">
+          <label for="type_id">ประเภทหลัก</label>
+          <select id="type_id" name="type_id" required>
+            <option value="">-- เลือกประเภทหลัก --</option>
+
+            {% if catalog is defined and catalog %}
+              {% for plastic_type in catalog %}
+                {% set type_id = plastic_type.id|default(plastic_type.type_id, true) %}
+                {% set type_code = plastic_type.code|default(plastic_type.type_code, true) %}
+                {% set type_name = plastic_type.type_name_th|default(plastic_type.full_name, true) %}
+
+                <option value="{{ type_id }}">
+                  {{ type_code }} - {{ type_name }}
+                </option>
+              {% endfor %}
+            {% endif %}
+          </select>
+        </div>
+
+        <div class="modal-form-group">
+          <label for="subtype_name">ชื่อประเภทย่อย</label>
+          <input
+            id="subtype_name"
+            type="text"
+            name="subtype_name"
+            placeholder="เช่น ขวดขาวขุ่น"
+            required
+          >
+        </div>
+
+        <div class="modal-form-group">
+          <label for="subtype_code">รหัสประเภทย่อย</label>
+          <input
+            id="subtype_code"
+            type="text"
+            name="subtype_code"
+            placeholder="เช่น HDPE-MILKY"
+            required
+          >
+        </div>
+
+        <div class="modal-form-group">
+          <label for="unit_price">ราคารับซื้อ</label>
+          <div class="modal-price-group">
+            <input
+              id="unit_price"
+              type="number"
+              step="0.01"
+              min="0"
+              name="unit_price"
+              placeholder="เช่น 12.00"
+              required
+            >
+            <span>บาท/กก.</span>
+          </div>
+        </div>
+
+        <div class="modal-form-group">
+          <label for="description">รายละเอียดเพิ่มเติม</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            placeholder="รายละเอียดเพิ่มเติม"
+          ></textarea>
+        </div>
+
+        <div class="plastic-modal-actions">
+          <label for="addPlasticModalToggle" class="btn-modal-cancel">
+            ยกเลิก
+          </label>
+
+          <button type="submit" class="btn-modal-submit">
+            บันทึกข้อมูล
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

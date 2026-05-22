@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}แก้ไขประเภทย่อยพลาสติก | ระบบร้านรับซื้อพลาสติก{% endblock %}
+
+{% block page_heading %}แก้ไขประเภทย่อยพลาสติก{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">ปรับปรุงชื่อประเภทย่อย รายละเอียด และสถานะการใช้งาน</p>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260521">
+{% endblock %}
+
+{% block content %}
+<section class="plastic-page">
+
+  <section class="plastic-header-card">
+    <div class="plastic-header-left">
+      <div class="plastic-header-icon">
+        <i class="bi bi-pencil-square"></i>
+      </div>
+
+      <div class="plastic-header-text">
+        <h3>แก้ไขข้อมูลประเภทย่อย</h3>
+        <p>
+          {{ subtype.type_code }} - {{ subtype.type_name_th }}
+        </p>
+      </div>
+    </div>
+
+    <a href="{{ url_for('plastic_types_page') }}" class="btn-open-plastic-modal">
+      <i class="bi bi-arrow-left"></i>
+      กลับหน้าประเภทพลาสติก
+    </a>
+  </section>
+
+  <section class="plastic-table-card">
+    <form method="post" class="plastic-modal-form" style="max-width: 720px; margin: 0 auto;">
+
+      <div class="modal-form-group">
+        <label>ประเภทหลัก</label>
+        <input
+          type="text"
+          value="{{ subtype.type_code }} - {{ subtype.type_name_th }}"
+          readonly
+        >
+      </div>
+
+      <div class="modal-form-group">
+        <label>รหัสประเภทย่อย</label>
+        <input
+          type="text"
+          value="{{ subtype.subtype_code }}"
+          readonly
+        >
+      </div>
+
+      <div class="modal-form-group">
+        <label for="subtype_name">ชื่อประเภทย่อย</label>
+        <input
+          id="subtype_name"
+          type="text"
+          name="subtype_name"
+          value="{{ subtype.subtype_name or '' }}"
+          required
+        >
+      </div>
+
+      <div class="modal-form-group">
+        <label for="description">รายละเอียดเพิ่มเติม</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          placeholder="รายละเอียดของประเภทย่อย">{{ subtype.description or '' }}</textarea>
+      </div>
+
+      <div class="modal-form-group">
+        <label for="is_active">สถานะ</label>
+        <select id="is_active" name="is_active">
+          <option value="1" {% if subtype.is_active == 1 %}selected{% endif %}>
+            เปิดใช้งาน
+          </option>
+          <option value="0" {% if subtype.is_active == 0 %}selected{% endif %}>
+            ปิดใช้งาน
+          </option>
+        </select>
+      </div>
+
+      <div class="plastic-modal-actions">
+        <a href="{{ url_for('plastic_types_page') }}" class="btn-modal-cancel">
+          ยกเลิก
+        </a>
+
+        <button type="submit" class="btn-modal-submit">
+          บันทึกการแก้ไข
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+</section>
+{% endblock %}

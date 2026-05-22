@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}จำหน่ายออก | ระบบร้านรับซื้อพลาสติก{% endblock %}
+
+{% block page_heading %}จำหน่ายออกจากคลัง{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">บันทึกการขายพลาสติกจากคลังให้โรงงานรีไซเคิลหรือลานรับซื้อปลายทาง</p>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260521">
+{% endblock %}
+
+{% block content %}
+<section class="export-page">
+
+  <section class="export-header-card">
+    <div class="export-header-left">
+      <div class="export-header-icon">
+        <i class="bi bi-truck"></i>
+      </div>
+
+      <div>
+        <h3>บันทึกจำหน่ายออก</h3>
+        <p>ใช้เมื่อพลาสติกในคลังสะสมจนพร้อมขายต่อให้ผู้รับซื้อปลายทาง</p>
+      </div>
+    </div>
+
+    <a href="{{ url_for('stock_export_history_page') }}" class="export-header-btn">
+      <i class="bi bi-clock-history"></i>
+      ประวัติจำหน่ายออก
+    </a>
+  </section>
+
+  <section class="export-layout">
+
+    <form class="export-card export-form-card" method="post" action="{{ url_for('stock_export_create') }}">
+      <div class="export-card-head">
+        <div>
+          <h3>ข้อมูลการจำหน่ายออก</h3>
+          <p>เลือกผู้รับซื้อ ปริมาณ และราคาขายต่อกิโลกรัม</p>
+        </div>
+      </div>
+
+      <div class="export-form-grid">
+        <div class="form-group full">
+          <label for="buyer_id">ผู้รับซื้อปลายทาง</label>
+          <select id="buyer_id" name="buyer_id" required>
+            <option value="">-- เลือกผู้รับซื้อปลายทาง --</option>
+            {% for buyer in buyers %}
+              <option value="{{ buyer.buyer_id }}">
+                {{ buyer.buyer_code }} - {{ buyer.buyer_name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label for="subtype_id">พลาสติกในคลัง</label>
+          <select id="subtype_id" name="subtype_id" required>
+            <option value="">-- เลือกรายการในคลัง --</option>
+            {% for item in stock_items %}
+              <option
+                value="{{ item.subtype_id }}"
+                data-stock="{{ item.total_weight_kg }}"
+                data-price="{{ item.suggested_export_price }}"
+                data-type="{{ item.type_code }}"
+                data-subtype="{{ item.subtype_name }}"
+                data-status="{{ item.status_text }}"
+              >
+                {{ item.type_code }} - {{ item.subtype_name }}
+                | คงเหลือ {{ "%.2f"|format(item.total_weight_kg|float) }} กก.
+                | {{ item.status_text }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="weight_kg">น้ำหนักที่จำหน่ายออก (กก.)</label>
+          <input
+            type="number"
+            id="weight_kg"
+            name="weight_kg"
+            step="0.01"
+            min="0.01"
+            placeholder="0.00"
+            required
+          >
+          <small id="stockHint">เลือกพลาสติกในคลังก่อน</small>
+        </div>
+
+        <div class="form-group">
+          <label for="unit_price">ราคาขายต่อ (บาท/กก.)</label>
+          <input
+            type="number"
+            id="unit_price"
+            name="unit_price"
+            step="0.01"
+            min="0.01"
+            placeholder="0.00"
+            required
+          >
+          <small>สามารถปรับตามราคาขายจริงได้</small>
+        </div>
+
+        <div class="form-group">
+          <label for="transport_method">วิธีขนส่ง</label>
+          <input
+            type="text"
+            id="transport_method"
+            name="transport_method"
+            placeholder="เช่น รถกระบะ / รถบรรทุก"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="vehicle_plate">ทะเบียนรถ</label>
+          <input
+            type="text"
+            id="vehicle_plate"
+            name="vehicle_plate"
+            placeholder="เช่น 1กก 1234"
+          >
+        </div>
+
+        <div class="form-group full">
+          <label for="note">หมายเหตุ</label>
+          <textarea
+            id="note"
+            name="note"
+            rows="3"
+            placeholder="รายละเอียดเพิ่มเติม เช่น ส่งให้โรงงานรอบประจำสัปดาห์"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="export-total-box">
+        <span>มูลค่ารวมโดยประมาณ</span>
+        <strong id="exportTotal">฿ 0.00</strong>
+      </div>
+
+      <div class="export-actions">
+        <a href="{{ url_for('stock_page') }}" class="btn-export-secondary">
+          กลับคลังสินค้า
+        </a>
+
+        <button type="submit" class="btn-export-primary">
+          <i class="bi bi-check-circle"></i>
+          บันทึกจำหน่ายออก
+        </button>
+      </div>
+    </form>
+
+    <aside class="export-card export-side-card">
+      <div class="export-card-head">
+        <div>
+          <h3>รายการในคลัง</h3>
+          <p>แสดงพลาสติกที่มีคงเหลือและสามารถจำหน่ายออกได้</p>
+        </div>
+      </div>
+
+      <div class="export-stock-list">
+        {% if stock_items %}
+          {% for item in stock_items %}
+          <div class="export-stock-item">
+            <div>
+              <span class="plastic-pill type-{{ item.type_code|lower }}">{{ item.type_code }}</span>
+              <strong>{{ item.subtype_name }}</strong>
+            </div>
+
+            <div class="stock-item-right">
+              <b>{{ "%.2f"|format(item.total_weight_kg|float) }} กก.</b>
+              {% if item.total_weight_kg|float >= 100 %}
+                <span class="mini-status ready">พร้อมจำหน่าย</span>
+              {% elif item.total_weight_kg|float >= 50 %}
+                <span class="mini-status medium">ปานกลาง</span>
+              {% else %}
+                <span class="mini-status low">ปริมาณน้อย</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="export-empty">
+            ยังไม่มีสินค้าในคลังสำหรับจำหน่ายออก
+          </div>
+        {% endif %}
+      </div>
+    </aside>
+
+  </section>
+</section>
+{% endblock %}
+
+{% block script_extra %}
+<script>
+  (function () {
+    const subtypeSelect = document.getElementById("subtype_id");
+    const weightInput = document.getElementById("weight_kg");
+    const unitPriceInput = document.getElementById("unit_price");
+    const exportTotal = document.getElementById("exportTotal");
+    const stockHint = document.getElementById("stockHint");
+
+    function money(value) {
+      return "฿ " + Number(value || 0).toLocaleString("th-TH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function getSelectedOption() {
+      if (!subtypeSelect || !subtypeSelect.selectedOptions.length) {
+        return null;
+      }
+      return subtypeSelect.selectedOptions[0];
+    }
+
+    function updateTotal() {
+      const weight = Number(weightInput.value || 0);
+      const price = Number(unitPriceInput.value || 0);
+      exportTotal.textContent = money(weight * price);
+    }
+
+    if (subtypeSelect) {
+      subtypeSelect.addEventListener("change", function () {
+        const option = getSelectedOption();
+
+        if (!option || !option.value) {
+          stockHint.textContent = "เลือกพลาสติกในคลังก่อน";
+          unitPriceInput.value = "";
+          updateTotal();
+          return;
+        }
+
+        const stock = Number(option.dataset.stock || 0);
+        const price = Number(option.dataset.price || 0);
+        const status = option.dataset.status || "-";
+
+        stockHint.textContent = "คงเหลือในคลัง " + stock.toFixed(2) + " กก. | สถานะ " + status;
+
+        if (price > 0) {
+          unitPriceInput.value = price.toFixed(2);
+        }
+
+        if (weightInput) {
+          weightInput.max = stock;
+        }
+
+        updateTotal();
+      });
+    }
+
+    if (weightInput) {
+      weightInput.addEventListener("input", function () {
+        const option = getSelectedOption();
+        const stock = option ? Number(option.dataset.stock || 0) : 0;
+        const weight = Number(weightInput.value || 0);
+
+        if (stock > 0 && weight > stock) {
+          stockHint.textContent = "น้ำหนักเกินคงเหลือในคลัง มีได้สูงสุด " + stock.toFixed(2) + " กก.";
+        }
+
+        updateTotal();
+      });
+    }
+
+    if (unitPriceInput) {
+      unitPriceInput.addEventListener("input", updateTotal);
+    }
+  })();
+</script>
+{% endblock %}
