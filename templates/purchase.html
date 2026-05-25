@@ -9,23 +9,12 @@
 {% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}?v=20260425">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}?v=20260523-ui">
 {% endblock %}
 
 {% block content %}
 <section class="purchase-page">
-
-  <!-- แถบหัวข้อ -->
-  <section class="purchase-hero">
-    <div class="purchase-hero-icon">
-      <i class="bi bi-cart-check"></i>
-    </div>
-    <div>
-      <h2>บันทึกรายการรับซื้อพลาสติก</h2>
-      <p>เริ่มจากตรวจเช็คชนิดพลาสติกด้วยรูปภาพ จากนั้นเลือกประเภทย่อยและเพิ่มลงในรายการบิล</p>
-    </div>
-  </section>
-  <div class="purchase-grid">
+<div class="purchase-grid">
 
     <!-- ฝั่งซ้าย -->
     <section class="purchase-card">

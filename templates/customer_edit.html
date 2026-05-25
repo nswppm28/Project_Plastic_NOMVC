@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 
 {% block title %}แก้ไขข้อมูลลูกค้า | ระบบร้านรับซื้อพลาสติก{% endblock %}
-{% block page_heading %}{% endblock %}
-{% block page_subtitle %}{% endblock %}
+{% block page_heading %}แก้ไขข้อมูลลูกค้า{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">ปรับปรุงชื่อ เบอร์โทร และที่อยู่ของลูกค้าให้ถูกต้อง</p>
+{% endblock %}
 
 {% block head_extra %}
 <style>
-  /* ซ่อนหัวด้านบนของ base เฉพาะหน้านี้ */
-  .topbar {
-    display: none;
-  }
-
   .customer-edit-page {
     display: flex;
     justify-content: center;

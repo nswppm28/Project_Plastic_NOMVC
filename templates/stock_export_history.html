@@ -8,31 +8,19 @@
 <p class="page-subtitle">ตรวจสอบรายการขายพลาสติกออกจากคลังให้ผู้รับซื้อปลายทาง</p>
 {% endblock %}
 
+{% block page_actions %}
+<a href="{{ url_for('stock_export_page') }}" class="page-action-btn primary">
+  <i class="bi bi-plus-circle"></i>
+  เพิ่มรายการจำหน่ายออก
+</a>
+{% endblock %}
+
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260521">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260523-ui">
 {% endblock %}
 
 {% block content %}
 <section class="export-page">
-
-  <section class="export-header-card">
-    <div class="export-header-left">
-      <div class="export-header-icon">
-        <i class="bi bi-clock-history"></i>
-      </div>
-
-      <div>
-        <h3>ประวัติการจำหน่ายออก</h3>
-        <p>แสดงรายการส่งออก/ขายต่อพลาสติกจากคลังย้อนหลัง</p>
-      </div>
-    </div>
-
-    <a href="{{ url_for('stock_export_page') }}" class="export-header-btn">
-      <i class="bi bi-plus-circle"></i>
-      เพิ่มรายการจำหน่ายออก
-    </a>
-  </section>
-
   <section class="export-card">
     <div class="export-card-head history-head">
       <div>

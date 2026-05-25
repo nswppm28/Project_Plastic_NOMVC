@@ -8,33 +8,19 @@
 <p class="page-subtitle">ปรับปรุงชื่อประเภทย่อย รายละเอียด และสถานะการใช้งาน</p>
 {% endblock %}
 
+{% block page_actions %}
+<a href="{{ url_for('plastic_types_page') }}" class="page-action-btn light">
+  <i class="bi bi-arrow-left"></i>
+  กลับหน้าประเภทพลาสติก
+</a>
+{% endblock %}
+
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260521">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260523-ui">
 {% endblock %}
 
 {% block content %}
 <section class="plastic-page">
-
-  <section class="plastic-header-card">
-    <div class="plastic-header-left">
-      <div class="plastic-header-icon">
-        <i class="bi bi-pencil-square"></i>
-      </div>
-
-      <div class="plastic-header-text">
-        <h3>แก้ไขข้อมูลประเภทย่อย</h3>
-        <p>
-          {{ subtype.type_code }} - {{ subtype.type_name_th }}
-        </p>
-      </div>
-    </div>
-
-    <a href="{{ url_for('plastic_types_page') }}" class="btn-open-plastic-modal">
-      <i class="bi bi-arrow-left"></i>
-      กลับหน้าประเภทพลาสติก
-    </a>
-  </section>
-
   <section class="plastic-table-card">
     <form method="post" class="plastic-modal-form" style="max-width: 720px; margin: 0 auto;">
 

@@ -1,0 +1,584 @@
+/* =========================================================
+   UI CLEAN FIX 2026-05-23
+   แก้หัวข้อซ้ำ 2 ชั้น + ปรับหน้าทั้งระบบให้กระชับขึ้น
+   โหลดท้ายสุดเพื่อ override CSS เดิมโดยไม่แตะ logic หลังบ้าน
+   ========================================================= */
+
+:root {
+  --clean-bg: #f6f8f7;
+  --clean-card: #ffffff;
+  --clean-border: #e2e8e4;
+  --clean-border-strong: #d5ded8;
+  --clean-text: #0f172a;
+  --clean-muted: #64748b;
+  --clean-green: #168754;
+  --clean-green-dark: #116b42;
+  --clean-green-soft: #e8f7ef;
+  --clean-danger-soft: #fff5f5;
+  --clean-shadow: 0 2px 8px rgba(15, 23, 42, 0.035);
+  --clean-shadow-hover: 0 8px 22px rgba(15, 23, 42, 0.06);
+  --clean-radius: 16px;
+}
+
+html,
+body {
+  background: var(--clean-bg) !important;
+  color: var(--clean-text) !important;
+}
+
+/* ================= LAYOUT ================= */
+
+.app-shell {
+  grid-template-columns: 230px minmax(0, 1fr) !important;
+}
+
+.sidebar {
+  width: 230px !important;
+  background: #ffffff !important;
+}
+
+.main-area {
+  padding: 18px 24px 24px !important;
+}
+
+.content-area {
+  margin-top: 16px !important;
+}
+
+/* Header กลางของหน้า: เหลือหัวข้อหลักชั้นเดียว ไม่ทำเป็นกล่องใหญ่ซ้ำ */
+.topbar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 0 0 14px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--clean-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.page-header-box {
+  width: 100% !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.page-title-block {
+  min-width: 0;
+}
+
+.page-heading {
+  margin: 0 0 4px !important;
+  color: var(--clean-text) !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  line-height: 1.28 !important;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  margin: 0 !important;
+  color: var(--clean-muted) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.page-actions:empty {
+  display: none;
+}
+
+.page-action-btn,
+.page-actions .status-pill {
+  min-height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 9px 14px !important;
+  border-radius: 12px !important;
+  text-decoration: none !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.page-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.page-action-btn.primary {
+  background: var(--clean-green) !important;
+  color: #ffffff !important;
+  border-color: var(--clean-green) !important;
+}
+
+.page-action-btn.primary:hover {
+  background: var(--clean-green-dark) !important;
+  border-color: var(--clean-green-dark) !important;
+}
+
+.page-action-btn.light {
+  background: #ffffff !important;
+  color: #14532d !important;
+  border-color: #cfe2d6 !important;
+}
+
+.page-action-btn.light:hover {
+  background: #edf7f1 !important;
+}
+
+.page-action-btn i,
+.page-actions .status-pill i {
+  font-size: 16px;
+}
+
+/* ================= COMMON PAGE SPACING ================= */
+
+.dashboard-page,
+.customer-page,
+.plastic-page,
+.purchase-page,
+.ai-page,
+.history-page,
+.stock-page,
+.export-page,
+.receipt-page {
+  gap: 14px !important;
+}
+
+.dashboard-page,
+.purchase-page,
+.ai-page,
+.history-page,
+.stock-page,
+.export-page {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* การ์ดทุกหน้าต้องเป็นข้อมูลจริง ไม่ใช่กล่องหัวข้อเปล่า */
+.dash-card,
+.kpi-card,
+.customer-card,
+.plastic-table-card,
+.purchase-card,
+.ai-card,
+.history-card,
+.stock-card,
+.stock-summary-card,
+.export-card,
+.receipt-paper,
+.bill-customer-card,
+.bill-summary,
+.plastic-check-card,
+.ai-result-card,
+.export-stock-item {
+  background: var(--clean-card) !important;
+  border: 1px solid var(--clean-border) !important;
+  border-radius: var(--clean-radius) !important;
+  box-shadow: var(--clean-shadow) !important;
+}
+
+.customer-card,
+.plastic-table-card,
+.purchase-card,
+.ai-card,
+.history-card,
+.stock-card,
+.export-card {
+  padding: 18px !important;
+}
+
+.dash-card:hover,
+.kpi-card:hover,
+.customer-card:hover,
+.plastic-table-card:hover,
+.purchase-card:hover,
+.ai-card:hover,
+.history-card:hover,
+.stock-card:hover,
+.stock-summary-card:hover,
+.export-card:hover {
+  box-shadow: var(--clean-shadow-hover) !important;
+}
+
+/* ซ่อน/กัน style header-card เดิม ถ้ามีไฟล์ HTML เก่าหลงเหลือ */
+.customer-header-card,
+.plastic-header-card,
+.purchase-hero,
+.ai-hero,
+.history-header-card,
+.stock-header-card,
+.export-header-card,
+.dashboard-overview-strip {
+  display: none !important;
+}
+
+/* ================= TEXT HEADERS INSIDE CARDS ================= */
+
+.card-header-row,
+.section-head,
+.purchase-head,
+.ai-card-head,
+.stock-card-head,
+.export-card-head,
+.history-list-head,
+.table-header-row {
+  margin-bottom: 14px !important;
+}
+
+.card-header-row h3,
+.purchase-head h3,
+.ai-card-head h3,
+.stock-card-head h3,
+.export-card-head h3,
+.history-list-head h3,
+.customer-edit-title h3 {
+  margin: 0 0 4px !important;
+  color: var(--clean-text) !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+.card-header-row p,
+.purchase-head p,
+.ai-card-head p,
+.stock-card-head p,
+.export-card-head p,
+.customer-edit-title p,
+.muted {
+  margin: 0 !important;
+  color: var(--clean-muted) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+}
+
+.header-icon,
+.purchase-card-icon,
+.ai-card-icon,
+.stock-summary-icon,
+.summary-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  font-size: 19px !important;
+  flex-shrink: 0 !important;
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboard-kpi-grid {
+  gap: 12px !important;
+}
+
+.kpi-card {
+  min-height: 104px !important;
+  padding: 15px !important;
+  gap: 11px !important;
+}
+
+.kpi-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  font-size: 18px !important;
+}
+
+.kpi-body p {
+  font-size: 12px !important;
+}
+
+.kpi-body h3 {
+  margin: 5px 0 2px !important;
+  font-size: 20px !important;
+}
+
+.dashboard-summary-grid,
+.purchase-grid,
+.ai-layout,
+.export-layout {
+  gap: 14px !important;
+}
+
+/* ================= FORMS ================= */
+
+.form-group,
+.modal-form-group {
+  gap: 6px !important;
+}
+
+.form-group label,
+.modal-form-group label,
+.customer-modal-form label,
+.customer-edit-form label {
+  margin-bottom: 0 !important;
+  color: #334155 !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.modal-form-group input,
+.modal-form-group select,
+.modal-form-group textarea,
+.customer-modal-form input,
+.customer-modal-form textarea,
+.customer-edit-form input,
+.customer-edit-form textarea,
+.customer-search-box input,
+.history-search-box input,
+.export-search-form input,
+.price-input {
+  min-height: 40px !important;
+  border-radius: 11px !important;
+  border-color: var(--clean-border-strong) !important;
+  font-size: 13px !important;
+}
+
+.customer-search-box,
+.history-search-box {
+  min-height: 42px !important;
+  border-radius: 12px !important;
+  border-color: var(--clean-border-strong) !important;
+}
+
+.customer-card:has(.customer-search-box),
+.history-card:has(.history-search-form) {
+  padding: 12px !important;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn,
+.customer-page .btn,
+.customer-modal .btn,
+.history-page .btn,
+.dash-btn,
+.btn-open-plastic-modal,
+.btn-save-price,
+.btn-delete-mini,
+.ai-btn-primary,
+.btn-export-primary,
+.btn-export-secondary,
+.export-header-btn,
+.stock-action-btn,
+.stock-row-action,
+.btn-modal-cancel,
+.btn-modal-submit,
+.export-search-form button {
+  min-height: 38px !important;
+  border-radius: 11px !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+}
+
+.btn-sm,
+.customer-page .btn-sm,
+.history-page .btn-sm {
+  min-height: 32px !important;
+  padding: 7px 10px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+}
+
+/* ================= TABLES ================= */
+
+.customer-table,
+.plastic-table,
+.history-table,
+.stock-table,
+.export-table,
+.dashboard-table {
+  border-spacing: 0 6px !important;
+}
+
+.customer-table thead th,
+.plastic-table th,
+.history-table th,
+.stock-table th,
+.export-table th,
+.dashboard-table th {
+  padding: 11px 12px !important;
+  background: #f7faf8 !important;
+  color: #52615a !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.customer-table tbody td,
+.plastic-table td,
+.history-table td,
+.stock-table td,
+.export-table td,
+.dashboard-table td {
+  padding: 11px 12px !important;
+  font-size: 13px !important;
+}
+
+/* ================= PURCHASE / AI ================= */
+
+.upload-box {
+  min-height: 112px !important;
+}
+
+.ai-upload-zone {
+  min-height: 230px !important;
+}
+
+.plastic-preview-image,
+.ai-preview-wrap img {
+  max-height: 210px !important;
+}
+
+.ai-result-main strong,
+.bill-grand-total strong {
+  font-size: 19px !important;
+}
+
+/* ================= STATUS ================= */
+
+.status-pill.status-ready,
+.status-ready {
+  background: #e8f7ef !important;
+  color: #116b42 !important;
+  border-color: #b9e6c9 !important;
+}
+
+.status-pill.status-not-ready,
+.status-not-ready {
+  background: #fff7ed !important;
+  color: #9a3412 !important;
+  border-color: #fed7aa !important;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1100px) {
+  .dashboard-kpi-grid,
+  .stock-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .dashboard-summary-grid,
+  .purchase-grid,
+  .ai-layout,
+  .export-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .main-area {
+    padding: 14px !important;
+  }
+
+  .page-header-box {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .page-actions {
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-heading {
+    font-size: 20px !important;
+  }
+
+  .dashboard-kpi-grid,
+  .stock-summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-action-btn,
+  .page-actions .status-pill {
+    width: 100%;
+  }
+}
+
+
+/* ================= PAGE HEADER ICON ================= */
+
+.page-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  min-width: 0;
+}
+
+.page-title-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #eaf7ef 0%, #e2f4ea 100%);
+  border: 1px solid #d4eadb;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+}
+
+.page-title-icon i {
+  font-size: 22px;
+  color: var(--clean-green);
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .page-header-box {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  .page-title-wrap {
+    width: 100%;
+  }
+
+  .page-actions {
+    width: 100%;
+    justify-content: flex-start;
+    padding-top: 0;
+  }
+
+  .page-title-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+  }
+
+  .page-title-icon i {
+    font-size: 20px;
+  }
+}

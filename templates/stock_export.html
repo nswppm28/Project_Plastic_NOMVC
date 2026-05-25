@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block title %}จำหน่ายออก | ระบบร้านรับซื้อพลาสติก{% endblock %}
 
@@ -8,38 +8,26 @@
 <p class="page-subtitle">บันทึกการขายพลาสติกจากคลังให้โรงงานรีไซเคิลหรือลานรับซื้อปลายทาง</p>
 {% endblock %}
 
+{% block page_actions %}
+<a href="{{ url_for('stock_export_history_page') }}" class="page-action-btn light">
+  <i class="bi bi-clock-history"></i>
+  ประวัติจำหน่ายออก
+</a>
+{% endblock %}
+
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260521">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260523-ui">
 {% endblock %}
 
 {% block content %}
 <section class="export-page">
-
-  <section class="export-header-card">
-    <div class="export-header-left">
-      <div class="export-header-icon">
-        <i class="bi bi-truck"></i>
-      </div>
-
-      <div>
-        <h3>บันทึกจำหน่ายออก</h3>
-        <p>ใช้เมื่อพลาสติกในคลังสะสมจนพร้อมขายต่อให้ผู้รับซื้อปลายทาง</p>
-      </div>
-    </div>
-
-    <a href="{{ url_for('stock_export_history_page') }}" class="export-header-btn">
-      <i class="bi bi-clock-history"></i>
-      ประวัติจำหน่ายออก
-    </a>
-  </section>
-
   <section class="export-layout">
 
     <form class="export-card export-form-card" method="post" action="{{ url_for('stock_export_create') }}">
       <div class="export-card-head">
         <div>
-          <h3>ข้อมูลการจำหน่ายออก</h3>
-          <p>เลือกผู้รับซื้อ ปริมาณ และราคาขายต่อกิโลกรัม</p>
+          <h3>บันทึกจำหน่ายออก</h3>
+          <p>กรอกเฉพาะข้อมูลจำเป็น เพื่อลดขั้นตอนการใช้งาน</p>
         </div>
       </div>
 
@@ -88,7 +76,6 @@
             placeholder="0.00"
             required
           >
-          <small id="stockHint">เลือกพลาสติกในคลังก่อน</small>
         </div>
 
         <div class="form-group">
@@ -102,28 +89,10 @@
             placeholder="0.00"
             required
           >
-          <small>สามารถปรับตามราคาขายจริงได้</small>
         </div>
 
-        <div class="form-group">
-          <label for="transport_method">วิธีขนส่ง</label>
-          <input
-            type="text"
-            id="transport_method"
-            name="transport_method"
-            placeholder="เช่น รถกระบะ / รถบรรทุก"
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="vehicle_plate">ทะเบียนรถ</label>
-          <input
-            type="text"
-            id="vehicle_plate"
-            name="vehicle_plate"
-            placeholder="เช่น 1กก 1234"
-          >
-        </div>
+        <input type="hidden" id="transport_method" name="transport_method" value="ไม่ระบุ">
+        <input type="hidden" id="vehicle_plate" name="vehicle_plate" value="-">
 
         <div class="form-group full">
           <label for="note">หมายเหตุ</label>
@@ -201,8 +170,6 @@
     const weightInput = document.getElementById("weight_kg");
     const unitPriceInput = document.getElementById("unit_price");
     const exportTotal = document.getElementById("exportTotal");
-    const stockHint = document.getElementById("stockHint");
-
     function money(value) {
       return "฿ " + Number(value || 0).toLocaleString("th-TH", {
         minimumFractionDigits: 2,
@@ -228,7 +195,6 @@
         const option = getSelectedOption();
 
         if (!option || !option.value) {
-          stockHint.textContent = "เลือกพลาสติกในคลังก่อน";
           unitPriceInput.value = "";
           updateTotal();
           return;
@@ -272,3 +238,4 @@
   })();
 </script>
 {% endblock %}
+

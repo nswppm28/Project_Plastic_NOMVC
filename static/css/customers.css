@@ -2,10 +2,6 @@
    CUSTOMER PAGE
 ========================================================= */
 
-.topbar {
-  display: none !important;
-}
-
 .customer-page {
   display: grid;
   gap: 18px;
@@ -19,55 +15,6 @@
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
 }
 
-/* =========================================================
-   CUSTOMER HEADER
-========================================================= */
-
-.customer-header-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-
-  padding: 22px 26px;
-  border-radius: 22px;
-}
-
-.customer-header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.customer-header-icon {
-  width: 56px;
-  height: 56px;
-
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-
-  border-radius: 18px;
-  background: #e9f7ef;
-  color: #198754;
-  font-size: 25px;
-}
-
-.customer-header-text h3 {
-  margin: 0 0 6px;
-  color: #102033;
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.3;
-}
-
-.customer-header-text p {
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
-  line-height: 1.55;
-}
 /* =========================================================
    BUTTONS
 ========================================================= */
@@ -120,18 +67,6 @@
   box-shadow: 0 10px 22px rgba(25, 135, 84, 0.24);
 }
 
-.customer-page .btn-light,
-.customer-modal .btn-light {
-  background: #edf3ef;
-  color: #0f2f22;
-  border: 1px solid #dce8e1;
-}
-
-.customer-page .btn-light:hover,
-.customer-modal .btn-light:hover {
-  background: #dfece5;
-}
-
 .customer-page .btn-danger,
 .customer-modal .btn-danger {
   background: #fdebed;
@@ -164,19 +99,6 @@
   font-size: 13px;
 }
 
-.btn-add-customer {
-  padding: 12px 18px;
-  border-radius: 14px;
-}
-
-.btn-add-customer i,
-.btn-edit-customer i,
-.btn-delete-customer i {
-  font-size: 16px;
-  line-height: 1;
-}
-
-/* ปุ่มแก้ไขให้เป็นสีเขียวเหมือนปุ่มเพิ่มลูกค้าใหม่ */
 .btn-edit-customer {
   background: #198754 !important;
   color: #ffffff !important;
@@ -198,9 +120,16 @@
   background: #f9d5d9 !important;
 }
 
+.btn-edit-customer i,
+.btn-delete-customer i {
+  font-size: 16px;
+  line-height: 1;
+}
+
 .action-group {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   flex-wrap: nowrap;
 }
@@ -263,6 +192,11 @@
   font-weight: 800;
   text-align: left;
   border-bottom: 1px solid #e6eee9;
+  white-space: nowrap;
+}
+
+.customer-table thead th:last-child {
+  text-align: center;
 }
 
 .customer-table tbody tr {
@@ -290,6 +224,9 @@
 }
 
 .customer-table tbody td:last-child {
+  width: 180px;
+  min-width: 180px;
+  text-align: center;
   border-right: 1px solid #edf1ef;
   border-radius: 0 15px 15px 0;
 }
@@ -329,126 +266,6 @@
    MODAL
 ========================================================= */
 
-.customer-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 9999;
-}
-
-.customer-modal.show {
-  display: flex;
-}
-
-.customer-modal-box {
-  width: 100%;
-  max-width: 640px;
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 30px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
-}
-
-.customer-modal-box h3 {
-  margin: 0 0 24px;
-  font-size: 22px;
-  font-weight: 800;
-  color: #102033;
-}
-
-.customer-modal-form {
-  display: grid;
-  gap: 18px;
-}
-
-.customer-modal-form label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #102033;
-}
-
-.customer-modal-form input,
-.customer-modal-form textarea {
-  width: 100%;
-  border: 1px solid #d8e3dd;
-  border-radius: 16px;
-  padding: 14px 16px;
-  background: #ffffff;
-  color: #102033;
-  font-size: 15px;
-  outline: none;
-  transition: 0.18s ease;
-}
-
-.customer-modal-form input:focus,
-.customer-modal-form textarea:focus {
-  border-color: #198754;
-  box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.08);
-}
-
-.customer-modal-form textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-.customer-modal-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 8px;
-}
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-@media (max-width: 768px) {
-  .customer-header-card {
-    align-items: flex-start;
-    padding: 20px;
-  }
-
-  .customer-header-left {
-    align-items: flex-start;
-  }
-
-  .customer-header-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: 16px;
-    font-size: 24px;
-  }
-
-  .customer-header-text h3 {
-    font-size: 19px;
-  }
-
-  .customer-header-text p {
-    font-size: 13px;
-  }
-
-  .btn-add-customer {
-    width: 100%;
-  }
-
-  .customer-modal-box {
-    padding: 22px;
-    border-radius: 18px;
-  }
-
-  .customer-modal-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .action-group {
-    flex-wrap: wrap;
-  }
-}
 .customer-modal {
   position: fixed;
   inset: 0;
@@ -552,14 +369,18 @@
   font-weight: 800;
 }
 
-.btn-outline {
-  color: #0f172a;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-}
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
-.btn-outline:hover {
-  background: #f8fafc;
+@media (max-width: 768px) {
+  .customer-card {
+    padding: 20px;
+  }
+
+  .action-group {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 560px) {
@@ -570,33 +391,4 @@
   .customer-modal-actions {
     grid-template-columns: 1fr;
   }
-}/* =========================================================
-   FIX TABLE ACTION COLUMN ALIGNMENT
-========================================================= */
-
-/* กำหนดความกว้างคอลัมน์จัดการให้พอดีกับปุ่ม */
-.customer-table th:last-child,
-.customer-table td:last-child {
-  width: 180px;
-  min-width: 180px;
-  text-align: center;
-}
-
-/* จัดปุ่มแก้ไข / ลบ ให้อยู่ตรงกลางใต้หัวข้อจัดการ */
-.customer-table td:last-child .action-group {
-  justify-content: center;
-}
-
-/* จัดหัวตารางให้ตรงกลางเฉพาะคอลัมน์จัดการ */
-.customer-table thead th:last-child {
-  text-align: center;
-}
-
-/* ป้องกันปุ่มเบียดกัน */
-.action-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: nowrap;
 }

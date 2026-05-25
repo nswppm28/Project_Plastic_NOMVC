@@ -1,5 +1,9 @@
 /* ================= PLASTIC TYPES PAGE ================= */
 
+.topbar {
+  display: none !important;
+}
+
 .plastic-page {
   display: flex;
   flex-direction: column;
@@ -329,7 +333,7 @@
 .plastic-modal-layer {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 9999;
   display: none;
   align-items: center;
   justify-content: center;
@@ -577,5 +581,85 @@
   .modal-price-group {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+/* ===== FORCE PLASTIC HEADER BUTTON BACK 20260525 ===== */
+.plastic-header-card {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  flex-wrap: wrap !important;
+  padding: 22px 26px !important;
+  background: #ffffff !important;
+  border: 1px solid #dfe8e3 !important;
+  border-radius: 22px !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04) !important;
+}
+
+.plastic-header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.plastic-header-icon {
+  width: 56px !important;
+  height: 56px !important;
+  display: grid !important;
+  place-items: center !important;
+  flex-shrink: 0 !important;
+  border-radius: 18px !important;
+  background: #e9f7ef !important;
+  color: #198754 !important;
+  font-size: 25px !important;
+}
+
+.plastic-header-text h3 {
+  margin: 0 0 6px !important;
+  color: #102033 !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+}
+
+.plastic-header-text p {
+  margin: 0 !important;
+  color: #6b7280 !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+.btn-open-plastic-modal {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  min-height: 48px !important;
+  padding: 0 22px !important;
+  background: #15803d !important;
+  color: #ffffff !important;
+  border-radius: 16px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 14px 26px rgba(21, 128, 61, 0.22) !important;
+  transition: 0.18s ease !important;
+}
+
+.btn-open-plastic-modal:hover {
+  background: #166534 !important;
+  transform: translateY(-1px) !important;
+}
+
+@media (max-width: 900px) {
+  .plastic-header-card {
+    align-items: flex-start !important;
+    padding: 20px !important;
+  }
+
+  .btn-open-plastic-modal {
+    width: 100% !important;
   }
 }

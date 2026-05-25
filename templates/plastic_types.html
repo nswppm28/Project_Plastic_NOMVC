@@ -1,4 +1,6 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+
+{% block title %}ประเภทพลาสติกและราคา | ระบบร้านรับซื้อพลาสติก{% endblock %}
 
 {% block page_heading %}จัดการประเภทพลาสติกและราคา{% endblock %}
 
@@ -6,8 +8,10 @@
 <p class="page-subtitle">กำหนดประเภทย่อยและราคารับซื้อพลาสติกแต่ละชนิด</p>
 {% endblock %}
 
+{% block page_actions %}{% endblock %}
+
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260428">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260525-buttons-back">
 {% endblock %}
 
 {% block content %}
@@ -92,7 +96,8 @@
 <div class="plastic-page">
 
   <input type="checkbox" id="addPlasticModalToggle" class="plastic-modal-toggle">
-
+  
+  <!-- HEADER CARD -->
   <section class="plastic-header-card">
     <div class="plastic-header-left">
       <div class="plastic-header-icon">
@@ -100,8 +105,9 @@
       </div>
 
       <div class="plastic-header-text">
-        <h3>ประเภทพลาสติกหลัก 6 ชนิด</h3>
-        <p>PET, HDPE, PVC, LDPE, PP และ PS พร้อมประเภทย่อยและราคารับซื้อ</p>
+        {% set plastic_type_count = catalog|length if catalog is defined and catalog else 0 %}
+        <h3>ประเภทพลาสติกหลัก {{ plastic_type_count }} ชนิด</h3>
+        <p>PET, HDPE, PVC, LDPE, PP และ PS พร้อมประเภทย่อยและราคาซื้อ</p>
       </div>
     </div>
 
@@ -110,8 +116,7 @@
       เพิ่มพลาสติกใหม่
     </label>
   </section>
-
-  <section class="plastic-table-card">
+<section class="plastic-table-card">
     <div class="plastic-table-wrap">
       <table class="plastic-table">
         <colgroup>
@@ -203,17 +208,6 @@
         </div>
 
         <div class="modal-form-group">
-          <label for="subtype_code">รหัสประเภทย่อย</label>
-          <input
-            id="subtype_code"
-            type="text"
-            name="subtype_code"
-            placeholder="เช่น HDPE-MILKY"
-            required
-          >
-        </div>
-
-        <div class="modal-form-group">
           <label for="unit_price">ราคารับซื้อ</label>
           <div class="modal-price-group">
             <input
@@ -255,3 +249,5 @@
 
 </div>
 {% endblock %}
+
+

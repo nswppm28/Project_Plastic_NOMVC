@@ -1,3 +1,4 @@
+{% set template_version = '20260525-sidebar-order-fixed' %}
 <!DOCTYPE html>
 <html lang="th">
 
@@ -21,23 +22,153 @@
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
   >
 
-  <!-- CSS หลัก -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=20260521">
+  <!-- CSS หลักของระบบ -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}?v={{ template_version }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}?v={{ template_version }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v={{ template_version }}">
 
   <!-- CSS เฉพาะหน้า -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/customers.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/receipt.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/stock.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260521">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}?v=20260521">
-
   {% block head_extra %}{% endblock %}
+
+  <!-- CSS responsive / ui กลาง -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}?v={{ template_version }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ui-clean.css') }}?v={{ template_version }}">
+
+  <style>
+    body .app-shell .main-area .topbar {
+      width: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      padding: 0 !important;
+      margin: 0 0 18px !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
+
+    body .app-shell .main-area .topbar .menu-toggle {
+      flex-shrink: 0 !important;
+    }
+
+    body .app-shell .main-area .topbar .page-header-box {
+      width: 100% !important;
+      min-height: 88px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 16px !important;
+      padding: 16px 20px !important;
+      background: #ffffff !important;
+      border: 1px solid #dde8e1 !important;
+      border-radius: 18px !important;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06) !important;
+    }
+
+    body .app-shell .main-area .topbar .page-title-wrap {
+      display: flex !important;
+      align-items: center !important;
+      gap: 14px !important;
+      min-width: 0 !important;
+    }
+
+    body .app-shell .main-area .topbar .page-title-icon {
+      width: 52px !important;
+      height: 52px !important;
+      min-width: 52px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
+      background: #e8f7ef !important;
+      border: 1px solid #d4eadb !important;
+      border-radius: 16px !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
+    }
+
+    body .app-shell .main-area .topbar .page-title-icon i {
+      font-size: 22px !important;
+      color: #168754 !important;
+      line-height: 1 !important;
+    }
+
+    body .app-shell .main-area .topbar .page-title-block {
+      min-width: 0 !important;
+    }
+
+    body .app-shell .main-area .topbar .page-heading {
+      margin: 0 0 4px !important;
+      padding: 0 !important;
+      color: #0f172a !important;
+      font-size: 22px !important;
+      font-weight: 900 !important;
+      line-height: 1.28 !important;
+      letter-spacing: -0.02em !important;
+    }
+
+    body .app-shell .main-area .topbar .page-subtitle {
+      margin: 0 !important;
+      padding: 0 !important;
+      color: #64748b !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      line-height: 1.5 !important;
+    }
+
+    body .app-shell .main-area .content-area {
+      margin-top: 0 !important;
+    }
+
+    /* บังคับ Sidebar ให้เรียงตาม HTML จริง */
+    body .sidebar .nav-menu {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    body .sidebar .nav-menu .nav-link {
+      order: initial !important;
+      flex-shrink: 0 !important;
+    }
+
+    @media (max-width: 900px) {
+      body .app-shell .main-area .topbar {
+        margin-bottom: 14px !important;
+      }
+
+      body .app-shell .main-area .topbar .page-header-box {
+        min-height: auto !important;
+        padding: 14px !important;
+        border-radius: 16px !important;
+      }
+
+      body .app-shell .main-area .topbar .page-title-wrap {
+        width: 100% !important;
+        gap: 12px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body .app-shell .main-area .topbar .page-title-icon {
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        border-radius: 14px !important;
+      }
+
+      body .app-shell .main-area .topbar .page-title-icon i {
+        font-size: 20px !important;
+      }
+
+      body .app-shell .main-area .topbar .page-heading {
+        font-size: 20px !important;
+      }
+
+      body .app-shell .main-area .topbar .page-subtitle {
+        font-size: 12.5px !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -57,8 +188,30 @@
         </div>
       </div>
 
+      {% set ep = request.endpoint or '' %}
+      {% set page_icon = 'bi-file-earmark-text' %}
+
+      {% if ep in ['dashboard_page', 'dashboard', 'index'] %}
+        {% set page_icon = 'bi-grid-1x2' %}
+      {% elif ep in ['customers_page', 'customer_add', 'customer_edit'] %}
+        {% set page_icon = 'bi-people' %}
+      {% elif ep in ['plastic_types_page', 'price_page', 'price_update', 'plastic_type_edit_page'] %}
+        {% set page_icon = 'bi-box-seam' %}
+      {% elif ep in ['purchase_page', 'purchase_create'] %}
+        {% set page_icon = 'bi-cart3' %}
+      {% elif ep in ['receipt_history_page', 'receipt_page', 'receipt_detail_page'] %}
+        {% set page_icon = 'bi-receipt' %}
+      {% elif ep in ['stock_page', 'stock'] %}
+        {% set page_icon = 'bi-archive' %}
+      {% elif ep in ['stock_export_page', 'stock_export_create', 'stock_export_history_page'] %}
+        {% set page_icon = 'bi-truck' %}
+      {% elif ep in ['ai_page', 'ai_detection', 'predict_plastic'] %}
+        {% set page_icon = 'bi-camera' %}
+      {% elif ep in ['login_page', 'login'] %}
+        {% set page_icon = 'bi-shield-lock' %}
+      {% endif %}
+
       <nav class="nav-menu">
-        {% set ep = request.endpoint or '' %}
 
         <a
           href="{{ url_for('dashboard_page') }}"
@@ -93,6 +246,14 @@
         </a>
 
         <a
+          href="{{ url_for('receipt_history_page') }}"
+          class="nav-link {{ 'active' if ep in ['receipt_history_page', 'receipt_page', 'receipt_detail_page'] else '' }}"
+        >
+          <i class="bi bi-receipt"></i>
+          <span>ใบเสร็จรับซื้อ</span>
+        </a>
+
+        <a
           href="{{ url_for('stock_page') }}"
           class="nav-link {{ 'active' if ep in ['stock_page', 'stock'] else '' }}"
         >
@@ -109,23 +270,15 @@
         </a>
 
         <a
-          href="{{ url_for('receipt_history_page') }}"
-          class="nav-link {{ 'active' if ep in ['receipt_history_page', 'receipt_page', 'receipt_detail_page'] else '' }}"
-        >
-          <i class="bi bi-receipt"></i>
-          <span>ใบเสร็จรับซื้อ</span>
-        </a>
-
-        <a
           href="{{ url_for('ai_page') }}"
           class="nav-link {{ 'active' if ep in ['ai_page', 'ai_detection', 'predict_plastic'] else '' }}"
         >
           <i class="bi bi-camera"></i>
           <span>ตรวจจับพลาสติก</span>
         </a>
+
       </nav>
 
-      <!-- Sidebar Footer: User + Logout -->
       {% if session.get('user_id') %}
       <div class="sidebar-footer">
 
@@ -159,13 +312,21 @@
         </button>
 
         <div class="page-header-box">
-          <h2 class="page-heading">
-            {% block page_heading %}หน้าหลัก{% endblock %}
-          </h2>
+          <div class="page-title-wrap">
+            <div class="page-title-icon" aria-hidden="true">
+              <i class="bi {{ page_icon }}"></i>
+            </div>
 
-          {% block page_subtitle %}
-          <p class="page-subtitle"></p>
-          {% endblock %}
+            <div class="page-title-block">
+              <h2 class="page-heading">
+                {% block page_heading %}หน้าหลัก{% endblock %}
+              </h2>
+
+              {% block page_subtitle %}
+              <p class="page-subtitle"></p>
+              {% endblock %}
+            </div>
+          </div>
         </div>
       </header>
 
@@ -188,7 +349,6 @@
     </div>
   </div>
 
-  <!-- ส่งข้อมูลจาก Flask ไป JavaScript -->
   <script id="page-data" type="application/json">
     {{ {
       "catalog": catalog|default(none),
@@ -205,7 +365,7 @@
     } | tojson }}
   </script>
 
-  <script src="{{ url_for('static', filename='js/main.js') }}?v=20260521"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}?v={{ template_version }}"></script>
 
   {% block script_extra %}{% endblock %}
 </body>

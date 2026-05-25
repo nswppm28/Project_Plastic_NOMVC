@@ -1,41 +1,36 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block title %}จัดการลูกค้า | ระบบร้านรับซื้อพลาสติก{% endblock %}
 
-{% block page_heading %}{% endblock %}
-{% block page_subtitle %}{% endblock %}
+{% block page_heading %}จัดการข้อมูลลูกค้า{% endblock %}
+
+{% block page_subtitle %}
+<p class="page-subtitle">เพิ่ม แก้ไข และจัดการข้อมูลลูกค้าที่นำพลาสติกมาขาย</p>
+{% endblock %}
+
+{% block page_actions %}
+<button type="button" class="page-action-btn primary" id="openAddCustomerModal">
+  <i class="bi bi-plus-circle"></i>
+  เพิ่มลูกค้าใหม่
+</button>
+{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/customers.css') }}?v=20260426">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customers.css') }}?v=20260525-customers-clean-final">
 {% endblock %}
 
 {% block content %}
 <section class="customer-page">
 
-  <!-- Header -->
-  <section class="customer-card customer-header-card">
-    <div class="customer-header-left">
-      <div class="customer-header-icon">
-        <i class="bi bi-people"></i>
-      </div>
-
-      <div class="customer-header-text">
-        <h3>จัดการข้อมูลลูกค้า</h3>
-        <p>เพิ่ม แก้ไข และจัดการข้อมูลลูกค้าที่นำพลาสติกมาขาย</p>
-      </div>
-    </div>
-
-    <button type="button" class="btn btn-primary btn-add-customer" id="openAddCustomerModal">
-      <i class="bi bi-plus-circle"></i>
-      <span>เพิ่มลูกค้าใหม่</span>
-    </button>
-  </section>
-
   <!-- Search -->
   <section class="customer-card">
     <div class="customer-search-box">
       <i class="bi bi-search"></i>
-      <input id="customerSearch" type="text" placeholder="ค้นหาลูกค้า เช่น ชื่อ เบอร์โทร หรือรหัสลูกค้า">
+      <input
+        id="customerSearch"
+        type="text"
+        placeholder="ค้นหาลูกค้า เช่น ชื่อ เบอร์โทร หรือรหัสลูกค้า"
+      >
     </div>
   </section>
 
@@ -57,72 +52,80 @@
 
         <tbody>
           {% if customers is defined and customers %}
-          {% for item in customers %}
-          {% set customer_id = item.id or item.customer_id %}
-          {% set customer_name = item.full_name or item.name or '' %}
-          {% set customer_phone = item.phone or '' %}
-          {% set customer_address = item.address or '' %}
-          {% set visit_count = item.visit_count or item.visits or 0 %}
-          {% set total_value = item.total_value or item.totalValue or 0 %}
+            {% for item in customers %}
+              {% set customer_id = item.id or item.customer_id %}
+              {% set customer_name = item.full_name or item.name or '' %}
+              {% set customer_phone = item.phone or '' %}
+              {% set customer_address = item.address or '' %}
+              {% set visit_count = item.visit_count or item.visits or 0 %}
+              {% set total_value = item.total_value or item.totalValue or 0 %}
 
-          <tr>
-            <td>
-              <span class="customer-code">
-                {{ item.customer_code or customer_id }}
-              </span>
-            </td>
+              <tr>
+                <td>
+                  <span class="customer-code">
+                    {{ item.customer_code or customer_id }}
+                  </span>
+                </td>
 
-            <td>
-              <span class="customer-name">
-                {{ customer_name }}
-              </span>
-            </td>
+                <td>
+                  <span class="customer-name">
+                    {{ customer_name }}
+                  </span>
+                </td>
 
-            <td>
-              {{ customer_phone or '-' }}
-            </td>
+                <td>
+                  {{ customer_phone or '-' }}
+                </td>
 
-            <td>
-              <span class="customer-muted">
-                {{ customer_address or '-' }}
-              </span>
-            </td>
+                <td>
+                  <span class="customer-muted">
+                    {{ customer_address or '-' }}
+                  </span>
+                </td>
 
-            <td>
-              {{ visit_count }} ครั้ง
-            </td>
+                <td>
+                  {{ visit_count }} ครั้ง
+                </td>
 
-            <td>
-              <span class="customer-money">
-                ฿ {{ "{:,.2f}".format(total_value|float) }}
-              </span>
-            </td>
+                <td>
+                  <span class="customer-money">
+                    ฿ {{ "{:,.2f}".format(total_value|float) }}
+                  </span>
+                </td>
 
-            <td>
-              <div class="action-group">
-                <button type="button" class="btn btn-primary btn-sm btn-edit-customer"
-                  data-customer-id="{{ customer_id }}" data-full-name="{{ customer_name|e }}"
-                  data-phone="{{ customer_phone|e }}" data-address="{{ customer_address|e }}"
-                  onclick="openEditCustomerModal(this)">
-                  <i class="bi bi-pencil-square"></i>
-                  <span>แก้ไข</span>
-                </button>
+                <td>
+                  <div class="action-group">
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm btn-edit-customer"
+                      data-customer-id="{{ customer_id }}"
+                      data-full-name="{{ customer_name|e }}"
+                      data-phone="{{ customer_phone|e }}"
+                      data-address="{{ customer_address|e }}"
+                      onclick="openEditCustomerModal(this)"
+                    >
+                      <i class="bi bi-pencil-square"></i>
+                      <span>แก้ไข</span>
+                    </button>
 
-                <button type="button" class="btn btn-danger btn-sm btn-delete-customer"
-                  onclick="deleteCustomer('{{ customer_id }}')">
-                  <i class="bi bi-trash"></i>
-                  <span>ลบ</span>
-                </button>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm btn-delete-customer"
+                      onclick="deleteCustomer('{{ customer_id }}')"
+                    >
+                      <i class="bi bi-trash"></i>
+                      <span>ลบ</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
           {% else %}
-          <tr>
-            <td colspan="7" class="customer-empty">
-              ยังไม่มีข้อมูลลูกค้า
-            </td>
-          </tr>
+            <tr>
+              <td colspan="7" class="customer-empty">
+                ยังไม่มีข้อมูลลูกค้า
+              </td>
+            </tr>
           {% endif %}
         </tbody>
       </table>
@@ -135,6 +138,7 @@
   <div class="customer-modal-box">
     <div class="customer-modal-head">
       <h3>เพิ่มลูกค้าใหม่</h3>
+
       <button type="button" class="modal-close-btn" onclick="closeCustomerModal()">
         <i class="bi bi-x-lg"></i>
       </button>
@@ -143,18 +147,36 @@
     <form id="addCustomerForm" class="customer-modal-form" action="/customers/create" method="post">
       <div>
         <label for="full_name">ชื่อ-นามสกุล</label>
-        <input type="text" id="full_name" name="full_name" placeholder="กรอกชื่อ-นามสกุล" required>
+        <input
+          type="text"
+          id="full_name"
+          name="full_name"
+          placeholder="กรอกชื่อ-นามสกุล"
+          required
+        >
       </div>
 
       <div>
         <label for="phone">เบอร์โทรศัพท์</label>
-        <input type="text" id="phone" name="phone" placeholder="เช่น 0812345678" inputmode="numeric" maxlength="10"
-          pattern="[0-9]+" required>
+        <input
+          type="text"
+          id="phone"
+          name="phone"
+          placeholder="เช่น 0812345678"
+          inputmode="numeric"
+          maxlength="10"
+          pattern="[0-9]+"
+          required
+        >
       </div>
 
       <div>
         <label for="address">ที่อยู่</label>
-        <textarea id="address" name="address" placeholder="กรอกที่อยู่ลูกค้า"></textarea>
+        <textarea
+          id="address"
+          name="address"
+          placeholder="กรอกที่อยู่ลูกค้า"
+        ></textarea>
       </div>
 
       <div class="customer-modal-actions">
@@ -175,6 +197,7 @@
   <div class="customer-modal-box">
     <div class="customer-modal-head">
       <h3>แก้ไขข้อมูลลูกค้า</h3>
+
       <button type="button" class="modal-close-btn" onclick="closeEditCustomerModal()">
         <i class="bi bi-x-lg"></i>
       </button>
@@ -183,18 +206,36 @@
     <form id="editCustomerForm" class="customer-modal-form" action="#" method="post">
       <div>
         <label for="edit_full_name">ชื่อ-นามสกุล</label>
-        <input type="text" id="edit_full_name" name="full_name" placeholder="กรอกชื่อ-นามสกุล" required>
+        <input
+          type="text"
+          id="edit_full_name"
+          name="full_name"
+          placeholder="กรอกชื่อ-นามสกุล"
+          required
+        >
       </div>
 
       <div>
         <label for="edit_phone">เบอร์โทรศัพท์</label>
-        <input type="text" id="edit_phone" name="phone" placeholder="เช่น 0812345678" inputmode="numeric" maxlength="10"
-          pattern="[0-9]+" required>
+        <input
+          type="text"
+          id="edit_phone"
+          name="phone"
+          placeholder="เช่น 0812345678"
+          inputmode="numeric"
+          maxlength="10"
+          pattern="[0-9]+"
+          required
+        >
       </div>
 
       <div>
         <label for="edit_address">ที่อยู่</label>
-        <textarea id="edit_address" name="address" placeholder="กรอกที่อยู่ลูกค้า"></textarea>
+        <textarea
+          id="edit_address"
+          name="address"
+          placeholder="กรอกที่อยู่ลูกค้า"
+        ></textarea>
       </div>
 
       <input type="hidden" name="note" value="">
@@ -228,19 +269,21 @@
 
   const customerSearch = document.getElementById("customerSearch");
   const customersTable = document.getElementById("customersTable");
-const phoneInput = document.getElementById("phone");
-const editPhoneOnlyInput = document.getElementById("edit_phone");
 
-function allowOnlyNumber(input) {
-  if (!input) return;
+  const phoneInput = document.getElementById("phone");
+  const editPhoneOnlyInput = document.getElementById("edit_phone");
 
-  input.addEventListener("input", function () {
-    this.value = this.value.replace(/[^0-9]/g, "");
-  });
-}
+  function allowOnlyNumber(input) {
+    if (!input) return;
 
-allowOnlyNumber(phoneInput);
-allowOnlyNumber(editPhoneOnlyInput);
+    input.addEventListener("input", function () {
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
+  }
+
+  allowOnlyNumber(phoneInput);
+  allowOnlyNumber(editPhoneOnlyInput);
+
   function openCustomerModal() {
     if (customerModal) {
       customerModal.classList.add("show");

@@ -8,41 +8,27 @@
 <p class="page-subtitle">อัปโหลดรูปภาพเพื่อให้ระบบช่วยวิเคราะห์ประเภทพลาสติก</p>
 {% endblock %}
 
+{% block page_actions %}
+{% if model_loaded %}
+  <span class="status-pill status-ready">
+    <i class="bi bi-check-circle-fill"></i>
+    โมเดลพร้อมใช้งาน
+  </span>
+{% else %}
+  <span class="status-pill status-not-ready">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    โมเดลยังไม่พร้อม
+  </span>
+{% endif %}
+{% endblock %}
+
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}?v=20260521">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}?v=20260523-ui">
 {% endblock %}
 
 {% block content %}
 <section class="ai-page">
-
-  <section class="ai-hero">
-    <div class="ai-hero-icon">
-      <i class="bi bi-camera"></i>
-    </div>
-
-    <div class="ai-hero-text">
-      <h3>ระบบตรวจจับชนิดพลาสติก</h3>
-      <p>
-        เลือกรูปภาพพลาสติก 1 รูป เพื่อให้ AI วิเคราะห์ประเภท เช่น PET, HDPE, PVC, LDPE, PP และ PS
-      </p>
-    </div>
-
-    <div class="ai-model-status">
-      {% if model_loaded %}
-        <span class="status-pill status-ready">
-          <i class="bi bi-check-circle-fill"></i>
-          โมเดลพร้อมใช้งาน
-        </span>
-      {% else %}
-        <span class="status-pill status-not-ready">
-          <i class="bi bi-exclamation-triangle-fill"></i>
-          โมเดลยังไม่พร้อม
-        </span>
-      {% endif %}
-    </div>
-  </section>
-
-  {% if not model_loaded %}
+{% if not model_loaded %}
   <section class="ai-warning-box">
     <i class="bi bi-info-circle"></i>
     <p>

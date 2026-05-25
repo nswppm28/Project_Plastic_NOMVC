@@ -5,7 +5,8 @@ app.py แบบรวมไฟล์เดียว
 - templates, static, sql ยังใช้โครงสร้างเดิม
 - รันด้วยคำสั่ง: python app.py
 """
-
+import time
+from pathlib import Path
 import os
 import json
 import traceback
@@ -39,6 +40,37 @@ except ModuleNotFoundError:
 # =========================================================
 
 app = Flask(__name__)
+import time
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
+app.jinja_env.auto_reload = True
+
+
+@app.context_processor
+def inject_asset_version():
+    def asset_version(filename):
+        file_path = BASE_DIR / "static" / filename
+
+        try:
+            return int(file_path.stat().st_mtime)
+        except OSError:
+            return int(time.time())
+
+    return {
+        "asset_version": asset_version
+    }
+
+
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response 
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "plastic-buyback-secret-key")
 
 MYSQL_PASSWORD = os.getenv("DB_PASSWORD") or "Nam640710768"

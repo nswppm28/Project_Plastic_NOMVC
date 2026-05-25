@@ -9,28 +9,11 @@
 {% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/receipt_history.css') }}?v=20260425">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/receipt_history.css') }}?v=20260523-ui">
 {% endblock %}
 
 {% block content %}
 <section class="history-page">
-
-  <!-- ส่วนหัวของหน้า -->
-
-<!-- ส่วนหัวของหน้า -->
-<section class="history-card history-header-card">
-  <div class="history-header-row">
-    <div class="history-icon">
-      <i class="bi bi-clock-history"></i>
-    </div>
-
-    <div class="history-header-text">
-      <h3>ประวัติใบเสร็จรับซื้อ</h3>
-      <p>ค้นหาและดูรายการรับซื้อย้อนหลังของลูกค้าแต่ละคน</p>
-    </div>
-  </div>
-</section>
-
   <!-- ค้นหาข้อมูล -->
   <section class="history-card">
     <form class="history-search-form" method="get" action="{{ url_for('receipt_history_page') }}">

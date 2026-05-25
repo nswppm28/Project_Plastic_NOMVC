@@ -204,3 +204,62 @@ body {
     font-size: 27px;
   }
 }
+/* =========================================================
+   LOGIN POLISH 2026-05-23
+   ========================================================= */
+body {
+  font-family: "Inter", "Kanit", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(25, 135, 84, 0.18), transparent 32%),
+    linear-gradient(135deg, #f4f8f6 0%, #e9f3ee 100%);
+}
+
+.login-card {
+  max-width: 400px;
+  padding: 34px 30px;
+  border: 1px solid #dfe8e3;
+  border-radius: 24px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
+}
+
+.login-logo {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 18px;
+  border-radius: 20px;
+  font-size: 31px;
+}
+
+.login-card h1 {
+  margin-bottom: 24px;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.login-form {
+  gap: 16px;
+}
+
+.form-group label {
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.input-box {
+  height: 50px;
+  border-radius: 14px;
+}
+
+.login-btn {
+  height: 50px;
+  border-radius: 14px;
+  background: #198754;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.login-btn:hover {
+  background: #157347;
+  box-shadow: 0 10px 22px rgba(25, 135, 84, 0.22);
+}
