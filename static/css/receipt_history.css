@@ -13,8 +13,16 @@
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
 }
 
+/* แก้กรอบขาวซ้อนจาก theme กลาง แต่คงขนาดเดิม */
+body .content-area .history-search-box,
+body .content-area .history-table-wrap {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
 
-/* ================= HEADER ================= */
 /* ================= HISTORY HEADER ================= */
 
 .history-header-card {
@@ -55,7 +63,350 @@
   margin: 0;
   color: #6b7280;
   font-size: 14px;
+  font-weight: 500;
   line-height: 1.55;
+}
+
+/* ================= SEARCH 
+   ปรับให้เหมือนหน้า customers
+================= */
+
+.history-search-form {
+  display: block;
+  width: 100%;
+}
+
+/* ซ่อนปุ่มค้นหา/ล้าง เพื่อให้เป็นช่องค้นหาเดียวแบบหน้า customers */
+.history-search-form > .btn,
+.history-search-form > button,
+.history-search-form > a.btn {
+  display: none !important;
+}
+
+.history-search-box {
+  position: relative;
+  width: 100%;
+}
+
+.history-search-box i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  z-index: 1;
+
+  transform: translateY(-50%);
+
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.history-search-box input {
+  width: 100%;
+  padding: 14px 16px 14px 46px;
+
+  border: 1px solid #d8e3dd !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  color: #102033 !important;
+
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+
+  outline: none;
+  box-shadow: none !important;
+  transition: 0.18s ease;
+}
+
+.history-search-box input:focus {
+  border-color: #198754 !important;
+  box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.08) !important;
+}
+
+.history-search-box input::placeholder {
+  color: #94a3b8;
+}
+
+/* ================= BUTTONS ================= */
+
+.history-page .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 42px;
+  padding: 11px 18px;
+
+  border: none;
+  border-radius: 13px;
+
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+
+  transition: 0.18s ease;
+}
+
+.history-page .btn:hover {
+  transform: translateY(-1px);
+}
+
+.history-page .btn-primary {
+  background: #198754;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(25, 135, 84, 0.18);
+}
+
+.history-page .btn-primary:hover {
+  background: #157347;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(25, 135, 84, 0.24);
+}
+
+.history-page .btn-light {
+  background: #ffffff;
+  color: #102033;
+  border: 1px solid #d8e3dd;
+}
+
+.history-page .btn-light:hover {
+  background: #f5f8f6;
+}
+
+.history-page .btn-sm {
+  min-height: 36px;
+  padding: 9px 13px;
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* ================= TABLE TOP ================= */
+
+.history-list-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.history-list-head h3 {
+  margin: 0;
+  color: #102033;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.history-list-head span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 13px;
+  border-radius: 999px;
+
+  background: #e9f7ef;
+  color: #198754;
+
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ================= TABLE ================= */
+
+.history-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  min-width: 1050px;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  background: transparent !important;
+}
+
+.history-table th,
+.history-table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+.history-table th {
+  background: #f5f8f6 !important;
+  color: #5f6b66;
+  border-bottom: 1px solid #e6eee9;
+
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.history-table th:first-child {
+  border-radius: 15px 0 0 15px;
+}
+
+.history-table th:last-child {
+  border-radius: 0 15px 15px 0;
+}
+
+.history-table tbody tr {
+  background: transparent;
+  transition: 0.18s ease;
+}
+
+.history-table tbody tr:hover td {
+  background: #fbfdfc;
+}
+
+.history-table td {
+  color: #102033;
+  background: #ffffff;
+
+  border-top: 1px solid #edf1ef;
+  border-bottom: 1px solid #edf1ef;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.history-table td:first-child {
+  border-left: 1px solid #edf1ef;
+  border-radius: 15px 0 0 15px;
+}
+
+.history-table td:last-child {
+  border-right: 1px solid #edf1ef;
+  border-radius: 0 15px 15px 0;
+}
+
+/* ================= COLUMN ALIGN ================= */
+
+.history-table th:nth-child(6),
+.history-table td:nth-child(6),
+.history-table th:nth-child(7),
+.history-table td:nth-child(7) {
+  width: 145px;
+  text-align: left !important;
+  white-space: nowrap;
+}
+
+.history-table .text-right {
+  text-align: left !important;
+}
+
+.weight-cell {
+  color: #102033;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.amount-cell {
+  color: #0f5132;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ================= TABLE CONTENT ================= */
+
+.receipt-no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 11px;
+  border-radius: 999px;
+
+  background: #e9f7ef;
+  color: #07854e;
+
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+.seller-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.seller-cell strong {
+  color: #102033;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.seller-cell span {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.plastic-types {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 7px 11px;
+  border-radius: 999px;
+
+  background: #f5f8f6;
+  color: #334155;
+
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* ================= EMPTY ================= */
+
+.history-empty {
+  text-align: center;
+  padding: 38px 16px !important;
+  color: #6b7280 !important;
+}
+
+.history-empty i {
+  display: block;
+  margin-bottom: 10px;
+  color: #94a3b8;
+  font-size: 34px;
+}
+
+.history-empty p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .history-header-card,
+  .history-list-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .history-page .btn {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -81,313 +432,6 @@
 
   .history-header-text p {
     font-size: 13px;
-  }
-}
-/* ================= SEARCH ================= */
-
-.history-search-form {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 12px;
-  align-items: center;
-}
-
-.history-search-box {
-  position: relative;
-}
-
-.history-search-box i {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6b7280;
-  font-size: 17px;
-}
-
-.history-search-box input {
-  width: 100%;
-  min-height: 46px;
-  padding: 12px 14px 12px 46px;
-  border: 1px solid #d8e3dd;
-  border-radius: 14px;
-  background: #ffffff;
-  color: #102033;
-  font-size: 14px;
-  font-weight: 400;
-  outline: none;
-  transition: 0.18s ease;
-}
-
-.history-search-box input:focus {
-  border-color: #198754;
-  box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.08);
-}
-
-
-/* ================= BUTTONS ================= */
-
-.history-page .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-
-  min-height: 42px;
-  padding: 10px 16px;
-
-  border: none;
-  border-radius: 13px;
-
-  cursor: pointer;
-  text-decoration: none;
-  white-space: nowrap;
-
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-
-  transition: 0.18s ease;
-}
-
-.history-page .btn:hover {
-  transform: translateY(-1px);
-}
-
-.history-page .btn-primary {
-  background: #198754;
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(25, 135, 84, 0.16);
-}
-
-.history-page .btn-primary:hover {
-  background: #157347;
-}
-
-.history-page .btn-light {
-  background: #edf3ef;
-  color: #102033;
-  border: 1px solid #dce8e1;
-}
-
-.history-page .btn-light:hover {
-  background: #dfece5;
-}
-
-.history-page .btn-sm {
-  min-height: 34px;
-  padding: 8px 12px;
-  border-radius: 11px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-
-/* ================= TABLE TOP ================= */
-
-.history-list-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 18px;
-}
-
-.history-list-head span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 7px 13px;
-  border-radius: 999px;
-
-  background: #e9f7ef;
-  color: #198754;
-
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-
-/* ================= TABLE ================= */
-
-.history-table-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.history-table {
-  width: 100%;
-  min-width: 1050px;
-  border-collapse: separate;
-  border-spacing: 0 8px;
-}
-
-.history-table th,
-.history-table td {
-  padding: 14px 16px;
-  vertical-align: middle;
-}
-
-.history-table th {
-  background: #f5f8f6;
-  color: #5f6b66;
-  border-bottom: 1px solid #e6eee9;
-
-  font-size: 13px;
-  font-weight: 700;
-  text-align: left;
-}
-
-.history-table td {
-  color: #102033;
-  border-top: 1px solid #edf1ef;
-  border-bottom: 1px solid #edf1ef;
-
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.45;
-}
-
-.history-table tbody tr {
-  background: #ffffff;
-  transition: 0.18s ease;
-}
-
-.history-table tbody tr:hover {
-  background: #fbfdfc;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
-}
-
-.history-table td:first-child {
-  border-left: 1px solid #edf1ef;
-  border-radius: 15px 0 0 15px;
-}
-
-.history-table td:last-child {
-  border-right: 1px solid #edf1ef;
-  border-radius: 0 15px 15px 0;
-}
-
-
-/* ================= COLUMN ALIGN ================= */
-
-/* คอลัมน์ 6 = น้ำหนัก, คอลัมน์ 7 = ยอดรวม */
-.history-table th:nth-child(6),
-.history-table td:nth-child(6),
-.history-table th:nth-child(7),
-.history-table td:nth-child(7) {
-  width: 145px;
-  text-align: left !important;
-  white-space: nowrap;
-}
-
-.history-table .text-right {
-  text-align: left !important;
-}
-
-.weight-cell {
-  color: #102033;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.amount-cell {
-  color: #0f5132;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-
-/* ================= TABLE CONTENT ================= */
-
-.receipt-no {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 7px 11px;
-  border-radius: 999px;
-
-  background: #e9f7ef;
-  color: #07854e;
-
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-}
-
-.seller-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.seller-cell strong {
-  color: #102033;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.seller-cell span {
-  color: #6b7280;
-  font-size: 13px;
-  font-weight: 400;
-}
-
-.plastic-types {
-  display: inline-flex;
-  align-items: center;
-
-  padding: 7px 11px;
-  border-radius: 999px;
-
-  background: #f5f8f6;
-  color: #334155;
-
-  font-size: 13px;
-  font-weight: 700;
-}
-
-
-/* ================= EMPTY ================= */
-
-.history-empty {
-  text-align: center;
-  padding: 38px 16px !important;
-  color: #6b7280 !important;
-}
-
-.history-empty i {
-  display: block;
-  margin-bottom: 10px;
-  color: #94a3b8;
-  font-size: 34px;
-}
-
-.history-empty p {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 900px) {
-  .history-search-form {
-    grid-template-columns: 1fr;
-  }
-
-  .history-header-card,
-  .history-list-head {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .history-page .btn {
-    width: 100%;
   }
 }
 

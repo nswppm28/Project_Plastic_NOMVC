@@ -4,28 +4,101 @@
 
 {% block page_heading %}จัดการประเภทพลาสติกและราคา{% endblock %}
 
-{% block page_subtitle %}
-<p class="page-subtitle">กำหนดประเภทย่อยและราคารับซื้อพลาสติกแต่ละชนิด</p>
+{% block page_actions %}
+<label for="addPlasticModalToggle" class="page-action-btn primary">
+  <i class="bi bi-plus-circle"></i>
+  เพิ่มพลาสติกใหม่
+</label>
 {% endblock %}
 
-{% block page_actions %}{% endblock %}
-
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260525-buttons-back">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/plastic_types.css') }}?v=20260527-plastic-types-search-force">
+
+<style>
+  /* =========================================================
+     Plastic Types Search Override
+     ใช้เฉพาะหน้า /plastic-types
+     ทำช่องค้นหาให้ขนาดเท่าหน้า customers
+  ========================================================= */
+
+  html body .app-shell .main-area .content-area .plastic-search-card {
+    width: 100% !important;
+    padding: 24px !important;
+
+    background: #ffffff !important;
+    border: 1px solid #dfe8e3 !important;
+    border-radius: 22px !important;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04) !important;
+    backdrop-filter: none !important;
+  }
+
+  html body .app-shell .main-area .content-area .plastic-search-box {
+    position: relative !important;
+
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  html body .app-shell .main-area .content-area .plastic-search-box i {
+    position: absolute !important;
+    left: 16px !important;
+    top: 50% !important;
+    z-index: 1 !important;
+
+    transform: translateY(-50%) !important;
+
+    color: #6b7280 !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    pointer-events: none !important;
+  }
+
+  html body .app-shell .main-area .content-area .plastic-search-box input {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+
+    padding: 14px 16px 14px 46px !important;
+
+    background: #ffffff !important;
+    color: #102033 !important;
+
+    border: 1px solid #d8e3dd !important;
+    border-radius: 14px !important;
+
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    line-height: normal !important;
+
+    outline: none !important;
+    box-shadow: none !important;
+    transition: 0.18s ease !important;
+  }
+
+  html body .app-shell .main-area .content-area .plastic-search-box input:focus {
+    border-color: #198754 !important;
+    box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.08) !important;
+  }
+
+  html body .app-shell .main-area .content-area .plastic-search-box input::placeholder {
+    color: #94a3b8 !important;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
 
 {% macro plastic_row(plastic_type, subtype=None) %}
-  {% set type_id = plastic_type.id|default(plastic_type.type_id, true) %}
   {% set type_code = plastic_type.code|default(plastic_type.type_code, true) %}
-  {% set type_name_th = plastic_type.type_name_th|default(type_code, true) %}
-  {% set type_name_en = plastic_type.full_name|default(plastic_type.type_name_en, true) %}
+  {% set type_name_th = plastic_type.type_name_th|default(plastic_type.name_th|default(type_code, true), true) %}
 
   {% if subtype %}
     {% set subtype_id = subtype.id|default(subtype.subtype_id, true) %}
     {% set subtype_name = subtype.name|default(subtype.subtype_name, true) %}
-    {% set subtype_code = subtype.code|default(subtype.subtype_code, true) %}
     {% set unit_price = subtype.price|default(subtype.unit_price|default(0, true), true) %}
     {% set form_id = 'price-form-' ~ subtype_id %}
   {% endif %}
@@ -37,16 +110,14 @@
 
     <td>
       {% if subtype %}
-        <div class="subtype-name">{{ subtype_name }}</div>
-        <div class="subtype-code">{{ subtype_code }}</div>
+        <span class="subtype-name">{{ subtype_name }}</span>
       {% else %}
         <span class="muted-text">ยังไม่มีประเภทย่อย</span>
       {% endif %}
     </td>
 
     <td>
-      <div class="plastic-name-th">{{ type_name_th }}</div>
-      <div class="plastic-full-name">{{ type_name_en }}</div>
+      <span class="plastic-name-th">{{ type_name_th }}</span>
     </td>
 
     <td>
@@ -93,71 +164,73 @@
   </tr>
 {% endmacro %}
 
-<div class="plastic-page">
+<section class="plastic-page">
 
   <input type="checkbox" id="addPlasticModalToggle" class="plastic-modal-toggle">
-  
-  <!-- HEADER CARD -->
-  <section class="plastic-header-card">
-    <div class="plastic-header-left">
-      <div class="plastic-header-icon">
-        <i class="bi bi-tags"></i>
-      </div>
 
-      <div class="plastic-header-text">
-        {% set plastic_type_count = catalog|length if catalog is defined and catalog else 0 %}
-        <h3>ประเภทพลาสติกหลัก {{ plastic_type_count }} ชนิด</h3>
-        <p>PET, HDPE, PVC, LDPE, PP และ PS พร้อมประเภทย่อยและราคาซื้อ</p>
-      </div>
+  <section class="plastic-search-card">
+    <div class="plastic-search-box">
+      <i class="bi bi-search"></i>
+      <input
+        id="plasticSearch"
+        type="text"
+        placeholder="ค้นหาพลาสติก เช่น PET, HDPE, ขวดใส, ขวดขาวขุ่น หรือชื่อประเภท"
+        autocomplete="off"
+      >
     </div>
-
-    <label for="addPlasticModalToggle" class="btn-open-plastic-modal">
-      <i class="bi bi-plus-circle"></i>
-      เพิ่มพลาสติกใหม่
-    </label>
   </section>
-<section class="plastic-table-card">
-    <div class="plastic-table-wrap">
-      <table class="plastic-table">
-        <colgroup>
-          <col style="width: 12%;">
-          <col style="width: 25%;">
-          <col style="width: 27%;">
-          <col style="width: 22%;">
-          <col style="width: 14%;">
-        </colgroup>
 
-        <thead>
-          <tr>
-            <th>ประเภทหลัก</th>
-            <th>ประเภทย่อย</th>
-            <th>ชื่อเต็ม</th>
-            <th>ราคารับซื้อ</th>
-            <th class="text-center">จัดการ</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% if catalog is defined and catalog %}
-            {% for plastic_type in catalog %}
-              {% if plastic_type.subtypes %}
-                {% for subtype in plastic_type.subtypes %}
-                  {{ plastic_row(plastic_type, subtype) }}
-                {% endfor %}
-              {% else %}
-                {{ plastic_row(plastic_type) }}
-              {% endif %}
-            {% endfor %}
-          {% else %}
-            <tr>
-              <td colspan="5" class="empty-state">
-                ยังไม่มีข้อมูลประเภทพลาสติก
-              </td>
-            </tr>
-          {% endif %}
-        </tbody>
-      </table>
+  <section class="plastic-table-section">
+    <div class="plastic-table-head">
+      <h3>รายการประเภทพลาสติก</h3>
+      <span id="plasticResultCount">0 รายการ</span>
     </div>
+
+    <table class="plastic-table" id="plasticTypesTable">
+      <colgroup>
+        <col class="col-type">
+        <col class="col-subtype">
+        <col class="col-fullname">
+        <col class="col-price">
+        <col class="col-action">
+      </colgroup>
+
+      <thead>
+        <tr>
+          <th>ประเภทหลัก</th>
+          <th>ประเภทย่อย</th>
+          <th>ชื่อประเภท</th>
+          <th>ราคารับซื้อ</th>
+          <th class="text-center">จัดการ</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% if catalog is defined and catalog %}
+          {% for plastic_type in catalog %}
+            {% if plastic_type.subtypes %}
+              {% for subtype in plastic_type.subtypes %}
+                {{ plastic_row(plastic_type, subtype) }}
+              {% endfor %}
+            {% else %}
+              {{ plastic_row(plastic_type) }}
+            {% endif %}
+          {% endfor %}
+
+          <tr id="plasticNoResultRow" style="display: none;">
+            <td colspan="5" class="empty-state">
+              ไม่พบประเภทพลาสติกที่ตรงกับคำค้นหา
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5" class="empty-state">
+              ยังไม่มีข้อมูลประเภทพลาสติก
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
   </section>
 
   <div class="plastic-modal-layer">
@@ -167,7 +240,6 @@
       <div class="plastic-modal-head">
         <div>
           <h2>เพิ่มพลาสติกใหม่</h2>
-          <p>เพิ่มประเภทย่อยและกำหนดราคารับซื้อเริ่มต้น</p>
         </div>
 
         <label for="addPlasticModalToggle" class="plastic-modal-close">
@@ -186,7 +258,7 @@
               {% for plastic_type in catalog %}
                 {% set type_id = plastic_type.id|default(plastic_type.type_id, true) %}
                 {% set type_code = plastic_type.code|default(plastic_type.type_code, true) %}
-                {% set type_name = plastic_type.type_name_th|default(plastic_type.full_name, true) %}
+                {% set type_name = plastic_type.type_name_th|default(plastic_type.name_th|default(type_code, true), true) %}
 
                 <option value="{{ type_id }}">
                   {{ type_code }} - {{ type_name }}
@@ -247,7 +319,58 @@
     </div>
   </div>
 
-</div>
+</section>
 {% endblock %}
 
+{% block script_extra %}
+<script>
+  const plasticSearch = document.getElementById("plasticSearch");
+  const plasticTypesTable = document.getElementById("plasticTypesTable");
+  const plasticResultCount = document.getElementById("plasticResultCount");
+  const plasticNoResultRow = document.getElementById("plasticNoResultRow");
 
+  function normalizePlasticText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function filterPlasticTypes() {
+    if (!plasticSearch || !plasticTypesTable) return;
+
+    const keyword = normalizePlasticText(plasticSearch.value);
+    const rows = plasticTypesTable.querySelectorAll("tbody tr.plastic-row");
+
+    let visibleCount = 0;
+
+    rows.forEach(function (row) {
+      const rowText = normalizePlasticText(row.textContent);
+      const matched = rowText.includes(keyword);
+
+      row.style.display = matched ? "" : "none";
+
+      if (matched) {
+        visibleCount += 1;
+      }
+    });
+
+    if (plasticNoResultRow) {
+      plasticNoResultRow.style.display =
+        visibleCount === 0 && rows.length > 0 ? "" : "none";
+    }
+
+    if (plasticResultCount) {
+      plasticResultCount.textContent = keyword
+        ? visibleCount + " รายการที่พบ"
+        : rows.length + " รายการ";
+    }
+  }
+
+  if (plasticSearch) {
+    plasticSearch.addEventListener("input", filterPlasticTypes);
+  }
+
+  filterPlasticTypes();
+</script>
+{% endblock %}

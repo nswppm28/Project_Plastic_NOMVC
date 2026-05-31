@@ -5,14 +5,74 @@
 {% block page_heading %}สต๊อกพลาสติกคงเหลือ{% endblock %}
 
 {% block page_subtitle %}
-<p class="page-subtitle">แสดงข้อมูลสรุปจากคลังสินค้าและประวัติการเปลี่ยนแปลงของสต๊อก</p>
+<p class="page-subtitle">แสดงน้ำหนักคงเหลือ สถานะสินค้า และจัดการจำหน่ายออกจากคลัง</p>
 {% endblock %}
 
 {% block page_actions %}
+<a href="{{ url_for('stock_export_page') }}" class="stock-top-export-btn">
+  <i class="bi bi-plus-circle"></i>
+  จำหน่ายออก
+</a>
 {% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/stock.css') }}?v=20260525-stock-clean-equal">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/stock.css') }}?v={{ asset_version('css/stock.css') }}">
+
+<style>
+  html body .stock-top-export-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+
+    min-height: 46px !important;
+    padding: 0 20px !important;
+
+    border: none !important;
+    border-radius: 14px !important;
+    background: #15945f !important;
+    color: #ffffff !important;
+
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+
+    box-shadow: 0 10px 22px rgba(21, 148, 95, 0.24) !important;
+    transition: 0.18s ease !important;
+  }
+
+  html body .stock-top-export-btn i {
+    color: #ffffff !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+  }
+
+  html body .stock-top-export-btn:hover {
+    background: #128454 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 12px 26px rgba(21, 148, 95, 0.3) !important;
+  }
+
+  html body .stock-top-export-btn:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 7px 16px rgba(21, 148, 95, 0.22) !important;
+  }
+
+  @media (max-width: 768px) {
+    html body .stock-top-export-btn {
+      min-height: 42px !important;
+      padding: 0 16px !important;
+      font-size: 13px !important;
+    }
+
+    html body .stock-top-export-btn i {
+      font-size: 16px !important;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -33,13 +93,13 @@
 
 <section class="stock-page">
 
-  <section class="stock-summary-grid">
+  <section class="stock-summary-grid" aria-label="สรุปข้อมูลคลังสินค้า">
     <article class="stock-summary-card">
       <div class="stock-summary-icon green">
         <i class="bi bi-box-seam"></i>
       </div>
       <div class="stock-summary-text">
-        <span>รายการประเภทย่อย</span>
+        <span>ประเภทย่อยทั้งหมด</span>
         <strong>{{ ns.total_items }} รายการ</strong>
       </div>
     </article>
@@ -77,23 +137,11 @@
 
   <section class="stock-card">
     <div class="stock-card-head">
-      <div>
-        <h3>สรุปคลังสินค้า</h3>
-        <p>น้ำหนักสะสมของพลาสติกแต่ละประเภทย่อยในคลังสินค้า</p>
-      </div>
+      <h3>สรุปคลังสินค้า</h3>
     </div>
 
     <div class="stock-table-wrap">
       <table class="stock-table stock-summary-table">
-        <colgroup>
-          <col>
-          <col>
-          <col>
-          <col>
-          <col>
-          <col>
-        </colgroup>
-
         <thead>
           <tr>
             <th>ประเภทหลัก</th>
@@ -101,7 +149,6 @@
             <th>น้ำหนักคงเหลือ</th>
             <th>อัปเดตล่าสุด</th>
             <th>สถานะ</th>
-            <th>จัดการ</th>
           </tr>
         </thead>
 
@@ -121,19 +168,23 @@
                 {% set status_class = 'empty' %}
               {% endif %}
 
-              <tr class="stock-row type-{{ item.type_code|lower }}">
+              <tr class="stock-row type-{{ item.type_code|default('other')|lower }}">
                 <td>
-                  <span class="stock-type-badge type-{{ item.type_code|lower }}">
-                    {{ item.type_code }}
+                  <span class="stock-type-badge">
+                    {{ item.type_code or '-' }}
                   </span>
                 </td>
 
                 <td>
-                  <strong class="stock-subtype-name">{{ item.subtype_name }}</strong>
+                  <strong class="stock-subtype-name">
+                    {{ item.subtype_name or '-' }}
+                  </strong>
                 </td>
 
                 <td>
-                  <strong class="stock-weight">{{ "%.2f"|format(weight) }} กก.</strong>
+                  <strong class="stock-weight">
+                    {{ "%.2f"|format(weight) }} กก.
+                  </strong>
                 </td>
 
                 <td>
@@ -147,27 +198,11 @@
                     {{ status_text }}
                   </span>
                 </td>
-
-                <td>
-                  {% if weight > 0 %}
-                    <a
-                      href="{{ url_for('stock_export_page') }}?subtype_id={{ item.subtype_id }}"
-                      class="stock-row-action"
-                    >
-                      <i class="bi bi-truck"></i>
-                      จำหน่ายออก
-                    </a>
-                  {% else %}
-                    <span class="stock-muted-small">
-                      ไม่มีสินค้า
-                    </span>
-                  {% endif %}
-                </td>
               </tr>
             {% endfor %}
           {% else %}
             <tr>
-              <td colspan="6" class="stock-empty">
+              <td colspan="5" class="stock-empty">
                 ยังไม่มีข้อมูลสินค้าในคลัง
               </td>
             </tr>
@@ -177,87 +212,6 @@
     </div>
   </section>
 
-  <section class="stock-card">
-    <div class="stock-card-head">
-      <div>
-        <h3>ประวัติการเคลื่อนไหวของสต๊อก</h3>
-        <p>ตรวจสอบย้อนหลังว่าสต๊อกเพิ่มหรือลดจากรายการใด</p>
-      </div>
-    </div>
-
-    <div class="stock-table-wrap">
-      <table class="stock-table movement-table">
-        <thead>
-          <tr>
-            <th>วันที่</th>
-            <th>ประเภทหลัก</th>
-            <th>ประเภทย่อย</th>
-            <th>การเคลื่อนไหว</th>
-            <th>เพิ่ม/ลด</th>
-            <th>คงเหลือหลังรายการ</th>
-            <th>หมายเหตุ</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% if stock_movements %}
-            {% for movement in stock_movements %}
-              {% if movement.movement_type in ['SALE_OUT', 'EXPORT_OUT'] %}
-                {% set movement_text = 'จำหน่ายออก' %}
-                {% set movement_class = 'out' %}
-              {% elif movement.movement_type in ['SALE_OUT_CANCEL'] %}
-                {% set movement_text = 'คืนสินค้า' %}
-                {% set movement_class = 'return' %}
-              {% else %}
-                {% set movement_text = 'รับเข้า' %}
-                {% set movement_class = 'in' %}
-              {% endif %}
-
-              <tr class="movement-row movement-{{ movement_class }}">
-                <td>
-                  <span class="stock-date">{{ movement.created_at or '-' }}</span>
-                </td>
-
-                <td>
-                  <span class="stock-type-badge type-{{ movement.type_code|lower }}">
-                    {{ movement.type_code }}
-                  </span>
-                </td>
-
-                <td>
-                  <strong class="stock-subtype-name">{{ movement.subtype_name }}</strong>
-                </td>
-
-                <td>
-                  <span class="movement-badge {{ movement_class }}">
-                    {{ movement_text }}
-                  </span>
-                </td>
-
-                <td>
-                  <strong>{{ "%.2f"|format(movement.quantity_kg|float) }} กก.</strong>
-                </td>
-
-                <td>
-                  <strong>{{ "%.2f"|format(movement.balance_after_kg|float) }} กก.</strong>
-                </td>
-
-                <td>
-                  <span class="stock-note">{{ movement.note or '-' }}</span>
-                </td>
-              </tr>
-            {% endfor %}
-          {% else %}
-            <tr>
-              <td colspan="7" class="stock-empty">
-                ยังไม่มีประวัติการเคลื่อนไหวของสต๊อก
-              </td>
-            </tr>
-          {% endif %}
-        </tbody>
-      </table>
-    </div>
-  </section>
-
 </section>
+
 {% endblock %}

@@ -9,35 +9,22 @@
 {% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/receipt_history.css') }}?v=20260523-ui">
+<link rel="stylesheet"
+  href="{{ url_for('static', filename='css/receipt_history.css') }}?v={{ asset_version('css/receipt_history.css') }}">
 {% endblock %}
 
 {% block content %}
 <section class="history-page">
-  <!-- ค้นหาข้อมูล -->
+
+  <!-- ค้นหาข้อมูลแบบทันที -->
   <section class="history-card">
-    <form class="history-search-form" method="get" action="{{ url_for('receipt_history_page') }}">
+    <div class="history-search-form">
       <div class="history-search-box">
         <i class="bi bi-search"></i>
-        <input
-          type="text"
-          name="q"
-          value="{{ receipt_search or '' }}"
-          placeholder="ค้นหา ชื่อลูกค้า เบอร์โทร รหัสลูกค้า เลขใบเสร็จ"
-        >
+        <input id="receiptHistorySearch" type="text" value="{{ receipt_search or '' }}"
+          placeholder="ค้นหาลูกค้า เช่น ชื่อ เบอร์โทร หรือรหัสลูกค้า" autocomplete="off">
       </div>
-
-      <button type="submit" class="btn btn-primary">
-        <i class="bi bi-search"></i>
-        ค้นหา
-      </button>
-
-      {% if receipt_search %}
-      <a href="{{ url_for('receipt_history_page') }}" class="btn btn-light">
-        ล้างค้นหา
-      </a>
-      {% endif %}
-    </form>
+    </div>
   </section>
 
   <!-- ตารางประวัติใบเสร็จ -->
@@ -47,11 +34,13 @@
         <h3>รายการรับซื้อย้อนหลัง</h3>
       </div>
 
-      <span>{{ receipt_history|length if receipt_history else 0 }} รายการ</span>
+      <span id="receiptHistoryCount">
+        {{ receipt_history|length if receipt_history else 0 }} รายการ
+      </span>
     </div>
 
     <div class="history-table-wrap">
-      <table class="history-table">
+      <table class="history-table" id="receiptHistoryTable">
         <thead>
           <tr>
             <th>เลขใบเสร็จ</th>
@@ -67,57 +56,65 @@
 
         <tbody>
           {% if receipt_history %}
-            {% for item in receipt_history %}
-            <tr>
-              <td>
-                <span class="receipt-no">
-                  {{ item.receipt_no or '-' }}
-                </span>
-              </td>
+          {% for item in receipt_history %}
+          <tr class="receipt-history-row">
+            <td>
+              <span class="receipt-no">
+                {{ item.receipt_no or '-' }}
+              </span>
+            </td>
 
-              <td>{{ item.receipt_date }}</td>
+            <td>
+              {{ item.receipt_date or '-' }}
+            </td>
 
-              <td>
-                <div class="seller-cell">
-                  <strong>{{ item.customer_name }}</strong>
-                  <span>{{ item.customer_code }}</span>
-                </div>
-              </td>
+            <td>
+              <div class="seller-cell">
+                <strong>{{ item.customer_name or '-' }}</strong>
+                <span>{{ item.customer_code or '-' }}</span>
+              </div>
+            </td>
 
-              <td>{{ item.phone or '-' }}</td>
+            <td>
+              {{ item.phone or '-' }}
+            </td>
 
-              <td>
-                <span class="plastic-types">
-                  {{ item.plastic_types or '-' }}
-                </span>
-              </td>
+            <td>
+              <span class="plastic-types">
+                {{ item.plastic_types or '-' }}
+              </span>
+            </td>
 
-              <td class="text-right weight-cell">
-                {{ "%.2f"|format(item.total_weight_kg|float) }} กก.
-              </td>
+            <td class="text-right weight-cell">
+              {{ "%.2f"|format(item.total_weight_kg|float) }} กก.
+            </td>
 
-              <td class="text-right amount-cell">
-                ฿ {{ "{:,.2f}".format(item.total_amount|float) }}
-              </td>
+            <td class="text-right amount-cell">
+              ฿ {{ "{:,.2f}".format(item.total_amount|float) }}
+            </td>
 
-              <td>
-                <a
-                  class="btn btn-primary btn-sm"
-                  href="{{ url_for('receipt_page', purchase_id=item.purchase_id) }}"
-                >
-                  <i class="bi bi-receipt"></i>
-                  ดูใบเสร็จ
-                </a>
-              </td>
-            </tr>
-            {% endfor %}
+            <td>
+              <a class="btn btn-primary btn-sm" href="{{ url_for('receipt_page', purchase_id=item.purchase_id) }}">
+                <i class="bi bi-receipt"></i>
+                ดูใบเสร็จ
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+
+          <tr id="receiptHistoryNoResultRow" style="display: none;">
+            <td colspan="8" class="history-empty">
+              <i class="bi bi-search"></i>
+              <p>ไม่พบข้อมูลที่ตรงกับคำค้นหา</p>
+            </td>
+          </tr>
           {% else %}
-            <tr>
-              <td colspan="8" class="history-empty">
-                <i class="bi bi-inbox"></i>
-                <p>ยังไม่มีประวัติผู้ขายย้อนหลัง</p>
-              </td>
-            </tr>
+          <tr>
+            <td colspan="8" class="history-empty">
+              <i class="bi bi-inbox"></i>
+              <p>ยังไม่มีประวัติผู้ขายย้อนหลัง</p>
+            </td>
+          </tr>
           {% endif %}
         </tbody>
       </table>
@@ -125,4 +122,57 @@
   </section>
 
 </section>
+{% endblock %}
+
+{% block script_extra %}
+<script>
+  const receiptHistorySearch = document.getElementById("receiptHistorySearch");
+  const receiptHistoryTable = document.getElementById("receiptHistoryTable");
+  const receiptHistoryCount = document.getElementById("receiptHistoryCount");
+  const receiptHistoryNoResultRow = document.getElementById("receiptHistoryNoResultRow");
+
+  function normalizeText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function filterReceiptHistory() {
+    if (!receiptHistorySearch || !receiptHistoryTable) return;
+
+    const keyword = normalizeText(receiptHistorySearch.value);
+    const rows = receiptHistoryTable.querySelectorAll("tbody tr.receipt-history-row");
+
+    let visibleCount = 0;
+
+    rows.forEach(function (row) {
+      const rowText = normalizeText(row.textContent);
+      const matched = rowText.includes(keyword);
+
+      row.style.display = matched ? "" : "none";
+
+      if (matched) {
+        visibleCount += 1;
+      }
+    });
+
+    if (receiptHistoryNoResultRow) {
+      receiptHistoryNoResultRow.style.display =
+        visibleCount === 0 && rows.length > 0 ? "" : "none";
+    }
+
+    if (receiptHistoryCount) {
+      receiptHistoryCount.textContent = keyword
+        ? visibleCount + " รายการที่พบ"
+        : rows.length + " รายการ";
+    }
+  }
+
+  if (receiptHistorySearch) {
+    receiptHistorySearch.addEventListener("input", filterReceiptHistory);
+  }
+
+  filterReceiptHistory();
+</script>
 {% endblock %}

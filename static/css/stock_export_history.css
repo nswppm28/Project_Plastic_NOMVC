@@ -1,0 +1,235 @@
+/* =========================================================
+   Stock Export History Page
+   ใช้เฉพาะหน้า: /stock-export-history
+========================================================= */
+
+.export-history-page {
+  display: grid;
+  gap: 20px;
+}
+
+/* =========================================================
+   Card
+========================================================= */
+
+.export-history-page .history-card {
+  width: 100%;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dfe8e3;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+/* =========================================================
+   Header + Search
+========================================================= */
+
+.export-history-page .history-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.export-history-page .history-title h3 {
+  margin: 0 0 6px;
+  color: #102033;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.export-history-page .history-title p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.export-history-page .history-search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.export-history-page .history-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 280px;
+  min-height: 42px;
+  padding: 0 13px;
+  background: #ffffff;
+  border: 1px solid #dbe5df;
+  border-radius: 14px;
+}
+
+.export-history-page .history-search-box i {
+  color: #64748b;
+  font-size: 15px;
+}
+
+.export-history-page .history-search-box input {
+  width: 100%;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #102033;
+  font-size: 14px;
+}
+
+.export-history-page .history-search-box input::placeholder {
+  color: #94a3b8;
+}
+
+.export-history-page .history-search-box:focus-within {
+  border-color: #198754;
+  box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.1);
+}
+
+.export-history-page .history-search-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 0 !important;
+  border-radius: 14px;
+  background: #198754 !important;
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  appearance: none;
+}
+
+.export-history-page .history-search-btn:hover {
+  background: #157347 !important;
+}
+
+/* =========================================================
+   Table
+========================================================= */
+
+.export-history-page .history-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.export-history-page .history-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.export-history-page .history-table th,
+.export-history-page .history-table td {
+  padding: 14px 15px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.export-history-page .history-table th {
+  background: #f5f8f6;
+  color: #5f6b66;
+  font-weight: 900;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.export-history-page .history-table td {
+  color: #102033;
+  background: #ffffff;
+  border-top: 1px solid #edf1ef;
+  border-bottom: 1px solid #edf1ef;
+}
+
+.export-history-page .history-table tbody tr:hover td {
+  background: #fbfdfc;
+}
+
+.export-history-page .history-table td:first-child {
+  border-left: 6px solid #198754;
+  border-radius: 14px 0 0 14px;
+}
+
+.export-history-page .history-table td:last-child {
+  border-right: 1px solid #edf1ef;
+  border-radius: 0 14px 14px 0;
+}
+
+.export-history-page .history-table strong {
+  color: #102033;
+  font-weight: 900;
+}
+
+.export-history-page .history-table small {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.export-history-page .muted-text {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.export-history-page .text-right {
+  text-align: right !important;
+}
+
+.export-history-page .text-center {
+  text-align: center !important;
+}
+
+.export-history-page .history-empty {
+  padding: 32px !important;
+  text-align: center;
+  color: #64748b !important;
+  font-weight: 800;
+  background: #fbfdfc !important;
+  border-left: 1px solid #edf1ef !important;
+  border-right: 1px solid #edf1ef !important;
+  border-radius: 14px !important;
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media (max-width: 768px) {
+  .export-history-page .history-card {
+    padding: 20px;
+  }
+
+  .export-history-page .history-card-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .export-history-page .history-search-form {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .export-history-page .history-search-box {
+    width: 100%;
+  }
+
+  .export-history-page .history-search-btn {
+    width: 100%;
+  }
+
+  .export-history-page .history-table {
+    min-width: 720px;
+  }
+}

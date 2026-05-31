@@ -8,22 +8,8 @@
 <p class="page-subtitle">อัปโหลดรูปภาพเพื่อให้ระบบช่วยวิเคราะห์ประเภทพลาสติก</p>
 {% endblock %}
 
-{% block page_actions %}
-{% if model_loaded %}
-  <span class="status-pill status-ready">
-    <i class="bi bi-check-circle-fill"></i>
-    โมเดลพร้อมใช้งาน
-  </span>
-{% else %}
-  <span class="status-pill status-not-ready">
-    <i class="bi bi-exclamation-triangle-fill"></i>
-    โมเดลยังไม่พร้อม
-  </span>
-{% endif %}
-{% endblock %}
-
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}?v=20260523-ui">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}?v={{ asset_version('css/ai.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -47,7 +33,6 @@
       <div class="ai-card-head">
         <div>
           <h3>อัปโหลดรูปภาพ</h3>
-          <p>แนะนำให้ใช้รูปที่เห็นวัตถุชัดเจน พื้นหลังไม่รก และมีแสงเพียงพอ</p>
         </div>
 
         <div class="ai-card-icon">
@@ -96,7 +81,6 @@
       <div class="ai-card-head">
         <div>
           <h3>ผลการวิเคราะห์</h3>
-          <p>ผลลัพธ์จากโมเดล AI สำหรับรูปภาพที่เลือก</p>
         </div>
 
         <div class="ai-card-icon">
@@ -135,15 +119,7 @@
         </div>
       </div>
 
-      <div class="ai-tip-box">
-        <h4>
-          <i class="bi bi-lightbulb"></i>
-          คำแนะนำ
-        </h4>
-        <p>
-          ผลลัพธ์จาก AI ใช้ช่วยประกอบการคัดแยกเบื้องต้น ควรตรวจสอบจากลักษณะจริงของพลาสติกอีกครั้งก่อนนำไปบันทึกรายการรับซื้อ
-        </p>
-      </div>
+
     </div>
 
   </section>

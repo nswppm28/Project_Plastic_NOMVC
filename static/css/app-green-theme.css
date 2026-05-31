@@ -1,0 +1,508 @@
+/* =====================================================
+   App Green Theme
+   File: static/css/app-green-theme.css
+
+   เวอร์ชันแก้:
+   - คุมพื้นหลังและ header หลักของระบบ
+   - ไม่ทับ section/article ทุกหน้าแบบเดิม
+   - ไม่บังคับขนาด input/table/button ทั่วระบบแรงเกินไป
+   - ปล่อยให้ CSS รายหน้า เช่น customers.css, plastic_types.css คุมขนาดเอง
+===================================================== */
+
+:root {
+  --app-green-dark: #0b3d2e;
+  --app-green-main: #0f6b3f;
+  --app-green-soft: #198754;
+  --app-green-light: #edf9f2;
+
+  --app-bg-soft: #f3fbf6;
+  --app-bg-soft-2: #edf8f1;
+  --app-bg-soft-3: #e5f4eb;
+
+  --app-card-bg: rgba(255, 255, 255, 0.9);
+  --app-card-border: rgba(198, 228, 211, 0.95);
+
+  --app-text-dark: #10201a;
+  --app-text-muted: #64776c;
+
+  --app-shadow-card: 0 16px 38px rgba(15, 81, 50, 0.08);
+  --app-shadow-soft: 0 10px 24px rgba(15, 81, 50, 0.07);
+
+  --action-dark-bg: #169455;
+  --action-dark-bg-hover: #117a45;
+  --action-dark-border: #169455;
+  --action-dark-border-hover: #117a45;
+  --action-dark-text: #ffffff;
+  --action-dark-shadow: 0 10px 22px rgba(10, 102, 58, 0.20);
+  --action-dark-shadow-hover: 0 14px 28px rgba(10, 102, 58, 0.26);
+
+  --action-light-bg: #ffffff;
+  --action-light-bg-hover: #f3fbf7;
+  --action-light-border: #d7e8df;
+  --action-light-border-hover: #bdeed0;
+  --action-light-text: #0f3f2c;
+}
+
+/* =====================================================
+   Global Background
+===================================================== */
+
+html,
+body {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(187, 247, 208, 0.45), transparent 34%),
+    radial-gradient(circle at top right, rgba(209, 250, 229, 0.55), transparent 30%),
+    linear-gradient(135deg, var(--app-bg-soft) 0%, var(--app-bg-soft-2) 45%, var(--app-bg-soft-3) 100%) !important;
+}
+
+body {
+  color: var(--app-text-dark);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.20)),
+    radial-gradient(circle at 18% 18%, rgba(34, 197, 94, 0.10), transparent 32%),
+    radial-gradient(circle at 86% 12%, rgba(16, 185, 129, 0.10), transparent 28%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(15, 81, 50, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 81, 50, 0.045) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+body .app-shell {
+  min-height: 100vh !important;
+  background: transparent !important;
+}
+
+body .main-area {
+  min-height: 100vh !important;
+  background: transparent !important;
+  padding: 22px !important;
+  box-sizing: border-box !important;
+}
+
+body .content-area {
+  background: transparent !important;
+}
+
+/* =====================================================
+   Page Header / Topbar
+===================================================== */
+
+body .app-shell .main-area .topbar {
+  margin-bottom: 18px !important;
+}
+
+body .app-shell .main-area .topbar .page-header-box {
+  background:
+    radial-gradient(circle at 88% 18%, rgba(255, 255, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 8% 12%, rgba(74, 222, 128, 0.12), transparent 32%),
+    linear-gradient(135deg, #123f30 0%, #0d3428 48%, #08271f 100%) !important;
+
+  border: 1px solid rgba(219, 245, 229, 0.16) !important;
+  border-left: 1px solid rgba(219, 245, 229, 0.16) !important;
+  border-radius: 22px !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 38px rgba(9, 43, 31, 0.18) !important;
+
+  backdrop-filter: blur(14px);
+}
+
+body .app-shell .main-area .topbar .page-heading {
+  color: #f4fff8 !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+}
+
+body .app-shell .main-area .topbar .page-title-icon {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08)) !important;
+
+  border: 1px solid rgba(219, 245, 229, 0.22) !important;
+  border-radius: 18px !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 8px 18px rgba(0, 0, 0, 0.10) !important;
+}
+
+body .app-shell .main-area .topbar .page-title-icon i {
+  color: #dfffe9 !important;
+}
+
+body .app-shell .main-area .topbar .menu-toggle {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(219, 245, 229, 0.20) !important;
+  box-shadow: 0 8px 18px rgba(9, 43, 31, 0.12) !important;
+}
+
+/* =====================================================
+   Safe Card Defaults
+   สำคัญ: ไม่ใส่ body .content-area section / article แล้ว
+===================================================== */
+
+body .content-area .card,
+body .content-area .panel,
+body .content-area .box,
+body .content-area .table-card,
+body .content-area .data-card,
+body .content-area .form-card,
+body .content-area .content-card,
+body .content-area .dashboard-card,
+body .content-area .summary-card,
+body .content-area .stat-card,
+body .content-area .kpi-card,
+body .page-card,
+body .content-panel,
+body .main-card,
+body .form-section,
+body .list-section,
+body .stock-summary-card,
+body .purchase-form-card,
+body .customer-form-card,
+body .plastic-type-form-card {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-border);
+  border-radius: 18px;
+  box-shadow: var(--app-shadow-card);
+  backdrop-filter: blur(10px);
+}
+
+/* =====================================================
+   Safe Table Defaults
+   ไม่ทับ table รายหน้าแรงเกินไป
+===================================================== */
+
+body table {
+  background: transparent;
+}
+
+body td,
+body th {
+  border-color: #e5eee9;
+}
+
+/* =====================================================
+   Safe Forms / Inputs
+   ไม่ใช้ !important เพื่อให้ CSS รายหน้าคุมขนาดได้
+===================================================== */
+
+body input,
+body select,
+body textarea {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #d9e7df;
+  border-radius: 12px;
+}
+
+body input:focus,
+body select:focus,
+body textarea:focus {
+  border-color: #16a466;
+  box-shadow: 0 0 0 4px rgba(22, 164, 102, 0.14);
+  outline: none;
+}
+
+body input::placeholder,
+body textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* =====================================================
+   Primary Buttons
+   คุมเฉพาะปุ่มหลักทั่วไป ไม่ทับปุ่มเฉพาะหน้า
+===================================================== */
+
+body .customer-add-btn,
+body .btn-open-plastic-modal,
+body .page-action-btn.primary,
+body .page-action-btn.success,
+body .btn-primary,
+body .btn-success,
+body a.btn-primary,
+body a.btn-success,
+body button.btn-primary,
+body button.btn-success,
+body input[type="submit"].btn-primary,
+body input[type="submit"].btn-success,
+body .action-btn-primary,
+body .submit-btn,
+body .save-btn,
+body .add-btn,
+body .create-btn,
+body .dash-btn-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+
+  min-height: 44px !important;
+  padding: 0 18px !important;
+
+  border: 1px solid var(--action-dark-border) !important;
+  border-radius: 14px !important;
+  background: var(--action-dark-bg) !important;
+
+  color: var(--action-dark-text) !important;
+  text-decoration: none !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+
+  box-shadow: var(--action-dark-shadow) !important;
+  cursor: pointer !important;
+  transition: 0.18s ease !important;
+}
+
+body .customer-add-btn i,
+body .btn-open-plastic-modal i,
+body .page-action-btn.primary i,
+body .page-action-btn.success i,
+body .btn-primary i,
+body .btn-success i,
+body .action-btn-primary i,
+body .submit-btn i,
+body .save-btn i,
+body .add-btn i,
+body .create-btn i,
+body .dash-btn-primary i {
+  color: #ffffff !important;
+  font-size: 17px !important;
+  line-height: 1 !important;
+}
+
+body .customer-add-btn:hover,
+body .btn-open-plastic-modal:hover,
+body .page-action-btn.primary:hover,
+body .page-action-btn.success:hover,
+body .btn-primary:hover,
+body .btn-success:hover,
+body a.btn-primary:hover,
+body a.btn-success:hover,
+body button.btn-primary:hover,
+body button.btn-success:hover,
+body .action-btn-primary:hover,
+body .submit-btn:hover,
+body .save-btn:hover,
+body .add-btn:hover,
+body .create-btn:hover,
+body .dash-btn-primary:hover {
+  background: var(--action-dark-bg-hover) !important;
+  border-color: var(--action-dark-border-hover) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--action-dark-shadow-hover) !important;
+}
+
+body .customer-add-btn:active,
+body .btn-open-plastic-modal:active,
+body .page-action-btn.primary:active,
+body .page-action-btn.success:active,
+body .btn-primary:active,
+body .btn-success:active,
+body .action-btn-primary:active,
+body .submit-btn:active,
+body .save-btn:active,
+body .add-btn:active,
+body .create-btn:active,
+body .dash-btn-primary:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 6px 14px rgba(10, 102, 58, 0.18) !important;
+}
+
+/* =====================================================
+   Secondary Buttons
+===================================================== */
+
+body .btn-light,
+body .page-action-btn.light,
+body .btn-outline,
+body .dash-btn-light {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+
+  min-height: 42px !important;
+  padding: 0 16px !important;
+
+  background: var(--action-light-bg) !important;
+  color: var(--action-light-text) !important;
+  border: 1px solid var(--action-light-border) !important;
+  border-radius: 14px !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  text-decoration: none !important;
+  line-height: 1 !important;
+
+  box-shadow: 0 6px 14px rgba(8, 92, 58, 0.08) !important;
+  transition: 0.18s ease !important;
+}
+
+body .btn-light:hover,
+body .page-action-btn.light:hover,
+body .btn-outline:hover,
+body .dash-btn-light:hover {
+  background: var(--action-light-bg-hover) !important;
+  color: #0b6b43 !important;
+  border-color: var(--action-light-border-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* =====================================================
+   Danger Buttons
+===================================================== */
+
+body .btn-danger {
+  background: #fdebed !important;
+  color: #d9363e !important;
+  border: 1px solid #f8cfd4 !important;
+  box-shadow: none !important;
+}
+
+body .btn-danger:hover {
+  background: #f9d5d9 !important;
+  color: #c92a32 !important;
+}
+
+body .btn-danger i {
+  color: #d9363e !important;
+}
+
+/* =====================================================
+   Page Backgrounds
+===================================================== */
+
+body .dashboard-page,
+body .customers-page,
+body .customer-page,
+body .plastic-types-page,
+body .plastic-page,
+body .purchase-page,
+body .receipt-page,
+body .stock-page,
+body .stock-export-page,
+body .ai-page,
+body .upload-page,
+body .analysis-page {
+  background: transparent !important;
+}
+
+/* =====================================================
+   Dashboard / KPI
+===================================================== */
+
+body .dashboard-kpi-grid .kpi-card,
+body .kpi-card,
+body .dashboard-card,
+body .summary-card,
+body .stat-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid var(--app-card-border) !important;
+  box-shadow: var(--app-shadow-card) !important;
+}
+
+body .kpi-card h1,
+body .kpi-card h2,
+body .kpi-card h3,
+body .kpi-card strong,
+body .dashboard-card h1,
+body .dashboard-card h2,
+body .dashboard-card h3 {
+  color: #0f172a !important;
+}
+
+body .kpi-card p,
+body .dashboard-card p,
+body .summary-card p {
+  color: var(--app-text-muted) !important;
+}
+
+/* =====================================================
+   Flash Message
+===================================================== */
+
+body .flash-wrap {
+  margin-bottom: 14px !important;
+}
+
+body .flash-message {
+  border-radius: 14px !important;
+  box-shadow: var(--app-shadow-soft) !important;
+}
+
+/* =====================================================
+   Pagination
+===================================================== */
+
+body .pagination,
+body .pagination-wrap {
+  background: transparent !important;
+}
+
+body .pagination a,
+body .pagination button,
+body .page-number {
+  background: #ffffff !important;
+  color: #0f7043 !important;
+  border: 1px solid #d7e8df !important;
+}
+
+body .pagination .active,
+body .page-number.active {
+  background: #168754 !important;
+  color: #ffffff !important;
+}
+
+/* =====================================================
+   Responsive
+===================================================== */
+
+@media (max-width: 900px) {
+  body .main-area {
+    padding: 14px !important;
+  }
+
+  body .app-shell .main-area .topbar .page-header-box {
+    border-radius: 18px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body .main-area {
+    padding: 12px !important;
+  }
+
+  body .content-area {
+    width: 100% !important;
+  }
+
+  body::after {
+    background-size: 28px 28px;
+    opacity: 0.16;
+  }
+}

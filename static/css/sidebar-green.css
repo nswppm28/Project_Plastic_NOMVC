@@ -1,0 +1,487 @@
+/* =====================================================
+   Green Sidebar Navigation - Green Logout Version
+   File: static/css/sidebar-green.css
+===================================================== */
+
+:root {
+  --green-sidebar-width: 260px;
+}
+
+/* Layout */
+body .app-shell {
+  display: grid !important;
+  grid-template-columns: var(--green-sidebar-width) minmax(0, 1fr) !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+}
+
+body .app-shell .main-area {
+  min-width: 0 !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+}
+
+/* Sidebar */
+body .app-shell .sidebar.sidebar-green {
+  width: var(--green-sidebar-width) !important;
+  min-width: var(--green-sidebar-width) !important;
+  max-width: var(--green-sidebar-width) !important;
+
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+
+  position: sticky !important;
+  top: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+
+  padding: 10px !important;
+  box-sizing: border-box !important;
+
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+
+  background:
+    radial-gradient(circle at top left, rgba(39, 184, 105, 0.85), transparent 34%),
+    linear-gradient(180deg, #188f55 0%, #126f43 48%, #0d5c37 100%) !important;
+
+  border-right: none !important;
+  box-shadow: 8px 0 26px rgba(15, 95, 58, 0.18) !important;
+  z-index: 30 !important;
+}
+
+/* =====================================================
+   Brand
+===================================================== */
+
+body .app-shell .sidebar-green .sidebar-brand-green {
+  position: relative !important;
+
+  height: 100px !important;
+  min-height: 100px !important;
+  padding: 12px !important;
+  border-radius: 14px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+
+  background:
+    radial-gradient(circle at 18% 20%, rgba(50, 218, 133, 0.24), transparent 30%),
+    radial-gradient(circle at 92% 12%, rgba(255, 255, 255, 0.13), transparent 24%),
+    linear-gradient(135deg, #0f7a49 0%, #095c38 48%, #063d29 100%) !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -18px 38px rgba(0, 0, 0, 0.12),
+    0 14px 30px rgba(4, 45, 29, 0.25) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-brand-green::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.14), transparent 32%),
+    linear-gradient(300deg, rgba(255, 255, 255, 0.07), transparent 42%) !important;
+
+  pointer-events: none !important;
+}
+
+body .app-shell .sidebar-green .sidebar-brand-green::after {
+  content: "" !important;
+  position: absolute !important;
+  right: -34px !important;
+  bottom: -46px !important;
+
+  width: 120px !important;
+  height: 120px !important;
+
+  border-radius: 70% 30% 70% 30% !important;
+  background: rgba(69, 190, 110, 0.17) !important;
+  transform: rotate(-24deg) !important;
+
+  pointer-events: none !important;
+}
+
+body .app-shell .sidebar-green .sidebar-brand-icon {
+  position: relative !important;
+  z-index: 2 !important;
+
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px !important;
+  border-radius: 16px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.32), transparent 35%),
+    linear-gradient(135deg, #2ecf7c 0%, #13945a 100%) !important;
+
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 10px 22px rgba(3, 50, 31, 0.24) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-brand-icon i {
+  color: #ffffff !important;
+  font-size: 30px !important;
+  line-height: 1 !important;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18)) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-brand-text {
+  position: relative !important;
+  z-index: 2 !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+body .app-shell .sidebar-green .sidebar-brand-text p {
+  margin: 0 0 4px !important;
+  color: #dfffe9 !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: 1.3px !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.28) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-brand-text h1 {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #ffffff !important;
+  font-size: 20.5px !important;
+  font-weight: 900 !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.04em !important;
+
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-brand-text small {
+  display: block !important;
+  margin-top: 5px !important;
+
+  color: rgba(226, 255, 235, 0.88) !important;
+  font-size: 9.6px !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Decorative leaves */
+body .app-shell .sidebar-green .brand-leaf {
+  position: absolute !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  opacity: 0.38 !important;
+}
+
+body .app-shell .sidebar-green .brand-leaf-one {
+  right: 15px !important;
+  top: 14px !important;
+  width: 28px !important;
+  height: 18px !important;
+  border-radius: 100% 0 100% 0 !important;
+  background: linear-gradient(135deg, #d8ffe4 0%, #53c87d 100%) !important;
+  transform: rotate(-28deg) !important;
+}
+
+body .app-shell .sidebar-green .brand-leaf-two {
+  right: -7px !important;
+  bottom: 20px !important;
+  width: 68px !important;
+  height: 42px !important;
+  border-radius: 100% 0 100% 0 !important;
+  background: linear-gradient(135deg, rgba(194, 255, 212, 0.5), rgba(46, 167, 91, 0.16)) !important;
+  transform: rotate(-22deg) !important;
+}
+
+/* =====================================================
+   Groups
+===================================================== */
+
+body .app-shell .sidebar-green .sidebar-group-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+body .app-shell .sidebar-green .sidebar-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+
+  padding: 0 0 6px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.20) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-group:last-child {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+
+/* =====================================================
+   Main Category Header
+===================================================== */
+
+body .app-shell .sidebar-green .sidebar-group-title {
+  display: flex !important;
+  align-items: center !important;
+
+  margin: 0 0 4px !important;
+  padding: 0 3px !important;
+
+  min-height: 28px !important;
+}
+
+body .app-shell .sidebar-green .sidebar-group-title span {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 26px !important;
+  padding: 0 11px !important;
+
+  color: #f4fff8 !important;
+  font-size: 14.2px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  letter-spacing: 0.01em !important;
+
+  border-radius: 10px !important;
+  border: 1px solid rgba(226, 255, 235, 0.20) !important;
+  background: rgba(226, 255, 235, 0.12) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 10px rgba(5, 48, 31, 0.06) !important;
+
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-group-title::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* =====================================================
+   Sub Menu Links
+===================================================== */
+
+body .app-shell .sidebar-green .sidebar-green-link {
+  position: relative !important;
+
+  width: calc(100% - 10px) !important;
+  min-height: 34px !important;
+
+  margin-left: 10px !important;
+  padding: 0 10px !important;
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+
+  color: rgba(255, 255, 255, 0.94) !important;
+  text-decoration: none !important;
+
+  font-size: 14.2px !important;
+  font-weight: 850 !important;
+  line-height: 1.18 !important;
+
+  transition: 0.18s ease !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-link i {
+  width: 21px !important;
+  min-width: 21px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 17px !important;
+  line-height: 1 !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-link span {
+  color: inherit !important;
+  white-space: nowrap !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-link:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: #ffffff !important;
+  transform: translateX(2px) !important;
+}
+
+/* Active */
+body .app-shell .sidebar-green .sidebar-green-link.active {
+  width: calc(100% - 4px) !important;
+  min-height: 39px !important;
+
+  margin-left: 4px !important;
+  padding-left: 14px !important;
+
+  background: linear-gradient(90deg, #f4fbf7 0%, #e8f6ef 100%) !important;
+  color: #108255 !important;
+  border-color: rgba(255, 255, 255, 0.48) !important;
+  box-shadow: 0 8px 18px rgba(5, 48, 31, 0.14) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-link.active::before {
+  content: "" !important;
+  position: absolute !important;
+  left: -1px !important;
+  top: 7px !important;
+  bottom: 7px !important;
+
+  width: 6px !important;
+  border-radius: 0 999px 999px 0 !important;
+  background: #1bd884 !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-link.active i {
+  color: #108255 !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-link.detect {
+  font-weight: 900 !important;
+}
+
+/* =====================================================
+   Logout - Green Theme
+===================================================== */
+
+body .app-shell .sidebar-green .sidebar-green-spacer {
+  flex: 1 1 auto !important;
+  min-height: 8px !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-logout {
+  min-height: 44px !important;
+  height: 44px !important;
+  flex-shrink: 0 !important;
+
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 14px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+
+  border-radius: 10px !important;
+  border: 1px solid rgba(188, 244, 207, 0.95) !important;
+  background:
+    linear-gradient(135deg, #effff5 0%, #d8f8e6 100%) !important;
+
+  color: #0d6b43 !important;
+  text-decoration: none !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 8px 18px rgba(3, 50, 31, 0.16) !important;
+
+  transition: 0.18s ease !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-logout i {
+  color: #0d6b43 !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-logout span {
+  color: #0d6b43 !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-logout:hover {
+  background:
+    linear-gradient(135deg, #e2fff0 0%, #c9f3db 100%) !important;
+  border-color: rgba(145, 226, 177, 1) !important;
+  color: #095c38 !important;
+  transform: translateY(-1px) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 10px 22px rgba(3, 50, 31, 0.20) !important;
+}
+
+body .app-shell .sidebar-green .sidebar-green-logout:hover i,
+body .app-shell .sidebar-green .sidebar-green-logout:hover span {
+  color: #095c38 !important;
+}
+
+/* =====================================================
+   Mobile
+===================================================== */
+
+@media (max-width: 900px) {
+  body .app-shell {
+    display: block !important;
+  }
+
+  body .app-shell .sidebar.sidebar-green {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+
+    overflow-y: auto !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+
+    transform: translateX(-100%) !important;
+    transition: 0.22s ease !important;
+  }
+
+  body.sidebar-open .app-shell .sidebar.sidebar-green,
+  body .app-shell .sidebar.sidebar-green.open,
+  body .app-shell .sidebar.sidebar-green.active {
+    transform: translateX(0) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --green-sidebar-width: 260px;
+  }
+}

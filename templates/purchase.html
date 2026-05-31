@@ -9,44 +9,48 @@
 {% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}?v=20260523-ui">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}?v=20260526-purchase-clean-add-bill-right">
 {% endblock %}
 
 {% block content %}
 <section class="purchase-page">
-<div class="purchase-grid">
+  <div class="purchase-grid">
 
-    <!-- ฝั่งซ้าย -->
+    <!-- LEFT: PURCHASE FORM -->
     <section class="purchase-card">
       <div class="section-head purchase-head">
         <div>
           <h3>ฟอร์มรับซื้อ</h3>
-          <p class="muted">กรอกข้อมูลทีละรายการ แล้วกดเพิ่มลงบิล</p>
         </div>
-        <div class="purchase-card-icon">
+
+        <div class="purchase-card-icon" aria-hidden="true">
           <i class="bi bi-bag-check"></i>
         </div>
       </div>
 
       <form id="purchaseForm" class="purchase-form">
-        <!-- ลูกค้า -->
+        <!-- CUSTOMER -->
         <div class="form-group full-width">
           <label for="customer_id">เลือกลูกค้า</label>
           <select id="customer_id" name="customer_id" required>
             <option value="">-- เลือกลูกค้า --</option>
+
             {% if customers %}
-            {% for customer in customers %}
-            <option value="{{ customer.customer_id or customer.id }}"
-              data-name="{{ customer.full_name or customer.name }}" data-phone="{{ customer.phone or '-' }}"
-              data-code="{{ customer.customer_code or '' }}">
-              {{ customer.full_name or customer.name }}
-            </option>
-            {% endfor %}
+              {% for customer in customers %}
+              <option
+                value="{{ customer.customer_id or customer.id }}"
+                data-name="{{ customer.full_name or customer.name }}"
+                data-phone="{{ customer.phone or '-' }}"
+                data-code="{{ customer.customer_code or '' }}"
+              >
+                {{ customer.full_name or customer.name }}
+              </option>
+              {% endfor %}
             {% endif %}
           </select>
         </div>
 
-        <!-- ตรวจเช็คพลาสติกด้วย AI -->
+        <!-- AI IMAGE CHECK -->
         <div class="form-group full-width">
           <label>ตรวจเช็คชนิดพลาสติกด้วยรูปภาพ</label>
 
@@ -90,6 +94,7 @@
             <div class="ai-result-card" id="aiCheckResult">
               <div class="ai-result-top">
                 <span class="result-dot"></span>
+
                 <div>
                   <h4>ผลการตรวจเช็ค AI</h4>
                   <p id="aiResultText">ยังไม่ได้ตรวจเช็คจากรูปภาพ</p>
@@ -109,10 +114,9 @@
               </div>
             </div>
           </div>
-
-          
         </div>
-        <!-- ประเภทหลัก -->
+
+        <!-- MAIN TYPE -->
         <div class="form-group">
           <label for="type_code">ประเภทหลัก</label>
           <select id="type_code" name="type_code">
@@ -120,7 +124,7 @@
           </select>
         </div>
 
-        <!-- ประเภทย่อย -->
+        <!-- SUBTYPE -->
         <div class="form-group">
           <label for="subtype_id">ประเภทย่อย</label>
           <select id="subtype_id" name="subtype_id">
@@ -128,26 +132,27 @@
           </select>
         </div>
 
-        <!-- ราคา -->
+        <!-- UNIT PRICE -->
         <div class="form-group">
           <label for="unit_price">ราคาต่อกิโลกรัม (บาท)</label>
           <input type="number" id="unit_price" step="0.01" readonly>
         </div>
 
-        <!-- น้ำหนัก -->
+        <!-- WEIGHT -->
         <div class="form-group">
           <label for="weight_kg">น้ำหนัก (กก.)</label>
           <input type="number" id="weight_kg" step="0.01" min="0.01" placeholder="เช่น 12.50">
         </div>
 
-        <!-- ราคารายการนี้ -->
+        <!-- ITEM TOTAL -->
         <div class="form-group full-width">
           <label for="total_amount">ราคารายการนี้ (บาท)</label>
           <input type="number" id="total_amount" step="0.01" readonly>
         </div>
 
-        <div class="purchase-actions full-width">
-          <button type="button" class="btn btn-light" id="addBillItemBtn">
+        <!-- ADD BILL ITEM BUTTON -->
+        <div class="form-group full-width bill-item-action">
+          <button type="button" class="btn-add-bill-item" id="addBillItemBtn">
             <i class="bi bi-plus-circle"></i>
             <span>เพิ่มลงรายการบิล</span>
           </button>
@@ -155,91 +160,90 @@
       </form>
     </section>
 
-   <!-- ฝั่งขวา: รายการบิล -->
-<section class="purchase-card bill-card">
-  <div class="section-head purchase-head">
-    <div>
-      <h3>รายการบิลรับซื้อ</h3>
-      <p class="muted">ตรวจสอบรายการทั้งหมดก่อนบันทึกและสร้างใบเสร็จ</p>
-    </div>
+    <!-- RIGHT: BILL SUMMARY -->
+    <section class="purchase-card bill-card">
+      <div class="section-head purchase-head">
+        <div>
+          <h3>รายการบิลรับซื้อ</h3>
+        </div>
 
-    <div class="purchase-card-icon">
-      <i class="bi bi-receipt"></i>
-    </div>
-  </div>
-
-  <!-- ข้อมูลลูกค้าในบิล -->
-  <div class="bill-customer-card">
-    <div>
-      <span>ลูกค้า</span>
-      <strong id="billCustomerName">ยังไม่ได้เลือกลูกค้า</strong>
-    </div>
-
-    <div>
-      <span>เบอร์โทร</span>
-      <strong id="billCustomerPhone">-</strong>
-    </div>
-  </div>
-
-  <!-- รายการในบิล -->
-  <div class="bill-box no-border">
-    <div class="bill-head">
-      <div>
-        <h4>รายการพลาสติกในบิล</h4>
-
+        <div class="purchase-card-icon" aria-hidden="true">
+          <i class="bi bi-receipt"></i>
+        </div>
       </div>
 
-      <span id="billItemCount">0 รายการ</span>
-    </div>
+      <!-- CUSTOMER INFO -->
+      <div class="bill-customer-card">
+        <div>
+          <span>ลูกค้า</span>
+          <strong id="billCustomerName">ยังไม่ได้เลือกลูกค้า</strong>
+        </div>
 
-    <div class="bill-empty" id="billEmpty">
-      ยังไม่มีรายการในบิล
-    </div>
+        <div>
+          <span>เบอร์โทร</span>
+          <strong id="billCustomerPhone">-</strong>
+        </div>
+      </div>
 
-    <table class="bill-table" id="billTable">
-      <thead>
-        <tr>
-          <th>รายการ</th>
-          <th>น้ำหนัก</th>
-          <th>รวม</th>
-          <th></th>
-        </tr>
-      </thead>
+      <!-- BILL ITEMS -->
+      <div class="bill-box no-border">
+        <div class="bill-head">
+          <div>
+            <h4>รายการพลาสติกในบิล</h4>
+          </div>
 
-      <tbody id="billTableBody"></tbody>
-    </table>
+          <span id="billItemCount">0 รายการ</span>
+        </div>
 
-   <div class="bill-summary">
-  <div>
-    <span>น้ำหนักรวม</span>
-    <strong id="billTotalWeight">0.00 กก.</strong>
+        <div class="bill-empty" id="billEmpty">
+          ยังไม่มีรายการในบิล
+        </div>
+
+        <table class="bill-table" id="billTable">
+          <thead>
+            <tr>
+              <th>รายการ</th>
+              <th>น้ำหนัก</th>
+              <th>รวม</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody id="billTableBody"></tbody>
+        </table>
+
+        <div class="bill-summary">
+          <div>
+            <span>น้ำหนักรวม</span>
+            <strong id="billTotalWeight">0.00 กก.</strong>
+          </div>
+
+          <div class="bill-grand-total">
+            <span>ยอดรวมทั้งบิล</span>
+            <strong id="billGrandTotal">฿ 0.00</strong>
+          </div>
+        </div>
+
+        <div class="purchase-note">
+          <i class="bi bi-info-circle"></i>
+          <span>เมื่อกดบันทึก ระบบจะสร้างใบเสร็จ 1 ใบ และข้อมูลจะไปแสดงในหน้าประวัติผู้ขายย้อนหลัง</span>
+        </div>
+
+        <div class="bill-actions">
+          <button
+            type="submit"
+            form="purchaseForm"
+            class="btn btn-primary btn-save-bill"
+            id="savePurchaseBtn"
+          >
+            <i class="bi bi-check-circle"></i>
+            <span>บันทึกและสร้างใบเสร็จ</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
   </div>
-
-  <div class="bill-grand-total">
-    <span>ยอดรวมทั้งบิล</span>
-    <strong id="billGrandTotal">฿ 0.00</strong>
-  </div>
-</div>
-
-<div class="purchase-note">
-  <i class="bi bi-info-circle"></i>
-  <span>เมื่อกดบันทึก ระบบจะสร้างใบเสร็จ 1 ใบ และข้อมูลจะไปแสดงในหน้าประวัติผู้ขายย้อนหลัง</span>
-</div>
-
-<div class="bill-actions">
-  <button
-    type="submit"
-    form="purchaseForm"
-    class="btn btn-primary btn-save-bill"
-    id="savePurchaseBtn"
-  >
-    <i class="bi bi-check-circle"></i>
-    <span>บันทึกและสร้างใบเสร็จ</span>
-  </button>
-</div>
-</section>
-
- </div>
 </section>
 {% endblock %}
 
@@ -269,7 +273,6 @@
     const aiTypeText = document.getElementById("aiTypeText");
     const aiConfidenceText = document.getElementById("aiConfidenceText");
 
-    /* ข้อมูลลูกค้าที่จะแสดงในบิล */
     const billCustomerName = document.getElementById("billCustomerName");
     const billCustomerPhone = document.getElementById("billCustomerPhone");
 
@@ -479,7 +482,6 @@
         aiResultText.textContent = "ตรวจเช็คสำเร็จ ระบบเลือกประเภทหลักให้แล้ว";
         aiTypeText.textContent = type;
         aiConfidenceText.textContent = confidence + "%";
-
       } catch (err) {
         aiResultText.textContent = "เกิดข้อผิดพลาด: " + err.message;
         aiTypeText.textContent = "-";
@@ -528,7 +530,6 @@
         renderBill();
 
         window.location.href = "/receipt?purchase_id=" + result.purchase_id;
-
       } catch (err) {
         alert("เกิดข้อผิดพลาด: " + err.message);
       } finally {

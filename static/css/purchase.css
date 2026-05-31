@@ -1,4 +1,17 @@
-/* ================= PAGE ================= */
+/* =====================================================
+   PURCHASE PAGE
+   File: static/css/purchase.css
+
+   Cleaned version:
+   - จัดโครงสร้างหน้าให้สะอาดขึ้น
+   - ปุ่มเพิ่มรายการบิลเป็นสีเขียวเข้ม
+   - ปุ่มเพิ่มรายการบิลชิดขวา
+   - ลด CSS ซ้ำของปุ่ม
+===================================================== */
+
+/* =====================================================
+   PAGE
+===================================================== */
 
 .purchase-page {
   display: grid;
@@ -7,8 +20,9 @@
   font-size: 14px;
 }
 
-
-/* ================= HERO HEADER ================= */
+/* =====================================================
+   HERO HEADER
+===================================================== */
 
 .purchase-hero {
   display: flex;
@@ -17,7 +31,7 @@
 
   padding: 22px 26px;
 
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #dfe8e3;
   border-radius: 22px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
@@ -52,8 +66,9 @@
   line-height: 1.55;
 }
 
-
-/* ================= LAYOUT CARD ================= */
+/* =====================================================
+   LAYOUT
+===================================================== */
 
 .purchase-grid {
   display: grid;
@@ -65,7 +80,7 @@
 .purchase-card {
   padding: 22px;
 
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #dfe8e3;
   border-radius: 20px;
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.035);
@@ -76,8 +91,9 @@
   top: 16px;
 }
 
-
-/* ================= CARD HEADER ================= */
+/* =====================================================
+   CARD HEADER
+===================================================== */
 
 .purchase-head {
   display: flex;
@@ -117,8 +133,9 @@
   line-height: 1.55;
 }
 
-
-/* ================= FORM ================= */
+/* =====================================================
+   FORM
+===================================================== */
 
 .purchase-form {
   display: grid;
@@ -147,7 +164,7 @@
   min-height: 44px;
   padding: 10px 13px;
 
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #d8e3dd;
   border-radius: 14px;
 
@@ -170,8 +187,9 @@
   line-height: 1.55;
 }
 
-
-/* ================= AI IMAGE CHECK ================= */
+/* =====================================================
+   AI IMAGE CHECK
+===================================================== */
 
 .plastic-check-card {
   display: grid;
@@ -193,7 +211,7 @@
   place-items: center;
   padding: 12px;
 
-  background: #fff;
+  background: #ffffff;
   border: 1.5px dashed #c8d7cf;
   border-radius: 16px;
 
@@ -271,15 +289,16 @@
   flex-wrap: wrap;
 }
 
-
-/* ================= AI RESULT ================= */
+/* =====================================================
+   AI RESULT
+===================================================== */
 
 .ai-result-card {
   display: grid;
   gap: 10px;
   padding: 13px;
 
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #edf1ef;
   border-radius: 16px;
 }
@@ -333,7 +352,7 @@
 .ai-result-main div {
   padding: 10px 12px;
 
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #edf1ef;
   border-radius: 14px;
 }
@@ -352,16 +371,19 @@
   font-weight: 900;
 }
 
+/* =====================================================
+   BUTTONS
+===================================================== */
 
-/* ================= BUTTONS ================= */
-
-.purchase-actions {
+.purchase-actions,
+.image-action-row {
   display: flex;
   gap: 10px;
   margin-top: 2px;
 }
 
-.btn {
+/* ปุ่มพื้นฐานในหน้า purchase */
+.purchase-page .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -376,34 +398,41 @@
 
   text-decoration: none;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
 
   transition: 0.18s ease;
 }
 
-.btn:hover {
+.purchase-page .btn:hover {
   transform: translateY(-1px);
 }
 
-.btn-primary {
-  background: #198754;
-  color: #fff;
-  box-shadow: 0 8px 18px rgba(25, 135, 84, 0.15);
+/* ปุ่มหลักของหน้า purchase ให้เข้ากับ theme หลัก */
+.purchase-page .btn-primary {
+  background: #169455;
+  color: #ffffff;
+  border: 1px solid #169455;
+  box-shadow: 0 10px 22px rgba(10, 102, 58, 0.22);
 }
 
-.btn-primary:hover {
-  background: #157347;
+.purchase-page .btn-primary:hover {
+  background: #117a45;
+  border-color: #117a45;
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(10, 102, 58, 0.28);
 }
 
-.btn-light {
-  background: #eef3f0;
-  color: #102033;
-  border: 1px solid #dde8e1;
+.purchase-page .btn-light {
+  background: #ffffff;
+  color: #0f3f2c;
+  border: 1px solid #d7e8df;
 }
 
-.btn-light:hover {
-  background: #e3ebe6;
+.purchase-page .btn-light:hover {
+  background: #f3fbf7;
+  color: #0b6b43;
+  border-color: #bdeed0;
 }
 
 .btn-danger-soft {
@@ -416,8 +445,112 @@
   background: #ffe4e6;
 }
 
+/* =====================================================
+   ADD BILL ITEM BUTTON
+   ปุ่ม "เพิ่มรายการบิล" สีเขียวและชิดขวา
+===================================================== */
 
-/* ================= BILL CUSTOMER ================= */
+/*
+  รองรับหลายชื่อ class เผื่อ HTML แต่ละเวอร์ชันใช้ชื่อต่างกัน:
+  - bill-item-action
+  - bill-add-action
+  - purchase-item-action
+  - purchase-add-item-action
+  - add-bill-row
+*/
+.bill-item-action,
+.bill-add-action,
+.purchase-item-action,
+.purchase-add-item-action,
+.add-bill-row {
+  width: 100%;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  margin-top: 16px;
+}
+
+/*
+  รองรับหลายชื่อปุ่ม:
+  - btn-add-bill-item
+  - add-bill-item-btn
+  - btn-add-item
+  - purchase-add-item-btn
+  - add-row-btn
+*/
+.btn-add-bill-item,
+.add-bill-item-btn,
+.btn-add-item,
+.purchase-add-item-btn,
+.add-row-btn,
+button[type="button"].btn-add-bill-item,
+button[type="button"].add-bill-item-btn,
+button[type="button"].btn-add-item,
+button[type="button"].purchase-add-item-btn,
+button[type="button"].add-row-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+
+  min-height: 44px !important;
+  padding: 0 18px !important;
+
+  border: 1px solid #169455 !important;
+  border-radius: 14px !important;
+  background: #169455 !important;
+  color: #ffffff !important;
+
+  text-decoration: none !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+
+  cursor: pointer !important;
+  box-shadow: 0 10px 22px rgba(10, 102, 58, 0.22) !important;
+  transition: 0.18s ease !important;
+}
+
+.btn-add-bill-item i,
+.add-bill-item-btn i,
+.btn-add-item i,
+.purchase-add-item-btn i,
+.add-row-btn i {
+  color: #ffffff !important;
+  font-size: 17px !important;
+  line-height: 1 !important;
+}
+
+.btn-add-bill-item:hover,
+.add-bill-item-btn:hover,
+.btn-add-item:hover,
+.purchase-add-item-btn:hover,
+.add-row-btn:hover,
+button[type="button"].btn-add-bill-item:hover,
+button[type="button"].add-bill-item-btn:hover,
+button[type="button"].btn-add-item:hover,
+button[type="button"].purchase-add-item-btn:hover,
+button[type="button"].add-row-btn:hover {
+  background: #117a45 !important;
+  border-color: #117a45 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 14px 28px rgba(10, 102, 58, 0.28) !important;
+}
+
+/* กรณีปุ่มเพิ่มรายการบิลอยู่ใน full-width form-group โดยตรง */
+.form-group.full-width > .btn-add-bill-item,
+.form-group.full-width > .add-bill-item-btn,
+.form-group.full-width > .btn-add-item,
+.form-group.full-width > .purchase-add-item-btn,
+.form-group.full-width > .add-row-btn {
+  justify-self: end !important;
+}
+
+/* =====================================================
+   BILL CUSTOMER
+===================================================== */
 
 .bill-customer-card {
   display: grid;
@@ -434,7 +567,7 @@
 
 .bill-customer-card div {
   padding: 10px 12px;
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #edf1ef;
   border-radius: 13px;
 }
@@ -454,8 +587,9 @@
   line-height: 1.35;
 }
 
-
-/* ================= BILL BOX ================= */
+/* =====================================================
+   BILL BOX
+===================================================== */
 
 .bill-box {
   margin-top: 14px;
@@ -516,8 +650,9 @@
   font-size: 14px;
 }
 
-
-/* ================= BILL TABLE ================= */
+/* =====================================================
+   BILL TABLE
+===================================================== */
 
 .bill-table {
   display: none;
@@ -577,8 +712,9 @@
   background: #ffe4e6;
 }
 
-
-/* ================= BILL SUMMARY ================= */
+/* =====================================================
+   BILL SUMMARY
+===================================================== */
 
 .bill-summary {
   display: grid;
@@ -593,7 +729,7 @@
 
   padding: 12px 13px;
 
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #edf1ef;
   border-radius: 13px;
 }
@@ -625,8 +761,9 @@
   font-weight: 900;
 }
 
-
-/* ================= BILL ACTIONS ================= */
+/* =====================================================
+   BILL ACTIONS
+===================================================== */
 
 .bill-actions {
   display: flex;
@@ -644,12 +781,12 @@
 
   border-radius: 15px;
   font-size: 14px;
-  font-weight: 800;
-  box-shadow: 0 8px 18px rgba(25, 135, 84, 0.16);
+  font-weight: 900;
 }
 
-
-/* ================= NOTE ================= */
+/* =====================================================
+   NOTE
+===================================================== */
 
 .purchase-note {
   display: flex;
@@ -673,8 +810,9 @@
   font-size: 16px;
 }
 
-
-/* ================= RESPONSIVE ================= */
+/* =====================================================
+   RESPONSIVE
+===================================================== */
 
 @media (max-width: 1180px) {
   .purchase-grid {
@@ -722,10 +860,24 @@
     flex-direction: column;
   }
 
-  .btn,
+  .purchase-page .btn,
   .image-action-row .btn,
-  .btn-save-bill {
+  .btn-save-bill,
+  .btn-add-bill-item,
+  .add-bill-item-btn,
+  .btn-add-item,
+  .purchase-add-item-btn,
+  .add-row-btn {
     width: 100%;
+  }
+
+  .bill-item-action,
+  .bill-add-action,
+  .purchase-item-action,
+  .purchase-add-item-action,
+  .add-bill-row,
+  .bill-actions {
+    justify-content: stretch !important;
   }
 
   .image-info-row {
@@ -738,9 +890,5 @@
 
   .bill-table {
     min-width: 460px;
-  }
-
-  .bill-actions {
-    justify-content: stretch;
   }
 }

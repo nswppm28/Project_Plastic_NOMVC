@@ -16,6 +16,69 @@
 }
 
 /* =========================================================
+   FIX: REMOVE DUPLICATED WHITE FRAME
+   เอาเฉพาะกรอบขาวซ้อนออก แต่คงขนาดเดิมทั้งหมด
+========================================================= */
+
+body .content-area .customer-search-box,
+body .content-area .customer-table-wrap {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* =========================================================
+   TOP ADD BUTTON
+========================================================= */
+
+.customer-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.customer-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 44px;
+  padding: 0 18px;
+
+  border: none;
+  border-radius: 13px;
+
+  background: #198754;
+  color: #ffffff;
+
+  cursor: pointer;
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+
+  box-shadow: 0 12px 24px rgba(25, 135, 84, 0.22);
+  transition: 0.18s ease;
+}
+
+.customer-add-btn:hover {
+  background: #157347;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(25, 135, 84, 0.28);
+}
+
+.customer-add-btn i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* =========================================================
    BUTTONS
 ========================================================= */
 
@@ -64,6 +127,7 @@
 .customer-page .btn-primary:hover,
 .customer-modal .btn-primary:hover {
   background: #157347;
+  color: #ffffff;
   box-shadow: 0 10px 22px rgba(25, 135, 84, 0.24);
 }
 
@@ -107,6 +171,7 @@
 
 .btn-edit-customer:hover {
   background: #157347 !important;
+  color: #ffffff !important;
   box-shadow: 0 10px 22px rgba(25, 135, 84, 0.22);
 }
 
@@ -118,6 +183,7 @@
 
 .btn-delete-customer:hover {
   background: #f9d5d9 !important;
+  color: #c92a32 !important;
 }
 
 .btn-edit-customer i,
@@ -182,6 +248,7 @@
   min-width: 920px;
   border-collapse: separate;
   border-spacing: 0 8px;
+  background: transparent !important;
 }
 
 .customer-table thead th {
@@ -195,23 +262,28 @@
   white-space: nowrap;
 }
 
+.customer-table thead th:first-child {
+  border-radius: 15px 0 0 15px;
+}
+
 .customer-table thead th:last-child {
   text-align: center;
+  border-radius: 0 15px 15px 0;
 }
 
 .customer-table tbody tr {
-  background: #ffffff;
+  background: transparent;
   transition: 0.18s ease;
 }
 
-.customer-table tbody tr:hover {
+.customer-table tbody tr:hover td {
   background: #fbfdfc;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
 }
 
 .customer-table tbody td {
   padding: 15px 16px;
   color: #102033;
+  background: #ffffff;
   font-size: 14px;
   vertical-align: middle;
   border-top: 1px solid #edf1ef;
@@ -376,6 +448,14 @@
 @media (max-width: 768px) {
   .customer-card {
     padding: 20px;
+  }
+
+  .customer-topbar {
+    justify-content: stretch;
+  }
+
+  .customer-add-btn {
+    width: 100%;
   }
 
   .action-group {

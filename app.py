@@ -1,23 +1,34 @@
 # -*- coding: utf-8 -*-
 """
 app.py แบบรวมไฟล์เดียว
-- รวม backend เดิมทั้งหมดกลับมาไว้ในไฟล์นี้
-- templates, static, sql ยังใช้โครงสร้างเดิม
-- รันด้วยคำสั่ง: python app.py
+
+โครงสร้างเดิม:
+- templates/
+- static/
+- sql/
+
+รันด้วยคำสั่ง:
+python app.py
 """
-import time
-from pathlib import Path
-import os
 import json
+import os
+import sys
+import time
 import traceback
 from datetime import date, datetime
 from decimal import Decimal
 from functools import wraps
+from pathlib import Path
 
 import mysql.connector
 from mysql.connector import Error
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash
+
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:
+    load_dotenv = None
 
 try:
     import numpy as np
@@ -36,14 +47,27 @@ except ModuleNotFoundError:
 
 
 # =========================================================
+# WINDOWS CONSOLE UTF-8 FIX
+# =========================================================
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
+
+# =========================================================
 # APP CONFIG
 # =========================================================
 
-app = Flask(__name__)
-import time
-from pathlib import Path
-
 BASE_DIR = Path(__file__).resolve().parent
+
+if load_dotenv is not None:
+    load_dotenv(BASE_DIR / ".env")
+
+app = Flask(__name__)
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "plastic-buyback-secret-key")
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
@@ -70,8 +94,8 @@ def add_no_cache_headers(response):
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
-    return response 
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "plastic-buyback-secret-key")
+    return response
+
 
 MYSQL_PASSWORD = os.getenv("DB_PASSWORD") or "Nam640710768"
 
@@ -102,6 +126,7 @@ FULL_NAMES = {
     "PVC": "Polyvinyl Chloride",
 }
 
+
 # =========================================================
 # GENERAL HELPERS
 # =========================================================
@@ -109,26 +134,40 @@ FULL_NAMES = {
 def json_ready(value):
     if isinstance(value, Decimal):
         return float(value)
+
     if isinstance(value, (datetime, date)):
         return value.isoformat()
+
     if isinstance(value, list):
         return [json_ready(v) for v in value]
+
     if isinstance(value, dict):
         return {k: json_ready(v) for k, v in value.items()}
+
     return value
 
 
 def success_response(data=None, message="success", status_code=200):
-    payload = {"success": True, "message": message}
+    payload = {
+        "success": True,
+        "message": message,
+    }
+
     if data is not None:
         payload["data"] = json_ready(data)
+
     return jsonify(payload), status_code
 
 
 def error_response(message="เกิดข้อผิดพลาด", status_code=400, detail=None):
-    payload = {"success": False, "error": message}
+    payload = {
+        "success": False,
+        "error": message,
+    }
+
     if detail:
         payload["detail"] = str(detail)
+
     return jsonify(payload), status_code
 
 
@@ -216,6 +255,7 @@ def generate_customer_code(fetch_one_func):
 
     return f"CUST-{seq:04d}"
 
+
 # =========================================================
 # DECORATORS
 # =========================================================
@@ -226,8 +266,11 @@ def login_required(func):
         if "user_id" not in session:
             flash("กรุณาเข้าสู่ระบบก่อน", "error")
             return redirect(url_for("login_page"))
+
         return func(*args, **kwargs)
+
     return wrapper
+
 
 # =========================================================
 # DATABASE HELPERS
@@ -240,6 +283,7 @@ def get_db_connection():
 def fetch_all(query, params=None):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+
     try:
         cursor.execute(query, params or ())
         return cursor.fetchall()
@@ -251,6 +295,7 @@ def fetch_all(query, params=None):
 def fetch_one(query, params=None):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+
     try:
         cursor.execute(query, params or ())
         return cursor.fetchone()
@@ -262,15 +307,20 @@ def fetch_one(query, params=None):
 def execute_query(query, params=None, commit=True):
     conn = get_db_connection()
     cursor = conn.cursor()
+
     try:
         cursor.execute(query, params or ())
         lastrowid = cursor.lastrowid
+
         if commit:
             conn.commit()
+
         return lastrowid
+
     except Exception:
         conn.rollback()
         raise
+
     finally:
         cursor.close()
         conn.close()
@@ -287,16 +337,16 @@ def get_default_user_id():
             LIMIT 1
             """
         )
+
         return row["user_id"] if row else None
+
     except Exception:
         return None
 
-# =========================================================
-# SERVICES
-# =========================================================
 
-
-# ----- auth_service.py -----
+# =========================================================
+# AUTH SERVICE
+# =========================================================
 
 def authenticate_user(username, password):
     user = fetch_one(
@@ -321,9 +371,15 @@ def authenticate_user(username, password):
 
     return None
 
-# ----- customer_service.py -----
 
-def load_customers():
+# =========================================================
+# CUSTOMER SERVICE
+# =========================================================
+
+def load_customers(keyword=""):
+    keyword = (keyword or "").strip()
+    like_keyword = f"%{keyword}%"
+
     return fetch_all(
         """
         SELECT
@@ -340,6 +396,12 @@ def load_customers():
         LEFT JOIN purchases p
             ON c.customer_id = p.customer_id
         WHERE c.is_active = 1
+          AND (
+              %s = ''
+              OR c.full_name LIKE %s
+              OR c.phone LIKE %s
+              OR c.customer_code LIKE %s
+          )
         GROUP BY
             c.customer_id,
             c.customer_code,
@@ -348,12 +410,19 @@ def load_customers():
             c.address,
             c.note
         ORDER BY c.customer_id DESC
-        """
+        """,
+        (keyword, like_keyword, like_keyword, like_keyword),
     )
 
-
 def get_customer(customer_id):
-    return fetch_one("SELECT * FROM customers WHERE customer_id = %s", (customer_id,))
+    return fetch_one(
+        """
+        SELECT *
+        FROM customers
+        WHERE customer_id = %s
+        """,
+        (customer_id,),
+    )
 
 
 def customer_has_purchases(customer_id):
@@ -365,6 +434,7 @@ def customer_has_purchases(customer_id):
         """,
         (customer_id,),
     )
+
     return to_int(row.get("purchase_count") if row else 0) > 0
 
 
@@ -410,10 +480,20 @@ def delete_customer_record(customer_id):
         )
         return "soft_delete"
 
-    execute_query("DELETE FROM customers WHERE customer_id = %s", (customer_id,))
+    execute_query(
+        """
+        DELETE FROM customers
+        WHERE customer_id = %s
+        """,
+        (customer_id,),
+    )
+
     return "delete"
 
-# ----- dashboard_service.py -----
+
+# =========================================================
+# DASHBOARD SERVICE
+# =========================================================
 
 def load_recent_transactions(limit=10):
     rows = fetch_all(
@@ -505,10 +585,14 @@ def load_dashboard_data():
             ROUND(SUM(pi.weight_kg), 3) AS total_weight_kg,
             ROUND(SUM(pi.amount), 2) AS total_amount
         FROM purchase_items pi
+        INNER JOIN purchases p
+            ON pi.purchase_id = p.purchase_id
         INNER JOIN plastic_subtypes ps
             ON pi.subtype_id = ps.subtype_id
         INNER JOIN plastic_types pt
             ON ps.type_id = pt.type_id
+        WHERE YEAR(p.purchase_date) = YEAR(CURDATE())
+          AND MONTH(p.purchase_date) = MONTH(CURDATE())
         GROUP BY pt.type_id, pt.type_code, pt.type_name_th
         ORDER BY total_weight_kg DESC, total_amount DESC
         LIMIT 1
@@ -566,6 +650,12 @@ def load_dashboard_data():
 
 
 def load_top_plastics(limit=5):
+    """
+    โหลดประเภทพลาสติกที่รับซื้อเดือนนี้มากที่สุด
+    ใช้เฉพาะหน้า Dashboard เท่านั้น
+    ห้ามผูกกับ filter ของหน้า receipt-history
+    """
+
     rows = fetch_all(
         """
         SELECT
@@ -573,12 +663,21 @@ def load_top_plastics(limit=5):
             pt.type_name_th AS plastic_name_th,
             ROUND(SUM(pi.weight_kg), 3) AS total_weight
         FROM purchase_items pi
+        INNER JOIN purchases p
+            ON pi.purchase_id = p.purchase_id
         INNER JOIN plastic_subtypes ps
             ON pi.subtype_id = ps.subtype_id
         INNER JOIN plastic_types pt
             ON ps.type_id = pt.type_id
-        GROUP BY pt.type_id, pt.type_code, pt.type_name_th
-        ORDER BY total_weight DESC
+        WHERE YEAR(p.purchase_date) = YEAR(CURDATE())
+          AND MONTH(p.purchase_date) = MONTH(CURDATE())
+        GROUP BY
+            pt.type_id,
+            pt.type_code,
+            pt.type_name_th
+        ORDER BY
+            total_weight DESC,
+            FIELD(pt.type_code, 'PVC', 'LDPE', 'PET', 'HDPE', 'PP', 'PS')
         LIMIT %s
         """,
         (limit,),
@@ -590,6 +689,7 @@ def load_top_plastics(limit=5):
     for item in rows:
         weight = to_float(item.get("total_weight"))
         percent = (weight / total_weight_all * 100) if total_weight_all > 0 else 0
+
         top_plastics.append(
             {
                 "plastic_type": item.get("plastic_type") or "-",
@@ -601,7 +701,9 @@ def load_top_plastics(limit=5):
 
     return top_plastics
 
-# ----- plastic_service.py -----
+# =========================================================
+# PLASTIC SERVICE
+# =========================================================
 
 def get_type_by_code(type_code):
     return fetch_one(
@@ -808,7 +910,13 @@ def update_plastic_subtype_record(subtype_id, subtype_name, description, is_acti
 
 
 def delete_plastic_subtype_record(subtype_id):
-    execute_query("DELETE FROM plastic_subtypes WHERE subtype_id = %s", (subtype_id,))
+    execute_query(
+        """
+        DELETE FROM plastic_subtypes
+        WHERE subtype_id = %s
+        """,
+        (subtype_id,),
+    )
 
 
 def update_purchase_price_record(subtype_id, unit_price):
@@ -848,13 +956,57 @@ def update_purchase_price_record(subtype_id, unit_price):
         cursor.close()
         conn.close()
 
-# ----- receipt_service.py -----
 
-def load_receipt_history(keyword=""):
-    like_keyword = f"%{keyword}%"
+# =========================================================
+# RECEIPT SERVICE
+# =========================================================
+
+def load_receipt_history(keyword="", filter_type="all"):
+    keyword = (keyword or "").strip()
+    filter_type = (filter_type or "all").strip().lower()
+
+    where_clauses = []
+    params = []
+
+    if keyword:
+        like_keyword = f"%{keyword}%"
+        where_clauses.append(
+            """
+            (
+                c.full_name LIKE %s
+                OR c.phone LIKE %s
+                OR c.customer_code LIKE %s
+                OR p.purchase_no LIKE %s
+                OR r.receipt_no LIKE %s
+            )
+            """
+        )
+        params.extend([
+            like_keyword,
+            like_keyword,
+            like_keyword,
+            like_keyword,
+            like_keyword,
+        ])
+
+    if filter_type == "today":
+        where_clauses.append("DATE(p.purchase_date) = CURDATE()")
+
+    elif filter_type in ("month", "this_month"):
+        where_clauses.append(
+            """
+            YEAR(p.purchase_date) = YEAR(CURDATE())
+            AND MONTH(p.purchase_date) = MONTH(CURDATE())
+            """
+        )
+
+    where_sql = ""
+
+    if where_clauses:
+        where_sql = "WHERE " + " AND ".join(where_clauses)
 
     rows = fetch_all(
-        """
+        f"""
         SELECT
             p.purchase_id,
             p.purchase_no,
@@ -885,15 +1037,7 @@ def load_receipt_history(keyword=""):
             ON pi.subtype_id = ps.subtype_id
         LEFT JOIN plastic_types pt
             ON ps.type_id = pt.type_id
-        WHERE
-            (
-                %s = ''
-                OR c.full_name LIKE %s
-                OR c.phone LIKE %s
-                OR c.customer_code LIKE %s
-                OR p.purchase_no LIKE %s
-                OR r.receipt_no LIKE %s
-            )
+        {where_sql}
         GROUP BY
             p.purchase_id,
             p.purchase_no,
@@ -904,16 +1048,15 @@ def load_receipt_history(keyword=""):
             c.full_name,
             c.phone,
             p.total_amount
-        ORDER BY p.purchase_date DESC
+        ORDER BY p.purchase_date DESC, p.purchase_id DESC
         """,
-        (keyword, like_keyword, like_keyword, like_keyword, like_keyword, like_keyword),
+        tuple(params),
     )
 
     for row in rows:
         row["receipt_date"] = format_datetime_th(row.get("receipt_datetime"))
 
     return rows
-
 
 def load_receipt_data(purchase_id):
     receipt = fetch_one(
@@ -974,13 +1117,39 @@ def load_receipt_data(purchase_id):
 
     return receipt, receipt_items
 
-# ----- stock_service.py -----
+
+# =========================================================
+# STOCK SERVICE
+# =========================================================
+
+def get_stock_status(weight_kg):
+    weight = to_float(weight_kg)
+
+    if weight >= 100:
+        return "พร้อมจำหน่าย"
+
+    if weight >= 50:
+        return "ปริมาณปานกลาง"
+
+    if weight > 0:
+        return "ปริมาณน้อย"
+
+    return "ไม่มีสินค้า"
+
+
+def get_stock_status_class(weight_kg):
+    weight = to_float(weight_kg)
+
+    if weight >= 100:
+        return "ready"
+
+    if weight > 0:
+        return "low"
+
+    return "empty"
+
 
 def load_stock_items():
-    """
-    โหลดข้อมูลสต๊อกคงเหลือของพลาสติกทุกประเภทย่อย
-    ใช้ LEFT JOIN เพื่อให้เห็นรายการที่ยังไม่มี stock_summary เป็น 0 กก.
-    """
     rows = fetch_all(
         """
         SELECT
@@ -1012,37 +1181,43 @@ def load_stock_items():
 
         row["total_weight"] = weight
         row["total_weight_kg"] = weight
+        row["stock_status"] = get_stock_status(weight)
+        row["status_text"] = row["stock_status"]
+        row["status_class"] = get_stock_status_class(weight)
         row["last_in_datetime"] = format_datetime_th(row.get("last_in_datetime"))
         row["updated_at"] = format_datetime_th(row.get("updated_at"))
 
     return rows
 
 
-def load_stock_movements(limit=50):
+def load_stock_movements(limit=100):
     """
-    โหลดประวัติการเคลื่อนไหวของสต๊อกล่าสุด
-    ใช้สำหรับตารางด้านล่างของหน้า Stock
+    โหลดประวัติการเคลื่อนไหวของสต๊อก
+    ใช้สำหรับกรณีต้องการ reuse ในอนาคต
     """
+
     rows = fetch_all(
         """
         SELECT
             sm.movement_id,
             sm.subtype_id,
             sm.purchase_item_id,
+            sm.stock_export_item_id,
             sm.movement_type,
-            sm.quantity_kg,
-            sm.balance_after_kg,
-            sm.note,
+            COALESCE(sm.quantity_kg, 0) AS quantity_kg,
+            COALESCE(sm.balance_after_kg, 0) AS balance_after_kg,
+            COALESCE(sm.note, '-') AS note,
             sm.created_at,
-            pt.type_code,
-            pt.type_name_th,
-            ps.subtype_code,
-            ps.subtype_name
+            COALESCE(pt.type_code, '-') AS type_code,
+            COALESCE(pt.type_name_th, '-') AS type_name_th,
+            COALESCE(ps.subtype_code, '-') AS subtype_code,
+            COALESCE(ps.subtype_name, '-') AS subtype_name
         FROM stock_movements sm
-        INNER JOIN plastic_subtypes ps
+        LEFT JOIN plastic_subtypes ps
             ON sm.subtype_id = ps.subtype_id
-        INNER JOIN plastic_types pt
+        LEFT JOIN plastic_types pt
             ON ps.type_id = pt.type_id
+        WHERE sm.movement_type NOT IN ('SALE_OUT_CANCEL', 'RETURN')
         ORDER BY sm.created_at DESC, sm.movement_id DESC
         LIMIT %s
         """,
@@ -1050,13 +1225,17 @@ def load_stock_movements(limit=50):
     )
 
     for row in rows:
-        row["quantity_kg"] = to_float(row.get("quantity_kg"))
+        row["quantity_kg"] = abs(to_float(row.get("quantity_kg")))
         row["balance_after_kg"] = to_float(row.get("balance_after_kg"))
         row["created_at"] = format_datetime_th(row.get("created_at"))
+        row["note"] = row.get("note") or "-"
 
     return rows
 
-# ----- stock_export_service.py -----
+
+# =========================================================
+# STOCK EXPORT SERVICE
+# =========================================================
 
 def load_stock_buyers():
     return fetch_all(
@@ -1075,21 +1254,6 @@ def load_stock_buyers():
         ORDER BY buyer_name ASC
         """
     )
-
-
-def get_stock_status(weight_kg):
-    weight = to_float(weight_kg)
-
-    if weight >= 100:
-        return "พร้อมจำหน่าย"
-
-    if weight >= 50:
-        return "ปริมาณปานกลาง"
-
-    if weight > 0:
-        return "ปริมาณน้อย"
-
-    return "ไม่มีสินค้า"
 
 
 def load_exportable_stock_items():
@@ -1130,6 +1294,7 @@ def load_exportable_stock_items():
         row["purchase_price"] = purchase_price
         row["suggested_export_price"] = round(purchase_price + 2, 2) if purchase_price > 0 else 0
         row["status_text"] = get_stock_status(weight)
+        row["status_class"] = get_stock_status_class(weight)
 
     return rows
 
@@ -1146,7 +1311,7 @@ def generate_export_no(cursor):
     )
 
     row = cursor.fetchone()
-    year_text = __import__("datetime").datetime.now().strftime("%Y")
+    year_text = datetime.now().strftime("%Y")
 
     if not row or not row.get("export_no"):
         return f"EXP-{year_text}-0001"
@@ -1331,7 +1496,7 @@ def create_stock_export_record(
                 (
                     subtype_id,
                     export_item_id,
-                    weight_kg * -1,
+                    weight_kg,
                     new_balance,
                     f"จำหน่ายออกเลขที่ {export_no}",
                 ),
@@ -1409,7 +1574,10 @@ def load_stock_export_history(keyword=""):
 
     return rows
 
-# ----- purchase_service.py -----
+
+# =========================================================
+# PURCHASE SERVICE
+# =========================================================
 
 def has_trigger(trigger_name):
     row = fetch_one(
@@ -1421,6 +1589,7 @@ def has_trigger(trigger_name):
         """,
         (trigger_name,),
     )
+
     return bool(row and row.get("trigger_count", 0) > 0)
 
 
@@ -1445,7 +1614,12 @@ def normalize_purchase_items(items):
         if not subtype_id or weight_kg <= 0:
             raise ValueError(f"รายการที่ {index} ไม่ถูกต้อง กรุณาเลือกประเภทย่อยและกรอกน้ำหนักมากกว่า 0")
 
-        normalized.append({"subtype_id": subtype_id, "weight_kg": weight_kg})
+        normalized.append(
+            {
+                "subtype_id": subtype_id,
+                "weight_kg": weight_kg,
+            }
+        )
 
     return normalized
 
@@ -1492,7 +1666,13 @@ def update_stock_without_trigger(cursor, subtype_id, purchase_item_id, weight_kg
         )
         VALUES (%s, %s, 'PURCHASE_IN', %s, %s, %s)
         """,
-        (subtype_id, purchase_item_id, weight_kg, balance_after_kg, f"รับเข้าจากรายการซื้อเลขที่ {purchase_no}"),
+        (
+            subtype_id,
+            purchase_item_id,
+            weight_kg,
+            balance_after_kg,
+            f"รับเข้าจากรายการซื้อเลขที่ {purchase_no}",
+        ),
     )
 
 
@@ -1616,13 +1796,20 @@ def create_purchase_bill_record(customer_id, items):
 def create_purchase_record(customer_id, subtype_id, weight_kg):
     return create_purchase_bill_record(
         customer_id=customer_id,
-        items=[{"subtype_id": subtype_id, "weight_kg": weight_kg}],
+        items=[
+            {
+                "subtype_id": subtype_id,
+                "weight_kg": weight_kg,
+            }
+        ],
     )
 
-# ----- ai_service.py -----
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-MODEL_FILE_PATH = MODEL_PATH if os.path.isabs(MODEL_PATH) else os.path.join(BASE_DIR, MODEL_PATH)
+# =========================================================
+# AI SERVICE
+# =========================================================
+
+MODEL_FILE_PATH = MODEL_PATH if os.path.isabs(MODEL_PATH) else str(BASE_DIR / MODEL_PATH)
 
 model = None
 MODEL_LOADED = False
@@ -1630,10 +1817,6 @@ MODEL_ERROR = None
 
 
 def _load_keras_model(model_path):
-    """
-    รองรับ TensorFlow/Keras หลายเวอร์ชัน
-    บางเวอร์ชันรับ safe_mode=False บางเวอร์ชันไม่รับ
-    """
     try:
         return tf.keras.models.load_model(
             model_path,
@@ -1678,30 +1861,23 @@ def load_ai_model():
         model = _load_keras_model(MODEL_FILE_PATH)
         MODEL_LOADED = True
         MODEL_ERROR = None
-        print(f"[AI] โหลดโมเดลสำเร็จ: {MODEL_FILE_PATH}")
+        print(f"[AI] Model loaded successfully: {MODEL_FILE_PATH}")
 
     except Exception as e:
         model = None
         MODEL_LOADED = False
         MODEL_ERROR = f"โหลดโมเดลไม่สำเร็จ: {e}"
-        print(f"[AI] โหลดโมเดลไม่สำเร็จ: {e}")
+        print(f"[AI] Model load failed: {e}")
 
 
 load_ai_model()
 
 
 def get_model_status():
-    """
-    คงรูปแบบเดิมไว้ เพราะ main_controller.py เดิมใช้:
-    model_loaded, model_error = get_model_status()
-    """
     return MODEL_LOADED, MODEL_ERROR
 
 
 def get_model_status_detail():
-    """
-    ใช้สำหรับ debug ผ่าน /api/ai_status
-    """
     return {
         "model_loaded": MODEL_LOADED,
         "model_error": MODEL_ERROR,
@@ -1730,9 +1906,6 @@ def preprocess_image(file_storage):
     image = image.resize((224, 224))
     image_array = np.array(image, dtype=np.float32)
 
-    # หมายเหตุ:
-    # EfficientNetB0 ของ Keras มักมี preprocessing อยู่ในตัวโมเดลแล้ว
-    # จึงยังไม่หาร 255 ตรงนี้ เพื่อให้ตรงกับตอนเทรนส่วนใหญ่
     return np.expand_dims(image_array, axis=0)
 
 
@@ -1804,12 +1977,10 @@ def predict_plastic_from_file(image_file):
         "database_warning": database_warning,
     }
 
-# =========================================================
-# ROUTES
-# =========================================================
 
-
-# ----- auth_controller.py -----
+# =========================================================
+# ROUTES: AUTH
+# =========================================================
 
 @app.route("/login", methods=["GET", "POST"])
 def login_page():
@@ -1839,19 +2010,25 @@ def login_page():
 
     return render_template("login.html")
 
+
 @app.route("/logout")
 def logout():
     session.clear()
     flash("ออกจากระบบเรียบร้อยแล้ว", "success")
     return redirect(url_for("login_page"))
 
-# ----- main_controller.py -----
+
+# =========================================================
+# ROUTES: MAIN
+# =========================================================
 
 @app.route("/")
 def home():
     if "user_id" not in session:
         return redirect(url_for("login_page"))
+
     return redirect(url_for("dashboard_page"))
+
 
 @app.route("/dashboard")
 @login_required
@@ -1868,6 +2045,7 @@ def dashboard_page():
         top_plastics=top_plastics,
     )
 
+
 @app.route("/purchase")
 @login_required
 def purchase_page():
@@ -1881,30 +2059,36 @@ def purchase_page():
         catalog=catalog,
     )
 
+
 @app.route("/stock")
 @login_required
 def stock_page():
-    stock_items = load_stock_items()
-    stock_movements = load_stock_movements()
+    rows = load_stock_items()
 
     return render_template(
         "stock.html",
         current_page="stock",
-        stock_items=stock_items,
-        stock_movements=stock_movements,
+        active_page="stock",
+        rows=rows,
+        stock_items=rows,
     )
+
+
 
 @app.route("/receipt-history")
 @login_required
 def receipt_history_page():
     keyword = request.args.get("q", "").strip()
-    receipt_history = load_receipt_history(keyword)
+    filter_type = request.args.get("filter", "all").strip().lower()
+
+    receipt_history = load_receipt_history(keyword, filter_type)
 
     return render_template(
         "receipt_history.html",
         current_page="receipt",
         receipt_history=receipt_history,
         receipt_search=keyword,
+        receipt_filter=filter_type,
     )
 
 @app.route("/receipt")
@@ -1929,6 +2113,7 @@ def receipt_page():
         receipt_items=receipt_items,
     )
 
+
 @app.route("/ai-detection")
 @login_required
 def ai_page():
@@ -1941,13 +2126,23 @@ def ai_page():
         model_error=model_error,
     )
 
-# ----- customer_controller.py -----
+
+# =========================================================
+# ROUTES: CUSTOMERS
+# =========================================================
 
 @app.route("/customers")
 @login_required
 def customers_page():
-    customers = load_customers()
-    return render_template("customers.html", current_page="customers", customers=customers)
+    keyword = request.args.get("q", "").strip()
+    customers = load_customers(keyword)
+
+    return render_template(
+        "customers.html",
+        current_page="customers",
+        customers=customers,
+        customer_search=keyword,
+    )
 
 @app.route("/customers/create", methods=["POST"])
 @login_required
@@ -1963,7 +2158,9 @@ def create_customer():
 
     create_customer_record(full_name, phone, address, note)
     flash("เพิ่มลูกค้าเรียบร้อยแล้ว", "success")
+
     return redirect(url_for("customers_page"))
+
 
 @app.route("/customers/<int:customer_id>/edit", methods=["GET", "POST"])
 @login_required
@@ -1976,14 +2173,21 @@ def edit_customer(customer_id):
 
         update_customer_record(customer_id, full_name, phone, address, note)
         flash("แก้ไขข้อมูลลูกค้าเรียบร้อยแล้ว", "success")
+
         return redirect(url_for("customers_page"))
 
     customer = get_customer(customer_id)
+
     if not customer:
         flash("ไม่พบข้อมูลลูกค้า", "error")
         return redirect(url_for("customers_page"))
 
-    return render_template("customer_edit.html", current_page="customers", customer=customer)
+    return render_template(
+        "customer_edit.html",
+        current_page="customers",
+        customer=customer,
+    )
+
 
 @app.route("/customers/<int:customer_id>/delete")
 @login_required
@@ -1996,22 +2200,33 @@ def delete_customer(customer_id):
 
     try:
         delete_type = delete_customer_record(customer_id)
+
         if delete_type == "soft_delete":
             flash("ลบลูกค้าออกจากหน้าจัดการแล้ว โดยยังเก็บประวัติรายการรับซื้อและใบเสร็จไว้", "success")
         else:
             flash("ลบข้อมูลลูกค้าเรียบร้อยแล้ว", "success")
+
     except Error as e:
         flash(f"ไม่สามารถลบลูกค้าได้: {e}", "error")
 
     return redirect(url_for("customers_page"))
 
-# ----- plastic_controller.py -----
+
+# =========================================================
+# ROUTES: PLASTIC TYPES
+# =========================================================
 
 @app.route("/plastic-types")
 @login_required
 def plastic_types_page():
     catalog = load_catalog()
-    return render_template("plastic_types.html", current_page="plastic_types", catalog=catalog)
+
+    return render_template(
+        "plastic_types.html",
+        current_page="plastic_types",
+        catalog=catalog,
+    )
+
 
 @app.route("/plastic-types/create", methods=["GET", "POST"])
 @login_required
@@ -2028,8 +2243,15 @@ def create_plastic_subtype():
             return redirect(url_for("plastic_types_page"))
 
         try:
-            create_plastic_subtype_record(type_id, subtype_code, subtype_name, description, unit_price)
+            create_plastic_subtype_record(
+                type_id=type_id,
+                subtype_code=subtype_code,
+                subtype_name=subtype_name,
+                description=description,
+                unit_price=unit_price,
+            )
             flash("เพิ่มประเภทย่อยเรียบร้อยแล้ว", "success")
+
         except Error as e:
             flash(f"เกิดข้อผิดพลาด: {e}", "error")
 
@@ -2058,6 +2280,7 @@ def create_plastic_subtype():
     <a href="/plastic-types">กลับ</a>
     """
 
+
 @app.route("/plastic-types/<int:subtype_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_plastic_subtype(subtype_id):
@@ -2068,14 +2291,21 @@ def edit_plastic_subtype(subtype_id):
 
         update_plastic_subtype_record(subtype_id, subtype_name, description, is_active)
         flash("แก้ไขประเภทย่อยเรียบร้อยแล้ว", "success")
+
         return redirect(url_for("plastic_types_page"))
 
     subtype = get_plastic_subtype(subtype_id)
+
     if not subtype:
         flash("ไม่พบข้อมูลประเภทย่อย", "error")
         return redirect(url_for("plastic_types_page"))
 
-    return render_template("plastic_type_edit.html", current_page="plastic_types", subtype=subtype)
+    return render_template(
+        "plastic_type_edit.html",
+        current_page="plastic_types",
+        subtype=subtype,
+    )
+
 
 @app.route("/plastic-types/<int:subtype_id>/delete")
 @login_required
@@ -2083,10 +2313,12 @@ def delete_plastic_subtype(subtype_id):
     try:
         delete_plastic_subtype_record(subtype_id)
         flash("ลบประเภทย่อยเรียบร้อยแล้ว", "success")
+
     except Error:
         flash("ไม่สามารถลบประเภทย่อยได้ เนื่องจากมีข้อมูลอ้างอิงอยู่", "error")
 
     return redirect(url_for("plastic_types_page"))
+
 
 @app.route("/plastic-types/<int:subtype_id>/price", methods=["POST"])
 @login_required
@@ -2100,12 +2332,16 @@ def update_price(subtype_id):
     try:
         update_purchase_price_record(subtype_id, unit_price)
         flash("อัปเดตราคารับซื้อเรียบร้อยแล้ว", "success")
+
     except Error as e:
         flash(f"เกิดข้อผิดพลาดในการอัปเดตราคา: {e}", "error")
 
     return redirect(url_for("plastic_types_page"))
 
-# ----- purchase_controller.py -----
+
+# =========================================================
+# ROUTES: PURCHASE
+# =========================================================
 
 @app.route("/purchase/create", methods=["POST"])
 @login_required
@@ -2116,8 +2352,10 @@ def create_purchase():
 
     if not customer_id:
         message = "กรุณาเลือกลูกค้า"
+
         if is_ajax:
             return error_response(message, 400)
+
         flash(message, "error")
         return redirect(url_for("purchase_page"))
 
@@ -2127,7 +2365,9 @@ def create_purchase():
                 items = json.loads(items_json)
             except json.JSONDecodeError:
                 raise ValueError("รูปแบบข้อมูลรายการในบิลไม่ถูกต้อง")
+
             result = create_purchase_bill_record(customer_id, items)
+
         else:
             subtype_id = request.form.get("subtype_id", type=int)
             weight_kg = request.form.get("weight_kg", type=float)
@@ -2139,6 +2379,7 @@ def create_purchase():
 
         if is_ajax:
             receipt, receipt_items = load_receipt_data(result["purchase_id"])
+
             return jsonify(
                 json_ready(
                     {
@@ -2154,21 +2395,28 @@ def create_purchase():
             )
 
         flash("บันทึกรายการรับซื้อและสร้างใบเสร็จเรียบร้อยแล้ว", "success")
+
         return redirect(url_for("receipt_page", purchase_id=result["purchase_id"]))
 
     except Exception as e:
         message = f"เกิดข้อผิดพลาดในการบันทึกรายการ: {e}"
+
         if is_ajax:
             return error_response(message, 500)
+
         flash(message, "error")
         return redirect(url_for("purchase_page"))
 
-# ----- ai_controller.py -----
+
+# =========================================================
+# ROUTES: AI
+# =========================================================
 
 @app.route("/api/ai_status", methods=["GET"])
 @login_required
 def ai_status():
     return jsonify(json_ready(get_model_status_detail()))
+
 
 @app.route("/api/predict_plastic", methods=["POST"])
 @login_required
@@ -2208,7 +2456,10 @@ def predict_plastic():
             e,
         )
 
-# ----- stock_export_controller.py -----
+
+# =========================================================
+# ROUTES: STOCK EXPORT
+# =========================================================
 
 @app.route("/stock-export")
 @login_required
@@ -2222,6 +2473,7 @@ def stock_export_page():
         buyers=buyers,
         stock_items=stock_items,
     )
+
 
 @app.route("/stock-export/create", methods=["POST"])
 @login_required
@@ -2251,6 +2503,7 @@ def stock_export_create():
         flash(f"ไม่สามารถบันทึกจำหน่ายออกได้: {e}", "error")
         return redirect(url_for("stock_export_page"))
 
+
 @app.route("/stock-export-history")
 @login_required
 def stock_export_history_page():
@@ -2264,18 +2517,24 @@ def stock_export_history_page():
         export_search=keyword,
     )
 
-# ----- error_controller.py -----
+
+# =========================================================
+# ERROR HANDLERS
+# =========================================================
 
 @app.errorhandler(404)
 def not_found(error):
     if request.path.startswith("/api/"):
         return error_response("ไม่พบ API ที่เรียกใช้งาน", 404)
+
     return "<h2>404 - ไม่พบหน้าที่ต้องการ</h2><a href='/dashboard'>กลับ Dashboard</a>", 404
+
 
 @app.errorhandler(500)
 def internal_error(error):
     if request.path.startswith("/api/"):
         return error_response("ระบบเกิดข้อผิดพลาดภายใน", 500, error)
+
     return "<h2>500 - ระบบเกิดข้อผิดพลาดภายใน</h2><a href='/dashboard'>กลับ Dashboard</a>", 500
 
 

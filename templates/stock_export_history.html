@@ -5,7 +5,7 @@
 {% block page_heading %}ประวัติจำหน่ายออก{% endblock %}
 
 {% block page_subtitle %}
-<p class="page-subtitle">ตรวจสอบรายการขายพลาสติกออกจากคลังให้ผู้รับซื้อปลายทาง</p>
+<p class="page-subtitle">ตรวจสอบรายการขายพลาสติกออกจากคลังแบบสรุป อ่านง่าย และเหมาะกับการใช้งานจริง</p>
 {% endblock %}
 
 {% block page_actions %}
@@ -16,44 +16,46 @@
 {% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260523-ui">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export_history.css') }}?v={{ asset_version('css/stock_export_history.css') }}">
 {% endblock %}
 
 {% block content %}
-<section class="export-page">
-  <section class="export-card">
-    <div class="export-card-head history-head">
-      <div>
+<section class="export-history-page">
+
+  <section class="history-card">
+
+    <div class="history-card-head">
+      <div class="history-title">
         <h3>รายการจำหน่ายออกทั้งหมด</h3>
-        <p>ค้นหาได้จากเลขที่รายการ หรือชื่อผู้รับซื้อปลายทาง</p>
       </div>
 
-      <form class="export-search-form" method="get" action="{{ url_for('stock_export_history_page') }}">
-        <input
-          type="text"
-          name="q"
-          value="{{ export_search or '' }}"
-          placeholder="ค้นหาเลขที่ / ผู้รับซื้อ"
-        >
-        <button type="submit">
+      <form class="history-search-form" method="get" action="{{ url_for('stock_export_history_page') }}">
+        <div class="history-search-box">
           <i class="bi bi-search"></i>
+          <input
+            type="text"
+            name="q"
+            value="{{ export_search or '' }}"
+            placeholder="ค้นหาเลขที่ / ผู้รับซื้อ"
+          >
+        </div>
+
+        <button class="history-search-btn" type="submit">
           ค้นหา
         </button>
       </form>
     </div>
 
-    <div class="export-table-wrap">
-      <table class="export-table">
+    <div class="history-table-wrap">
+      <table class="history-table">
         <thead>
           <tr>
             <th>เลขที่</th>
             <th>วันที่</th>
-            <th>ผู้รับซื้อปลายทาง</th>
-            <th class="text-center">จำนวนรายการ</th>
+            <th>ผู้รับซื้อ</th>
+            <th class="text-center">จำนวน</th>
             <th class="text-right">น้ำหนักรวม</th>
             <th class="text-right">มูลค่ารวม</th>
-            <th>ขนส่ง</th>
-            <th class="text-center">สถานะ</th>
           </tr>
         </thead>
 
@@ -66,12 +68,16 @@
               </td>
 
               <td>
-                <span class="muted-text">{{ export.export_date }}</span>
+                <span class="muted-text">
+                  {{ export.export_date }}
+                </span>
               </td>
 
               <td>
                 <strong>{{ export.buyer_name }}</strong>
-                <small>{{ export.buyer_code }}</small>
+                {% if export.buyer_code %}
+                  <small>{{ export.buyer_code }}</small>
+                {% endif %}
               </td>
 
               <td class="text-center">
@@ -85,24 +91,11 @@
               <td class="text-right">
                 <strong>฿ {{ "%.2f"|format(export.total_amount|float) }}</strong>
               </td>
-
-              <td>
-                <span class="muted-text">
-                  {{ export.transport_method or '-' }}
-                  {% if export.vehicle_plate %}
-                    <br>{{ export.vehicle_plate }}
-                  {% endif %}
-                </span>
-              </td>
-
-              <td class="text-center">
-                <span class="export-status">สำเร็จ</span>
-              </td>
             </tr>
             {% endfor %}
           {% else %}
             <tr>
-              <td colspan="8" class="export-empty">
+              <td colspan="6" class="history-empty">
                 ยังไม่มีประวัติจำหน่ายออก
               </td>
             </tr>
@@ -110,6 +103,7 @@
         </tbody>
       </table>
     </div>
+
   </section>
 
 </section>

@@ -1,4 +1,4 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}จำหน่ายออก | ระบบร้านรับซื้อพลาสติก{% endblock %}
 
@@ -16,22 +16,23 @@
 {% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v=20260523-ui">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/stock_export.css') }}?v={{ asset_version('css/stock_export.css') }}">
 {% endblock %}
 
 {% block content %}
+
+{% set selected_subtype_id = request.args.get('subtype_id', type=int) %}
+
 <section class="export-page">
   <section class="export-layout">
 
     <form class="export-card export-form-card" method="post" action="{{ url_for('stock_export_create') }}">
       <div class="export-card-head">
-        <div>
-          <h3>บันทึกจำหน่ายออก</h3>
-          <p>กรอกเฉพาะข้อมูลจำเป็น เพื่อลดขั้นตอนการใช้งาน</p>
-        </div>
+        <h3>บันทึกจำหน่ายออก</h3>
       </div>
 
       <div class="export-form-grid">
+
         <div class="form-group full">
           <label for="buyer_id">ผู้รับซื้อปลายทาง</label>
           <select id="buyer_id" name="buyer_id" required>
@@ -46,23 +47,70 @@
 
         <div class="form-group full">
           <label for="subtype_id">พลาสติกในคลัง</label>
+
           <select id="subtype_id" name="subtype_id" required>
-            <option value="">-- เลือกรายการในคลัง --</option>
+            <option value="">-- เลือกพลาสติกในคลัง --</option>
+
             {% for item in stock_items %}
+              {% set stock = item.total_weight_kg|default(0)|float %}
+              {% set price = item.suggested_export_price|default(0)|float %}
+
+              {% if stock >= 100 %}
+                {% set status_code = 'ready' %}
+                {% set status_text = 'พร้อมจำหน่าย' %}
+              {% elif stock >= 50 %}
+                {% set status_code = 'medium' %}
+                {% set status_text = 'ปานกลาง' %}
+              {% elif stock > 0 %}
+                {% set status_code = 'low' %}
+                {% set status_text = 'ปริมาณน้อย' %}
+              {% else %}
+                {% set status_code = 'out' %}
+                {% set status_text = 'หมดสต๊อก' %}
+              {% endif %}
+
               <option
                 value="{{ item.subtype_id }}"
-                data-stock="{{ item.total_weight_kg }}"
-                data-price="{{ item.suggested_export_price }}"
+                data-stock="{{ stock }}"
+                data-price="{{ price }}"
                 data-type="{{ item.type_code }}"
                 data-subtype="{{ item.subtype_name }}"
-                data-status="{{ item.status_text }}"
+                data-status-code="{{ status_code }}"
+                data-status-text="{{ status_text }}"
+                {% if selected_subtype_id == item.subtype_id %}selected{% endif %}
+                {% if stock <= 0 %}disabled{% endif %}
               >
-                {{ item.type_code }} - {{ item.subtype_name }}
-                | คงเหลือ {{ "%.2f"|format(item.total_weight_kg|float) }} กก.
-                | {{ item.status_text }}
+                {{ item.type_code }} - {{ item.subtype_name }} ({{ "%.2f"|format(stock) }} กก.)
               </option>
             {% endfor %}
           </select>
+
+          <div id="stockSelectedInfo" class="stock-selected-info is-hidden">
+            <div class="stock-info-main">
+              <span class="stock-info-label">รายการที่เลือก</span>
+              <strong id="stockSelectedName">-</strong>
+            </div>
+
+            <div class="stock-info-grid">
+              <div class="stock-info-box">
+                <span>คงเหลือ</span>
+                <b id="stockWeight">0.00 กก.</b>
+              </div>
+
+              <div class="stock-info-box">
+                <span>ราคาขายแนะนำ</span>
+                <b id="stockPrice">฿ 0.00</b>
+              </div>
+
+              <div class="stock-info-box status-box">
+                <span>สถานะ</span>
+                <b id="stockStatus" class="stock-status-badge">-</b>
+              </div>
+            </div>
+          </div>
+
+          <small id="stockMessage" class="export-stock-message">
+          </small>
         </div>
 
         <div class="form-group">
@@ -103,6 +151,7 @@
             placeholder="รายละเอียดเพิ่มเติม เช่น ส่งให้โรงงานรอบประจำสัปดาห์"
           ></textarea>
         </div>
+
       </div>
 
       <div class="export-total-box">
@@ -124,32 +173,36 @@
 
     <aside class="export-card export-side-card">
       <div class="export-card-head">
-        <div>
-          <h3>รายการในคลัง</h3>
-          <p>แสดงพลาสติกที่มีคงเหลือและสามารถจำหน่ายออกได้</p>
-        </div>
+        <h3>รายการในคลัง</h3>
       </div>
 
       <div class="export-stock-list">
         {% if stock_items %}
           {% for item in stock_items %}
-          <div class="export-stock-item">
-            <div>
-              <span class="plastic-pill type-{{ item.type_code|lower }}">{{ item.type_code }}</span>
-              <strong>{{ item.subtype_name }}</strong>
-            </div>
+            {% set stock = item.total_weight_kg|default(0)|float %}
 
-            <div class="stock-item-right">
-              <b>{{ "%.2f"|format(item.total_weight_kg|float) }} กก.</b>
-              {% if item.total_weight_kg|float >= 100 %}
-                <span class="mini-status ready">พร้อมจำหน่าย</span>
-              {% elif item.total_weight_kg|float >= 50 %}
-                <span class="mini-status medium">ปานกลาง</span>
-              {% else %}
-                <span class="mini-status low">ปริมาณน้อย</span>
-              {% endif %}
+            <div class="export-stock-item">
+              <div>
+                <span class="plastic-pill type-{{ item.type_code|lower }}">
+                  {{ item.type_code }}
+                </span>
+                <strong>{{ item.subtype_name }}</strong>
+              </div>
+
+              <div class="stock-item-right">
+                <b>{{ "%.2f"|format(stock) }} กก.</b>
+
+                {% if stock >= 100 %}
+                  <span class="mini-status ready">พร้อมจำหน่าย</span>
+                {% elif stock >= 50 %}
+                  <span class="mini-status medium">ปานกลาง</span>
+                {% elif stock > 0 %}
+                  <span class="mini-status low">ปริมาณน้อย</span>
+                {% else %}
+                  <span class="mini-status out">หมดสต๊อก</span>
+                {% endif %}
+              </div>
             </div>
-          </div>
           {% endfor %}
         {% else %}
           <div class="export-empty">
@@ -170,6 +223,18 @@
     const weightInput = document.getElementById("weight_kg");
     const unitPriceInput = document.getElementById("unit_price");
     const exportTotal = document.getElementById("exportTotal");
+
+    const stockSelectedInfo = document.getElementById("stockSelectedInfo");
+    const stockSelectedName = document.getElementById("stockSelectedName");
+    const stockWeight = document.getElementById("stockWeight");
+    const stockPrice = document.getElementById("stockPrice");
+    const stockStatus = document.getElementById("stockStatus");
+    const stockMessage = document.getElementById("stockMessage");
+
+    if (!subtypeSelect || !weightInput || !unitPriceInput || !exportTotal) {
+      return;
+    }
+
     function money(value) {
       return "฿ " + Number(value || 0).toLocaleString("th-TH", {
         minimumFractionDigits: 2,
@@ -178,10 +243,19 @@
     }
 
     function getSelectedOption() {
-      if (!subtypeSelect || !subtypeSelect.selectedOptions.length) {
+      if (!subtypeSelect.selectedOptions.length) {
         return null;
       }
-      return subtypeSelect.selectedOptions[0];
+
+      const option = subtypeSelect.selectedOptions[0];
+      return option && option.value ? option : null;
+    }
+
+    function setMessage(text, isWarning) {
+      if (!stockMessage) return;
+
+      stockMessage.textContent = text;
+      stockMessage.classList.toggle("is-warning", Boolean(isWarning));
     }
 
     function updateTotal() {
@@ -190,52 +264,116 @@
       exportTotal.textContent = money(weight * price);
     }
 
-    if (subtypeSelect) {
-      subtypeSelect.addEventListener("change", function () {
-        const option = getSelectedOption();
+    function resetStockInfo() {
+      if (stockSelectedInfo) {
+        stockSelectedInfo.classList.add("is-hidden");
+      }
 
-        if (!option || !option.value) {
-          unitPriceInput.value = "";
-          updateTotal();
-          return;
-        }
+      if (stockSelectedName) {
+        stockSelectedName.textContent = "-";
+      }
 
-        const stock = Number(option.dataset.stock || 0);
-        const price = Number(option.dataset.price || 0);
-        const status = option.dataset.status || "-";
+      if (stockWeight) {
+        stockWeight.textContent = "0.00 กก.";
+      }
 
-        stockHint.textContent = "คงเหลือในคลัง " + stock.toFixed(2) + " กก. | สถานะ " + status;
+      if (stockPrice) {
+        stockPrice.textContent = money(0);
+      }
 
-        if (price > 0) {
-          unitPriceInput.value = price.toFixed(2);
-        }
+      if (stockStatus) {
+        stockStatus.textContent = "-";
+        stockStatus.className = "stock-status-badge";
+      }
 
-        if (weightInput) {
-          weightInput.max = stock;
-        }
-
-        updateTotal();
-      });
+      setMessage("เลือกพลาสติกในคลังเพื่อดูน้ำหนักคงเหลือและราคาขายแนะนำ", false);
     }
 
-    if (weightInput) {
-      weightInput.addEventListener("input", function () {
-        const option = getSelectedOption();
-        const stock = option ? Number(option.dataset.stock || 0) : 0;
-        const weight = Number(weightInput.value || 0);
+    function updateStockInfo(option) {
+      if (!option) {
+        resetStockInfo();
+        return;
+      }
 
-        if (stock > 0 && weight > stock) {
-          stockHint.textContent = "น้ำหนักเกินคงเหลือในคลัง มีได้สูงสุด " + stock.toFixed(2) + " กก.";
-        }
+      const stock = Number(option.dataset.stock || 0);
+      const price = Number(option.dataset.price || 0);
+      const type = option.dataset.type || "-";
+      const subtype = option.dataset.subtype || "-";
+      const statusCode = option.dataset.statusCode || "ready";
+      const statusText = option.dataset.statusText || "-";
 
-        updateTotal();
-      });
+      if (stockSelectedInfo) {
+        stockSelectedInfo.classList.remove("is-hidden");
+      }
+
+      if (stockSelectedName) {
+        stockSelectedName.textContent = type + " - " + subtype;
+      }
+
+      if (stockWeight) {
+        stockWeight.textContent = stock.toFixed(2) + " กก.";
+      }
+
+      if (stockPrice) {
+        stockPrice.textContent = money(price);
+      }
+
+      if (stockStatus) {
+        stockStatus.textContent = statusText;
+        stockStatus.className = "stock-status-badge " + statusCode;
+      }
+
+      setMessage("กรอกน้ำหนักที่ต้องการจำหน่ายออก โดยต้องไม่เกินจำนวนคงเหลือในคลัง", false);
     }
 
-    if (unitPriceInput) {
-      unitPriceInput.addEventListener("input", updateTotal);
+    subtypeSelect.addEventListener("change", function () {
+      const option = getSelectedOption();
+
+      if (!option) {
+        unitPriceInput.value = "";
+        weightInput.removeAttribute("max");
+        updateStockInfo(null);
+        updateTotal();
+        return;
+      }
+
+      const stock = Number(option.dataset.stock || 0);
+      const price = Number(option.dataset.price || 0);
+
+      weightInput.max = stock.toFixed(2);
+
+      if (price > 0) {
+        unitPriceInput.value = price.toFixed(2);
+      }
+
+      updateStockInfo(option);
+      updateTotal();
+    });
+
+    weightInput.addEventListener("input", function () {
+      const option = getSelectedOption();
+      const stock = option ? Number(option.dataset.stock || 0) : 0;
+      const weight = Number(weightInput.value || 0);
+
+      if (option && stock > 0 && weight > stock) {
+        setMessage("น้ำหนักเกินคงเหลือในคลัง จำหน่ายได้สูงสุด " + stock.toFixed(2) + " กก.", true);
+      } else if (option) {
+        setMessage("กรอกน้ำหนักที่ต้องการจำหน่ายออก โดยต้องไม่เกินจำนวนคงเหลือในคลัง", false);
+      } else {
+        resetStockInfo();
+      }
+
+      updateTotal();
+    });
+
+    unitPriceInput.addEventListener("input", updateTotal);
+
+    if (subtypeSelect.value) {
+      subtypeSelect.dispatchEvent(new Event("change"));
+    } else {
+      resetStockInfo();
+      updateTotal();
     }
   })();
 </script>
 {% endblock %}
-

@@ -1,4 +1,3 @@
-{% set template_version = '20260525-sidebar-order-fixed' %}
 <!DOCTYPE html>
 <html lang="th">
 
@@ -12,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   >
 
@@ -23,16 +22,20 @@
   >
 
   <!-- CSS หลักของระบบ -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}?v={{ template_version }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}?v={{ template_version }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v={{ template_version }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}?v={{ asset_version('css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}?v={{ asset_version('css/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v={{ asset_version('css/components.css') }}">
 
   <!-- CSS เฉพาะหน้า -->
   {% block head_extra %}{% endblock %}
 
   <!-- CSS responsive / ui กลาง -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}?v={{ template_version }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/ui-clean.css') }}?v={{ template_version }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}?v={{ asset_version('css/responsive.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ui-clean.css') }}?v={{ asset_version('css/ui-clean.css') }}">
+
+  <!-- CSS Sidebar -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar-green.css') }}?v=20260526-balanced-pastel-sidebar">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app-green-theme.css') }}?v=20260526-action-buttons-dark-green-full">
 
   <style>
     body .app-shell .main-area .topbar {
@@ -54,16 +57,18 @@
 
     body .app-shell .main-area .topbar .page-header-box {
       width: 100% !important;
-      min-height: 88px !important;
+      min-height: 82px !important;
       display: flex !important;
       align-items: center !important;
-      justify-content: flex-start !important;
+      justify-content: space-between !important;
       gap: 16px !important;
       padding: 16px 20px !important;
-      background: #ffffff !important;
-      border: 1px solid #dde8e1 !important;
+
+      background: linear-gradient(90deg, #edf9f2 0%, #ffffff 74%) !important;
+      border: 1px solid #cfe8da !important;
+      border-left: 8px solid #0f6b3f !important;
       border-radius: 18px !important;
-      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06) !important;
+      box-shadow: 0 10px 24px rgba(15, 81, 50, 0.08) !important;
     }
 
     body .app-shell .main-area .topbar .page-title-wrap {
@@ -71,6 +76,7 @@
       align-items: center !important;
       gap: 14px !important;
       min-width: 0 !important;
+      flex: 1 1 auto !important;
     }
 
     body .app-shell .main-area .topbar .page-title-icon {
@@ -81,15 +87,16 @@
       align-items: center !important;
       justify-content: center !important;
       flex-shrink: 0 !important;
-      background: #e8f7ef !important;
-      border: 1px solid #d4eadb !important;
+
+      background: #dcf4e7 !important;
+      border: 1px solid #bfe5cf !important;
       border-radius: 16px !important;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
     }
 
     body .app-shell .main-area .topbar .page-title-icon i {
       font-size: 22px !important;
-      color: #168754 !important;
+      color: #0f6b3f !important;
       line-height: 1 !important;
     }
 
@@ -98,53 +105,87 @@
     }
 
     body .app-shell .main-area .topbar .page-heading {
-      margin: 0 0 4px !important;
+      margin: 0 !important;
       padding: 0 !important;
-      color: #0f172a !important;
-      font-size: 22px !important;
+      color: #0b3d2e !important;
+      font-size: 24px !important;
       font-weight: 900 !important;
-      line-height: 1.28 !important;
+      line-height: 1.25 !important;
       letter-spacing: -0.02em !important;
     }
 
-    body .app-shell .main-area .topbar .page-subtitle {
-      margin: 0 !important;
-      padding: 0 !important;
-      color: #64748b !important;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-      line-height: 1.5 !important;
+    body .app-shell .main-area .topbar .page-actions {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 10px !important;
+      flex-shrink: 0 !important;
+      margin-left: auto !important;
+    }
+
+    body .app-shell .main-area .topbar .page-action-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      min-height: 42px !important;
+      padding: 0 16px !important;
+      border: none !important;
+      border-radius: 12px !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
+      transition: 0.18s ease !important;
+    }
+
+    body .app-shell .main-area .topbar .page-action-btn.primary {
+      background: #198754 !important;
+      color: #ffffff !important;
+      box-shadow: 0 12px 24px rgba(25, 135, 84, 0.22) !important;
+    }
+
+    body .app-shell .main-area .topbar .page-action-btn.primary:hover {
+      background: #157347 !important;
+      transform: translateY(-1px) !important;
+    }
+
+    body .app-shell .main-area .topbar .page-action-btn.light {
+      background: #edf7f1 !important;
+      color: #0b3d2e !important;
+      border: 1px solid #cfe8da !important;
+    }
+
+    body .app-shell .main-area .topbar .page-action-btn.light:hover {
+      background: #dff3e8 !important;
+      color: #0f5132 !important;
+      transform: translateY(-1px) !important;
     }
 
     body .app-shell .main-area .content-area {
       margin-top: 0 !important;
     }
 
-    /* บังคับ Sidebar ให้เรียงตาม HTML จริง */
-    body .sidebar .nav-menu {
-      display: flex !important;
-      flex-direction: column !important;
-    }
-
-    body .sidebar .nav-menu .nav-link {
-      order: initial !important;
-      flex-shrink: 0 !important;
+    body .app-shell .main-area .topbar .page-subtitle,
+    body .app-shell .main-area .page-subtitle {
+      display: none !important;
     }
 
     @media (max-width: 900px) {
-      body .app-shell .main-area .topbar {
-        margin-bottom: 14px !important;
-      }
-
       body .app-shell .main-area .topbar .page-header-box {
         min-height: auto !important;
         padding: 14px !important;
         border-radius: 16px !important;
+        align-items: flex-start !important;
+        flex-direction: column !important;
       }
 
-      body .app-shell .main-area .topbar .page-title-wrap {
+      body .app-shell .main-area .topbar .page-actions {
         width: 100% !important;
-        gap: 12px !important;
+        justify-content: flex-start !important;
+        margin-left: 0 !important;
       }
     }
 
@@ -156,149 +197,174 @@
         border-radius: 14px !important;
       }
 
-      body .app-shell .main-area .topbar .page-title-icon i {
-        font-size: 20px !important;
-      }
-
       body .app-shell .main-area .topbar .page-heading {
-        font-size: 20px !important;
+        font-size: 21px !important;
       }
 
-      body .app-shell .main-area .topbar .page-subtitle {
-        font-size: 12.5px !important;
+      body .app-shell .main-area .topbar .page-action-btn {
+        width: 100% !important;
       }
     }
   </style>
+
+  <!-- CSS ธีมเขียวของทุกหน้า ต้องอยู่ท้ายสุดเพื่อทับสีเดิม -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app-green-theme.css') }}?v=20260526-app-green-theme-buttons-unified">
 </head>
 
 <body>
   <div class="app-shell">
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
+    {% set ep = request.endpoint or '' %}
+    {% set page_icon = 'bi-file-earmark-text' %}
 
-      <div class="brand-block">
-        <div class="brand-icon">
+    {% if ep in ['dashboard_page', 'dashboard', 'index'] %}
+      {% set page_icon = 'bi-grid-1x2' %}
+    {% elif ep in ['customers_page', 'customer_add', 'customer_edit'] %}
+      {% set page_icon = 'bi-people' %}
+    {% elif ep in ['plastic_types_page', 'price_page', 'price_update', 'plastic_type_edit_page'] %}
+      {% set page_icon = 'bi-box-seam' %}
+    {% elif ep in ['purchase_page', 'purchase_create'] %}
+      {% set page_icon = 'bi-cart3' %}
+    {% elif ep in ['receipt_history_page', 'receipt_page', 'receipt_detail_page'] %}
+      {% set page_icon = 'bi-receipt' %}
+    {% elif ep in ['stock_page', 'stock'] %}
+      {% set page_icon = 'bi-archive' %}
+    {% elif ep in ['stock_export_page', 'stock_export_create', 'stock_export_history_page'] %}
+      {% set page_icon = 'bi-truck' %}
+    {% elif ep in ['ai_page', 'ai_detection', 'predict_plastic'] %}
+      {% set page_icon = 'bi-camera' %}
+    {% elif ep in ['login_page', 'login'] %}
+      {% set page_icon = 'bi-shield-lock' %}
+    {% endif %}
+
+    <!-- Sidebar -->
+    <aside class="sidebar sidebar-green" id="sidebar">
+
+      <div class="sidebar-brand-green">
+        <div class="brand-leaf brand-leaf-one"></div>
+        <div class="brand-leaf brand-leaf-two"></div>
+
+        <div class="sidebar-brand-icon">
           <i class="bi bi-recycle"></i>
         </div>
 
-        <div>
-          <p class="brand-small">PLASTIC BUYBACK</p>
-          <h1>ร้านรับซื้อพลาสติก</h1>
+        <div class="sidebar-brand-text">
+          <p>PLASTIC BUYBACK</p>
+          <h1>ร้านรับซื้อ<br>พลาสติก</h1>
+          <small>เปลี่ยนพลาสติกให้มีคุณค่า</small>
         </div>
       </div>
 
-      {% set ep = request.endpoint or '' %}
-      {% set page_icon = 'bi-file-earmark-text' %}
+      <nav class="sidebar-group-list">
 
-      {% if ep in ['dashboard_page', 'dashboard', 'index'] %}
-        {% set page_icon = 'bi-grid-1x2' %}
-      {% elif ep in ['customers_page', 'customer_add', 'customer_edit'] %}
-        {% set page_icon = 'bi-people' %}
-      {% elif ep in ['plastic_types_page', 'price_page', 'price_update', 'plastic_type_edit_page'] %}
-        {% set page_icon = 'bi-box-seam' %}
-      {% elif ep in ['purchase_page', 'purchase_create'] %}
-        {% set page_icon = 'bi-cart3' %}
-      {% elif ep in ['receipt_history_page', 'receipt_page', 'receipt_detail_page'] %}
-        {% set page_icon = 'bi-receipt' %}
-      {% elif ep in ['stock_page', 'stock'] %}
-        {% set page_icon = 'bi-archive' %}
-      {% elif ep in ['stock_export_page', 'stock_export_create', 'stock_export_history_page'] %}
-        {% set page_icon = 'bi-truck' %}
-      {% elif ep in ['ai_page', 'ai_detection', 'predict_plastic'] %}
-        {% set page_icon = 'bi-camera' %}
-      {% elif ep in ['login_page', 'login'] %}
-        {% set page_icon = 'bi-shield-lock' %}
-      {% endif %}
+        <!-- ภาพรวม -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-title">
+            <span>ภาพรวม</span>
+          </div>
 
-      <nav class="nav-menu">
+          <a
+            href="{{ url_for('dashboard_page') }}"
+            class="sidebar-green-link {{ 'active' if ep in ['dashboard_page', 'dashboard', 'index'] else '' }}"
+          >
+            <i class="bi bi-grid"></i>
+            <span>แดชบอร์ด</span>
+          </a>
+        </div>
 
-        <a
-          href="{{ url_for('dashboard_page') }}"
-          class="nav-link {{ 'active' if ep in ['dashboard_page', 'dashboard', 'index'] else '' }}"
-        >
-          <i class="bi bi-grid-1x2"></i>
-          <span>แดชบอร์ด</span>
-        </a>
+        <!-- ประวัติรับซื้อ -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-title">
+            <span>ประวัติรับซื้อ</span>
+          </div>
 
-        <a
-          href="{{ url_for('customers_page') }}"
-          class="nav-link {{ 'active' if ep in ['customers_page', 'customer_add', 'customer_edit'] else '' }}"
-        >
-          <i class="bi bi-people"></i>
-          <span>จัดการลูกค้า</span>
-        </a>
+          <a
+            href="{{ url_for('purchase_page') }}"
+            class="sidebar-green-link {{ 'active' if ep in ['purchase_page', 'purchase_create'] else '' }}"
+          >
+            <i class="bi bi-cart3"></i>
+            <span>รับซื้อ</span>
+          </a>
 
-        <a
-          href="{{ url_for('plastic_types_page') }}"
-          class="nav-link {{ 'active' if ep in ['plastic_types_page', 'price_page', 'price_update', 'plastic_type_edit_page'] else '' }}"
-        >
-          <i class="bi bi-box-seam"></i>
-          <span>ประเภทพลาสติก</span>
-        </a>
+          <a
+            href="{{ url_for('customers_page') }}"
+            class="sidebar-green-link {{ 'active' if ep in ['customers_page', 'customer_add', 'customer_edit'] else '' }}"
+          >
+            <i class="bi bi-people"></i>
+            <span>จัดการลูกค้า</span>
+          </a>
 
-        <a
-          href="{{ url_for('purchase_page') }}"
-          class="nav-link {{ 'active' if ep in ['purchase_page', 'purchase_create'] else '' }}"
-        >
-          <i class="bi bi-cart3"></i>
-          <span>รับซื้อ</span>
-        </a>
+          <a
+            href="{{ url_for('receipt_history_page') }}"
+            class="sidebar-green-link {{ 'active' if ep in ['receipt_history_page', 'receipt_page', 'receipt_detail_page'] else '' }}"
+          >
+            <i class="bi bi-receipt"></i>
+            <span>ใบเสร็จรับซื้อ</span>
+          </a>
+        </div>
 
-        <a
-          href="{{ url_for('receipt_history_page') }}"
-          class="nav-link {{ 'active' if ep in ['receipt_history_page', 'receipt_page', 'receipt_detail_page'] else '' }}"
-        >
-          <i class="bi bi-receipt"></i>
-          <span>ใบเสร็จรับซื้อ</span>
-        </a>
+        <!-- สินค้า -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-title">
+            <span>สินค้า</span>
+          </div>
 
-        <a
-          href="{{ url_for('stock_page') }}"
-          class="nav-link {{ 'active' if ep in ['stock_page', 'stock'] else '' }}"
-        >
-          <i class="bi bi-archive"></i>
-          <span>คลังสินค้า</span>
-        </a>
+          <a
+            href="{{ url_for('plastic_types_page') }}"
+            class="sidebar-green-link {{ 'active' if ep in ['plastic_types_page', 'price_page', 'price_update', 'plastic_type_edit_page'] else '' }}"
+          >
+            <i class="bi bi-box-seam"></i>
+            <span>ประเภทพลาสติก</span>
+          </a>
 
-        <a
-          href="{{ url_for('stock_export_page') }}"
-          class="nav-link {{ 'active' if ep in ['stock_export_page', 'stock_export_create', 'stock_export_history_page'] else '' }}"
-        >
-          <i class="bi bi-truck"></i>
-          <span>จำหน่ายออก</span>
-        </a>
+          <a
+            href="{{ url_for('stock_page') }}"
+            class="sidebar-green-link {{ 'active' if ep in ['stock_page', 'stock'] else '' }}"
+          >
+            <i class="bi bi-archive"></i>
+            <span>คลังสินค้า</span>
+          </a>
+        </div>
 
-        <a
-          href="{{ url_for('ai_page') }}"
-          class="nav-link {{ 'active' if ep in ['ai_page', 'ai_detection', 'predict_plastic'] else '' }}"
-        >
-          <i class="bi bi-camera"></i>
-          <span>ตรวจจับพลาสติก</span>
-        </a>
+        <!-- จำหน่ายออก -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-title">
+            <span>จำหน่ายออก</span>
+          </div>
+
+          <a
+            href="{{ url_for('stock_export_page') }}"
+            class="sidebar-green-link {{ 'active' if ep in ['stock_export_page', 'stock_export_create', 'stock_export_history_page'] else '' }}"
+          >
+            <i class="bi bi-truck"></i>
+            <span>จำหน่ายออก</span>
+          </a>
+        </div>
+
+        <!-- ตรวจสอบ -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-title">
+            <span>ตรวจสอบ</span>
+          </div>
+
+          <a
+            href="{{ url_for('ai_page') }}"
+            class="sidebar-green-link detect {{ 'active' if ep in ['ai_page', 'ai_detection', 'predict_plastic'] else '' }}"
+          >
+            <i class="bi bi-camera"></i>
+            <span>ตรวจจับพลาสติก</span>
+          </a>
+        </div>
 
       </nav>
 
       {% if session.get('user_id') %}
-      <div class="sidebar-footer">
+      <div class="sidebar-green-spacer"></div>
 
-        <div class="user-box">
-          <div class="user-avatar">
-            <i class="bi bi-person-circle"></i>
-          </div>
-
-          <div class="user-info">
-            <strong>{{ session.get('full_name', 'ผู้ใช้งาน') }}</strong>
-            <span>{{ session.get('role', 'user') }}</span>
-          </div>
-        </div>
-
-        <a href="{{ url_for('logout') }}" class="logout-btn">
-          <i class="bi bi-box-arrow-right"></i>
-          <span>ออกจากระบบ</span>
-        </a>
-
-      </div>
+      <a href="{{ url_for('logout') }}" class="sidebar-green-logout">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>ออกจากระบบ</span>
+      </a>
       {% endif %}
 
     </aside>
@@ -307,7 +373,7 @@
     <div class="main-area">
 
       <header class="topbar">
-        <button class="menu-toggle" type="button" id="menuToggle">
+        <button class="menu-toggle" type="button" id="menuToggle" aria-label="เปิดเมนู">
           <i class="bi bi-list"></i>
         </button>
 
@@ -321,11 +387,11 @@
               <h2 class="page-heading">
                 {% block page_heading %}หน้าหลัก{% endblock %}
               </h2>
-
-              {% block page_subtitle %}
-              <p class="page-subtitle"></p>
-              {% endblock %}
             </div>
+          </div>
+
+          <div class="page-actions">
+            {% block page_actions %}{% endblock %}
           </div>
         </div>
       </header>
@@ -365,7 +431,7 @@
     } | tojson }}
   </script>
 
-  <script src="{{ url_for('static', filename='js/main.js') }}?v={{ template_version }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}?v={{ asset_version('js/main.js') }}"></script>
 
   {% block script_extra %}{% endblock %}
 </body>
